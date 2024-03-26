@@ -3,6 +3,7 @@ import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/input_field.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/utilities/utilities.dart';
+
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
 
@@ -72,26 +73,61 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 Gap(2 * SizeConfig.heightMultiplier),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SocialButton(
-                        title: "Github",
-                        icon: AppImages.github,
-                        function: () {},
-                      ),
-                    ),
-                    Gap(2 * SizeConfig.widthMultiplier),
-                    Expanded(
-                      child: SocialButton(
-                        title: "Google",
-                        icon: AppImages.google,
-                        function: () {},
-                      ),
-                    ),
-                  ],
+                Center(
+                  child: SupaSocialsAuth(
+                    queryParams: const {
+                      OAuthProvider.github: {
+                        'redirect_to':
+                            'https://pkgfznuiqaixphqiynme.supabase.co/auth/v1/callback',
+                        
+                      },
+                      OAuthProvider.google: {
+                        'redirect_to':
+                            'https://pkgfznuiqaixphqiynme.supabase.co/auth/v1/callback',
+                      },
+                    },
+                    socialProviders: const [
+                      OAuthProvider.github,
+                      OAuthProvider.google,
+                      OAuthProvider.discord,
+                      OAuthProvider.figma
+                    ],
+                    colored: true,
+                    socialButtonVariant: SocialButtonVariant.icon,
+                    redirectUrl: kIsWeb
+                        ? null
+                        : 'https://pkgfznuiqaixphqiynme.supabase.co/auth/v1/callback',
+                    onSuccess: (Session response) {
+                      context.push('/home');
+                      debugPrint(response.toString());
+                    },
+                    showSuccessSnackBar: false,
+                    onError: (error) {
+                      debugPrint(error.toString());
+                    },
+                  ),
                 ),
                 Gap(2 * SizeConfig.heightMultiplier),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: SocialButton(
+                //         title: "Github",
+                //         icon: AppImages.github,
+                //         function: () {},
+                //       ),
+                //     ),
+                //     Gap(2 * SizeConfig.widthMultiplier),
+                //     Expanded(
+                //       child: SocialButton(
+                //         title: "Google",
+                //         icon: AppImages.google,
+                //         function: () {},
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // Gap(2 * SizeConfig.heightMultiplier),
                 const Separator(),
                 Gap(2 * SizeConfig.heightMultiplier),
                 InputField(

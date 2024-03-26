@@ -8,7 +8,7 @@ abstract class AuthTemplate {
   Future<AuthResponse> signUpWithEmailAndPassword(
       String email, String name, String password);
   Future<AuthResponse> signInWithGoogle();
-  Future<AuthResponse> signInWithGithub();
+  Future<bool> signInWithGithub();
   Future<bool> sendPasswordResetEmail(String email);
   Future<bool> signOut();
 }
@@ -58,12 +58,15 @@ class AuthRepository extends AuthTemplate {
   }
 
   @override
-  Future<AuthResponse> signInWithGithub() async {
+  Future<bool> signInWithGithub() async {
     try {
-      final response = await supabase.auth.signInWithProvider(
-        provider: OAuthProvider.github,
+      final  response = await supabase.auth.signInWithOAuth(
+        OAuthProvider.github,
+        redirectTo: 'https://www.ecoville.site',
+        // authScreenLaunchMode: LaunchMode.
       );
       return response;
+      
     } catch (e) {
       debugPrint(e.toString());
       throw Exception(e.toString());
@@ -72,11 +75,13 @@ class AuthRepository extends AuthTemplate {
 
   @override
   Future<AuthResponse> signInWithGoogle() async {
+    // secret - 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
+    // id - 203502494436-hqg1vh46cpqqhpsg5vqvecb96vs6dbpf.apps.googleusercontent.com
     try {
       const webClientId =
-          '203502494436-b2e9a7prusv18vog9tmge6chpeg00sto.apps.googleusercontent.com';
+          '203502494436-hqg1vh46cpqqhpsg5vqvecb96vs6dbpf.apps.googleusercontent.com';
       const iosClientId =
-          '203502494436-3c0s0cl8ie5u49ehrsbf9trk1grm3fhh.apps.googleusercontent.com';
+          '203502494436-hm4jnoru8i7ml1ir7jn5fh8efpki1oql.apps.googleusercontent.com';
 
       final GoogleSignIn googleSignIn = GoogleSignIn(
         signInOption: SignInOption.standard,

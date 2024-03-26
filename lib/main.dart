@@ -1,5 +1,6 @@
 import 'package:ecoville/blocs/app/authentication/authentication_cubit.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:ecoville/views/home/home.dart';
 import 'package:flutter/services.dart';
 
 const supabaseKey = String.fromEnvironment('ANON_KEY');
@@ -48,7 +49,7 @@ class Checker extends StatelessWidget {
       builder: (context, state) {
         // TODO remember to update the location of the pages for authenticated and unauthenticated users
         if (state is Authenticated) {
-          return const WelcomePage();
+          return const HomePage();
         } else if (state is Unauthenticated) {
           return const WelcomePage();
         } else {

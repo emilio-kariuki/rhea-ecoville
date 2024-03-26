@@ -14,3 +14,5 @@ export 'package:shimmer/shimmer.dart';
 export 'package:flutter_spinkit/flutter_spinkit.dart';
 export 'package:flutter_svg/svg.dart';
 export 'package:gap/gap.dart';
+export 'package:flutter/foundation.dart';
+export 'package:supabase_auth_ui/supabase_auth_ui.dart';

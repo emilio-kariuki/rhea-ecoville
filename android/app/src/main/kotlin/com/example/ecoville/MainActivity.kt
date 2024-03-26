@@ -1,4 +1,4 @@
-package com.example.ecoville
+package com.ecoville.eville
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -73,26 +73,49 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
                 Gap(2 * SizeConfig.heightMultiplier),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SocialButton(
-                        title: "Github",
-                        icon: AppImages.github,
-                        function: () {},
-                      ),
-                    ),
-                    Gap(2 * SizeConfig.widthMultiplier),
-                    Expanded(
-                      child: SocialButton(
-                        title: "Google",
-                        icon: AppImages.google,
-                        function: () {},
-                      ),
-                    ),
-                  ],
+                Center(
+                  child: SupaSocialsAuth(
+                    socialProviders: const [
+                      OAuthProvider.github,
+                      OAuthProvider.google,
+                      OAuthProvider.discord,
+                      OAuthProvider.figma
+                    ],
+                    colored: true,
+                    socialButtonVariant: SocialButtonVariant.icon,
+                    redirectUrl: kIsWeb
+                        ? null
+                        : 'https://pkgfznuiqaixphqiynme.supabase.co/auth/v1/callback',
+                    onSuccess: (Session response) {
+                      // context.push('/home');
+                    },
+                    showSuccessSnackBar: false,
+                    onError: (error) {
+                      debugPrint(error.toString());
+                    },
+                  ),
                 ),
                 Gap(2 * SizeConfig.heightMultiplier),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: SocialButton(
+                //         title: "Github",
+                //         icon: AppImages.github,
+                //         function: () {},
+                //       ),
+                //     ),
+                //     Gap(2 * SizeConfig.widthMultiplier),
+                //     Expanded(
+                //       child: SocialButton(
+                //         title: "Google",
+                //         icon: AppImages.google,
+                //         function: () {},
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // Gap(2 * SizeConfig.heightMultiplier),
                 const Separator(),
                 Gap(2 * SizeConfig.heightMultiplier),
                 InputField(

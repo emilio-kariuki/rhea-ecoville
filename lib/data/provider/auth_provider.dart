@@ -23,6 +23,11 @@ class AuthProvider extends AuthTemplate {
   }
 
   @override
+  Future<bool> signInWithGithub() {
+    return AuthRepository().signInWithGithub();
+  }
+
+  @override
   Future<bool> signOut() {
     return AuthRepository().signOut();
   }

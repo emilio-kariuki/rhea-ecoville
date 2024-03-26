@@ -54,6 +54,20 @@ class AuthCubit extends Cubit<SupabaseAuthState> {
     }
   }
 
+  // Future<void> signInWithGithub() async {
+  //   try {
+  //     emit(AuthLoading());
+  //     final response = await _authProvider.signInWithGithub();
+  //     if (response) {
+  //       emit(AuthSuccess(response.user!));
+  //     } else {
+  //       emit(const AuthError('Something went wrong'));
+  //     }
+  //   } catch (e) {
+  //     emit(AuthError(e.toString().toException()));
+  //   }
+  // }
+
   Future<void> signOut() async {
     emit(AuthLoading());
     final response = await _authProvider.signOut();

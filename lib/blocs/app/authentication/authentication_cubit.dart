@@ -11,6 +11,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> appStarted() async {
     emit(AuthenticationLoading());
     final response = await _authProvider.isSignedIn();
+    debugPrint('isSignedIn: $response');
     if (response) {
       emit(Authenticated());
     } else {

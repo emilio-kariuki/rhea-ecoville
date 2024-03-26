@@ -25,6 +25,7 @@ dependencies:
   image_picker: ^1.0.7
   shared_preferences: ^2.2.2
   shimmer: ^3.0.0
+  supabase_auth_ui: ^0.4.3
   supabase_flutter: ^2.3.4
   toastification: ^1.2.1
 
