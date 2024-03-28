@@ -6,7 +6,7 @@ import PlayStore from "@/assets/playstore.svg";
 import { Plus, Home, Leaf, Search, Compass } from "lucide-react";
 export function Hero() {
   return (
-    <div className="flex flex-row items-center justify-center gap-10 py-32">
+    <div className="flex flex-row items-center justify-center gap-10 py-20">
       <div className=" w-fit flex flex-col items-start ">
         <h1 className="font-bold text-[110px] w-[40px] mx-w-[40px] leading-none text-[#224722]">
           Keep your plants alive
