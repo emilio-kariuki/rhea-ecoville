@@ -133,3 +133,5 @@ class LocalStorageManager {
         MapEntry(key, value.map((e) => jsonDecode(e) as T).toList()));
   }
 }
+
+

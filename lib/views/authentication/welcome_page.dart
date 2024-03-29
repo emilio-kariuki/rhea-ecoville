@@ -8,7 +8,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: Color(0xffE7EDDD),
       body: SafeArea(
         bottom: false,
         child: Center(

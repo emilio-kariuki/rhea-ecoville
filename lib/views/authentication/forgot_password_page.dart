@@ -124,7 +124,9 @@ class ForgotPasswordPage extends StatelessWidget {
                       width: 80 * SizeConfig.widthMultiplier,
                       height: 7.5 * SizeConfig.heightMultiplier,
                       function: () {
-                        context.read<AuthCubit>().sendPasswordResetEmail(emailController.text);
+                        context
+                            .read<AuthCubit>()
+                            .sendPasswordResetEmail(emailController.text);
                       },
                       backgroundColor: green,
                     );
