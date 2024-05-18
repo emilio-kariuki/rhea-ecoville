@@ -5,4 +5,4 @@ export "./extension.dart";
 export './supabase.dart';
 export './route_config.dart';
 export './packages.dart';
-
+export './app_contants.dart';

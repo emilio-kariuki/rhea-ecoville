@@ -16,3 +16,8 @@ export 'package:flutter_svg/svg.dart';
 export 'package:gap/gap.dart';
 export 'package:flutter/foundation.dart';
 export 'package:supabase_auth_ui/supabase_auth_ui.dart';
+export 'package:flutter_local_notifications/flutter_local_notifications.dart';
+export 'package:firebase_core/firebase_core.dart';
+export 'package:firebase_messaging/firebase_messaging.dart';
+export 'package:sqflite/sqflite.dart';
+export 'package:path/path.dart';
