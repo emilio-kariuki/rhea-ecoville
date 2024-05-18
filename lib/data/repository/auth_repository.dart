@@ -1,19 +1,19 @@
 import 'package:ecoville/data/local/local_storage.dart';
+import 'package:ecoville/data/provider/notification_provider.dart';
+import 'package:ecoville/data/provider/user_provider.dart';
+import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 abstract class AuthTemplate {
   Future<bool> isSignedIn();
-  Future<AuthResponse> signInWithEmailAndPassword(
-      String email, String password);
-  Future<AuthResponse> signUpWithEmailAndPassword(
-      String email, String name, String password);
-  Future<AuthResponse> signInWithGoogle();
-  Future<bool> signInWithGithub();
-  Future<bool> sendPasswordResetEmail(String email);
+  Future<bool> signInWithGoogle();
   Future<bool> signOut();
 }
 
 class AuthRepository extends AuthTemplate {
+  final _userService = service<UserProvider>();
+  final _notificationService = service<NotificationProvider>();
   @override
   Future<bool> isSignedIn() async {
     final user = supabase.auth.currentUser;
@@ -24,64 +24,12 @@ class AuthRepository extends AuthTemplate {
   }
 
   @override
-  Future<AuthResponse> signUpWithEmailAndPassword(
-      String email, String name, String password) async {
-    try {
-      final AuthResponse response =
-          await supabase.auth.signUp(email: email, password: password);
-      await supabase.from('user').insert({
-        'id': response.user!.id,
-        'email': email,
-        'name': name,
-        'picture': AppImages.defaultImage,
-      });
-      await LocalStorageManager(await SharedPreferences.getInstance())
-          .saveString('email', email);
-      return response;
-    } on AuthException catch (e) {
-      debugPrint(e.toString());
-      throw Exception(e.message);
-    }
-  }
-
-  @override
-  Future<AuthResponse> signInWithEmailAndPassword(
-      String email, String password) async {
-    try {
-      final AuthResponse response = await supabase.auth
-          .signInWithPassword(password: password, email: email);
-      return response;
-    } on AuthException catch (e) {
-      debugPrint(e.toString());
-      throw Exception(e.message);
-    }
-  }
-
-  @override
-  Future<bool> signInWithGithub() async {
-    try {
-      final  response = await supabase.auth.signInWithOAuth(
-        OAuthProvider.github,
-        redirectTo: 'https://www.ecoville.site',
-        // authScreenLaunchMode: LaunchMode.
-      );
-      return response;
-      
-    } catch (e) {
-      debugPrint(e.toString());
-      throw Exception(e.toString());
-    }
-  }
-
-  @override
-  Future<AuthResponse> signInWithGoogle() async {
-    // secret - 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
-    // id - 203502494436-hqg1vh46cpqqhpsg5vqvecb96vs6dbpf.apps.googleusercontent.com
+  Future<bool> signInWithGoogle() async {
     try {
       const webClientId =
-          '203502494436-hqg1vh46cpqqhpsg5vqvecb96vs6dbpf.apps.googleusercontent.com';
+          '377119171510-chp0j4b1u1f638ajsosufe39cc8ha3qk.apps.googleusercontent.com';
       const iosClientId =
-          '203502494436-hm4jnoru8i7ml1ir7jn5fh8efpki1oql.apps.googleusercontent.com';
+          '377119171510-66892ga8mr2q9e02akq47efjj28of08v.apps.googleusercontent.com';
 
       final GoogleSignIn googleSignIn = GoogleSignIn(
         signInOption: SignInOption.standard,
@@ -105,21 +53,20 @@ class AuthRepository extends AuthTemplate {
         idToken: idToken,
         accessToken: accessToken,
       );
-      return response;
+      final token = await _notificationService.getNotificationToken();
+      await _userService.createUser(
+        user: UserModel(
+          id: response.user!.id,
+          name: response.user!.userMetadata?['full_name'],
+          email: response.user!.email!,
+          image: response.user!.userMetadata?['avatar_url'],
+          token: token,
+        ),
+      );
+      return true;
     } catch (e) {
       debugPrint(e.toString());
       throw Exception(e.toString());
-    }
-  }
-
-  @override
-  Future<bool> sendPasswordResetEmail(String email) async {
-    try {
-      await supabase.auth.resetPasswordForEmail(email);
-      return true;
-    } catch (error) {
-      debugPrint(error.toString());
-      return false;
     }
   }
 
