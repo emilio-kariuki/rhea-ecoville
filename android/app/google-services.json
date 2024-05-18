@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "847413989991",
+    "project_id": "ecoville-picsa",
+    "storage_bucket": "ecoville-picsa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847413989991:android:4109d427cd58fbedc63ac2",
+        "android_client_info": {
+          "package_name": "com.ecoville.eville"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "847413989991-fdttej3tabm8li6bp023oqsh8tbftevj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiU_QFvfNozRYRR0pROPKn7E74PC6JaSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847413989991-fdttej3tabm8li6bp023oqsh8tbftevj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
