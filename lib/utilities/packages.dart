@@ -21,3 +21,5 @@ export 'package:firebase_core/firebase_core.dart';
 export 'package:firebase_messaging/firebase_messaging.dart';
 export 'package:sqflite/sqflite.dart';
 export 'package:path/path.dart';
+export 'package:geocoder/geocoder.dart';
+export 'package:geolocator/geolocator.dart';

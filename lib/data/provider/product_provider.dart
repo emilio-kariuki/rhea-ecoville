@@ -33,8 +33,8 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<List<ProductModel>> getProductsByUser({required String userId}) {
-    return _productRepository.getProductsByUser(userId: userId);
+  Future<List<ProductModel>> getUserProductsPosted() {
+    return _productRepository.getUserProductsPosted();
   }
 
   @override
@@ -50,5 +50,35 @@ class ProductProvider extends ProductTemplate {
   @override
   Future<bool> updateProduct({required ProductModel product}) {
     return _productRepository.updateProduct(product: product);
+  }
+
+  @override
+  Future<List<ProductModel>> getSavedProducts() {
+    return _productRepository.getSavedProducts();
+  }
+
+  @override
+  Future<bool> watchProduct({required ProductModel product}) {
+    return _productRepository.watchProduct(product: product);
+  }
+
+  @override
+  Future<List<ProductModel>> getWatchedProducts() {
+    return _productRepository.getWatchedProducts();
+  }
+
+  @override
+  Future<bool> unwatchProduct({required String id}) {
+    return _productRepository.unwatchProduct(id: id);
+  }
+
+  @override
+  Future<List<ProductModel>> getNearbyProducts() {
+    return _productRepository.getNearbyProducts();
+  }
+
+  @override
+  Future<List<ProductModel>> getSimilarProducts({required String productId}) {
+    return _productRepository.getSimilarProducts(productId: productId);
   }
 }

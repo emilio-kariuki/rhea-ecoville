@@ -11,6 +11,7 @@ const String APP_EMAIL = "emilio113kariuki@gmail.com";
 const String APP_PHONE = '+254 796 250 443';
 const String APP_ADDRESS = 'Nairobi, Kenya';
 const String APP_LICENSE = 'MIT';
+const String GOOGLE_MAPS_API_KEY = "AIzaSyBkOlEK3rAUxsL0xGiD5XaP22QjbP9vZq8";
 
 //* tables
 const String TABLE_USERS = 'ecoville_user';
@@ -19,3 +20,8 @@ const String TABLE_BIDDING = 'ecoville_bidding';
 const String TABLE_BIDDING_HISTORY = 'ecoville_bidding_history';
 const String TABLE_BIDDING_WINNER = 'ecoville_bidding_winner';
 const String TABLE_NOTIFICATION = 'ecoville_notification';
+const String LOCAL_DATABASE = "products.db";
+const int LOCAL_DATABASE_VERSION = 1;
+const String LOCAL_TABLE_PRODUCTS = "products";
+const String LOCAL_TABLE_WATCHED = "watchedTable";
+const double NEARBY_RADIUS = 1000;

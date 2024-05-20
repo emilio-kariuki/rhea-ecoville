@@ -1,5 +1,4 @@
 import 'package:ecoville/data/repository/user_repository.dart';
-import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/user_model.dart';
 
 class UserProvider extends UserTemplate {
@@ -22,13 +21,4 @@ class UserProvider extends UserTemplate {
     return _userRepository.updateUser(user: user);
   }
 
-  @override
-  Future<List<ProductModel>> getProductsPosted() {
-    return _userRepository.getProductsPosted();
-  }
-
-  @override
-  Future<List<ProductModel>> getProductsSaved() {
-    return _userRepository.getProductsSaved();
-  }
 }

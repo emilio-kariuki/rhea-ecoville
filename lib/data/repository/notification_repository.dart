@@ -85,7 +85,6 @@ class NotificationRepository extends NotificationTemplate {
     }
   }
 
-
   @override
   Future<void> sendNotification({required String title, required String body}) {
     return flutterLocalNotificationsPlugin.show(

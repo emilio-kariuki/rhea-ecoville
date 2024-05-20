@@ -1,9 +1,13 @@
 import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/provider/auth_provider.dart';
+import 'package:ecoville/data/provider/bid_provider.dart';
+import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
 import 'package:ecoville/data/repository/auth_repository.dart';
+import 'package:ecoville/data/repository/bid_repository.dart';
+import 'package:ecoville/data/repository/location_repository.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/repository/product_repository.dart';
 import 'package:ecoville/data/repository/user_repository.dart';
@@ -26,5 +30,11 @@ void initLocator() {
     ..registerLazySingleton<DatabaseHelper>(() => DatabaseHelper())
     ..registerLazySingleton<ProductProvider>(
         () => ProductProvider(productRepository: service()))
-    ..registerLazySingleton<ProductRepository>(() => ProductRepository());
+    ..registerLazySingleton<ProductRepository>(() => ProductRepository())
+    ..registerLazySingleton<BidProvider>(
+        () => BidProvider(bidRepository: service()))
+    ..registerLazySingleton<BidRepository>(() => BidRepository())
+    ..registerLazySingleton<LocationProvider>(
+        () => LocationProvider(locationRepository: service()))
+    ..registerLazySingleton<LocationRepository>(() => LocationRepository());
 }
