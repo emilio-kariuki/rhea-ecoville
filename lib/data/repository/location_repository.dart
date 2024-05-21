@@ -1,5 +1,4 @@
 import 'package:ecoville/utilities/packages.dart';
-import 'package:geolocator/geolocator.dart';
 
 abstract class LocationTemplate {
   Future<void> requestPermission();

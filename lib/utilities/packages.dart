@@ -23,3 +23,7 @@ export 'package:sqflite/sqflite.dart';
 export 'package:path/path.dart';
 export 'package:geocoder/geocoder.dart';
 export 'package:geolocator/geolocator.dart';
+export 'package:flutter_image_compress/flutter_image_compress.dart';
+export 'package:url_launcher/url_launcher.dart';
+export 'package:share_plus/share_plus.dart';
+export 'package:image_picker/image_picker.dart';
