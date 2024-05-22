@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:flutter/services.dart';
 
 abstract class AppTemplate {
-  Future<void> requestPermission();
   Future<File> pickImage({required ImageSource source});
   Future<File> compressImage({required File image});
   Future<String> uploadFile({required String path, required String productId});
@@ -16,6 +16,8 @@ abstract class AppTemplate {
   Future<void> launchSms({required String phone, required String text});
   Future<void> launchWhatsApp({required String phone, required String text});
   Future<bool> copyToClipboard({required String text});
+  Future<String> downloadAndSaveFile(
+      {required String url, required String fileName});
 }
 
 class AppRepository extends AppTemplate {
@@ -139,9 +141,6 @@ class AppRepository extends AppTemplate {
   }
 
   @override
-  Future<void> requestPermission() async {}
-
-  @override
   Future<String> uploadFile(
       {required String path, required String productId}) async {
     try {
@@ -171,5 +170,20 @@ class AppRepository extends AppTemplate {
       debugPrint(e.toString());
       throw Exception('Error uploading image');
     }
+  }
+
+  @override
+  Future<String> downloadAndSaveFile({required String url, required String fileName}) async {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final String filePath = '${directory.path}/$fileName';
+    final response = await Dio().get(
+      url,
+      options: Options(
+        responseType: ResponseType.bytes,
+      ),
+    );
+    final File file = File(filePath);
+    await file.writeAsBytes(response.data);
+    return filePath;
   }
 }

@@ -7,8 +7,8 @@ class ProductProvider extends ProductTemplate {
       : _productRepository = productRepository;
 
   @override
-  Future<bool> createProduct({required ProductModel product}) {
-    return _productRepository.createProduct(product: product);
+  Future<bool> createProduct({required ProductModel product, required bool allowBidding}) {
+    return _productRepository.createProduct(product: product, allowBidding: allowBidding);
   }
 
   @override

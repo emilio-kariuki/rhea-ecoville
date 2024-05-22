@@ -1,10 +1,12 @@
 import 'package:ecoville/data/local/local_database.dart';
+import 'package:ecoville/data/provider/app_provider.dart';
 import 'package:ecoville/data/provider/auth_provider.dart';
 import 'package:ecoville/data/provider/bid_provider.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
+import 'package:ecoville/data/repository/app_repository.dart';
 import 'package:ecoville/data/repository/auth_repository.dart';
 import 'package:ecoville/data/repository/bid_repository.dart';
 import 'package:ecoville/data/repository/location_repository.dart';
@@ -20,6 +22,9 @@ void initLocator() {
     ..registerLazySingleton<AuthProvider>(
         () => AuthProvider(authRepository: service()))
     ..registerLazySingleton<AuthRepository>(() => AuthRepository())
+    ..registerLazySingleton<AppProvider>(
+        () => AppProvider(appRepository: service()))
+    ..registerLazySingleton<AppRepository>(() => AppRepository())
     ..registerLazySingleton<NotificationProvider>(
         () => NotificationProvider(notificationRepository: service()))
     ..registerLazySingleton<NotificationRepository>(

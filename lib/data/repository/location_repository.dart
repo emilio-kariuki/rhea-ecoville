@@ -16,6 +16,7 @@ class LocationRepository extends LocationTemplate {
   @override
   Future<Position> getCurrentLocation() async {
     try {
+      await requestPermission();
       return await Geolocator.getCurrentPosition();
     } catch (error) {
       return await Geolocator.getCurrentPosition(
@@ -98,6 +99,7 @@ class LocationRepository extends LocationTemplate {
   Future<GeoData> getAddressFromCoordinates(
       {required Position position}) async {
     try {
+      await requestPermission();
       final addresses = await Geocoder.getDataFromCoordinates(
           latitude: position.latitude,
           longitude: position.longitude,

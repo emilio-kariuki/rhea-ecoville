@@ -1,11 +1,26 @@
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
+import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/home/home.dart';
 import 'package:flutter/services.dart';
 
-const supabaseKey = String.fromEnvironment('ANON_KEY');
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  final notification = message.notification;
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await NotificationRepository().initializeNotifications();
+  await NotificationRepository().sendImageNotification(
+      title: notification!.title!,
+      body: notification.body!,
+      imageUrl: notification.android!.imageUrl!);
+
+  print("Handling a background message: ${message.messageId}");
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initLocator();
@@ -17,10 +32,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await NotificationRepository().initializeNotifications();
+  await NotificationRepository().getNotificationToken();
+
   runApp(const MainApp());
 }
 

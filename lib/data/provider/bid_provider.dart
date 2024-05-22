@@ -30,4 +30,10 @@ class BidProvider extends BidTemplate {
   Future<bool> updateBid({required BidModel bid}) {
     return _bidRepository.updateBid(bid: bid);
   }
+  
+  @override
+  Future<bool> notifyWinner() {
+    // TODO: implement notifyWinner
+    throw UnimplementedError();
+  }
 }

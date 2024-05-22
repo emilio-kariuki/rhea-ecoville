@@ -58,14 +58,15 @@ class AppProvider extends AppTemplate {
     return _appRepository.pickImage(source: source);
   }
 
-  @override
-  Future<void> requestPermission() {
-    return _appRepository.requestPermission();
-  }
 
   @override
   Future<String> uploadFile({required String path, required String productId}) {
     return _appRepository.uploadFile(path: path, productId: productId);
+  }
+  
+  @override
+  Future<String> downloadAndSaveFile({required String url, required String fileName}) {
+    return _appRepository.downloadAndSaveFile(url: url, fileName: fileName);
   }
  
 }

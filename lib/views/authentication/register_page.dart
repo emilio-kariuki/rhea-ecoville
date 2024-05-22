@@ -1,5 +1,4 @@
-import 'package:ecoville/blocs/app/supabase_auth/auth_cubit.dart';
-import 'package:ecoville/shared/complete_button.dart';
+// import 'package:ecoville/blocs/app/supabase_auth/auth_cubit.dart';
 import 'package:ecoville/shared/input_field.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/utilities/utilities.dart';
@@ -228,42 +227,42 @@ class RegisterPage extends StatelessWidget {
                   ],
                 ),
                 Gap(3 * SizeConfig.heightMultiplier),
-                BlocProvider(
-                  create: (context) => AuthCubit(),
-                  child: BlocConsumer<AuthCubit, SupabaseAuthState>(
-                    listener: (context, state) {
-                      if (state is AuthSuccess) {
-                        context.go(AppRoute.home);
-                      }
-                      if (state is AuthError) {
-                        context.showErrorToast(
-                            title: "Error",
-                            message: state.message,
-                            context: context);
-                      }
-                    },
-                    builder: (context, state) {
-                      return CompleteButton(
-                        isLoading: state is AuthLoading,
-                        borderRadius: 30,
-                        text: 'Create Account',
-                        width: 80 * SizeConfig.widthMultiplier,
-                        height: 7 * SizeConfig.heightMultiplier,
-                        function: () {
-                          if (_formKey.currentState!.validate()) {
-                            context
-                                .read<AuthCubit>()
-                                .signUpWithEmailAndPassword(
-                                    emailController.text,
-                                    nameController.text,
-                                    passwordController.text);
-                          }
-                        },
-                        backgroundColor: green,
-                      );
-                    },
-                  ),
-                ),
+                // BlocProvider(
+                //   create: (context) => AuthCubit(),
+                //   child: BlocConsumer<AuthCubit, SupabaseAuthState>(
+                //     listener: (context, state) {
+                //       if (state is AuthSuccess) {
+                //         context.go(AppRoute.home);
+                //       }
+                //       if (state is AuthError) {
+                //         context.showErrorToast(
+                //             title: "Error",
+                //             message: state.message,
+                //             context: context);
+                //       }
+                //     },
+                //     builder: (context, state) {
+                //       return CompleteButton(
+                //         isLoading: state is AuthLoading,
+                //         borderRadius: 30,
+                //         text: 'Create Account',
+                //         width: 80 * SizeConfig.widthMultiplier,
+                //         height: 7 * SizeConfig.heightMultiplier,
+                //         function: () {
+                //           if (_formKey.currentState!.validate()) {
+                //             context
+                //                 .read<AuthCubit>()
+                //                 .signUpWithEmailAndPassword(
+                //                     emailController.text,
+                //                     nameController.text,
+                //                     passwordController.text);
+                //           }
+                //         },
+                //         backgroundColor: green,
+                //       );
+                //     },
+                //   ),
+                // ),
                 Gap(3 * SizeConfig.heightMultiplier),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

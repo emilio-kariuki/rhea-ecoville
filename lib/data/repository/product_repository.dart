@@ -3,7 +3,6 @@ import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:geolocator/geolocator.dart';
 
 abstract class ProductTemplate {
   Future<List<ProductModel>> getProducts();
@@ -11,7 +10,8 @@ abstract class ProductTemplate {
   Future<List<ProductModel>> getProductsByCategory(
       {required String categoryId});
   Future<List<ProductModel>> getUserProductsPosted();
-  Future<bool> createProduct({required ProductModel product});
+  Future<bool> createProduct(
+      {required ProductModel product, required bool allowBidding});
   Future<bool> updateProduct({required ProductModel product});
   Future<bool> deleteProduct({required String id});
   Future<bool> saveProduct({required ProductModel product});
@@ -28,7 +28,8 @@ class ProductRepository extends ProductTemplate {
   final _dbHelper = service<DatabaseHelper>();
   final _locationProvider = service<LocationProvider>();
   @override
-  Future<bool> createProduct({required ProductModel product}) async {
+  Future<bool> createProduct(
+      {required ProductModel product, required bool allowBidding}) async {
     try {
       await supabase.from(TABLE_PRODUCT).insert(product.toJson());
       return true;

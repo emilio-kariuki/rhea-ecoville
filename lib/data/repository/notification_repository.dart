@@ -1,8 +1,13 @@
+import 'package:ecoville/data/repository/app_repository.dart';
 import 'package:ecoville/utilities/packages.dart';
+
+int id = 0;
 
 abstract class NotificationTemplate {
   Future<void> initializeNotifications();
   Future<void> sendNotification({required String title, required String body});
+  Future<void> sendImageNotification(
+      {required String title, required String body, required String imageUrl});
   Future<String> getNotificationToken();
 }
 
@@ -13,7 +18,7 @@ class NotificationRepository extends NotificationTemplate {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     channel = const AndroidNotificationChannel(
-      'low_importance_channel',
+      'fcm',
       'Low Importance Notifications',
       description: 'This channel is used for important notifications.',
       importance: Importance.high,
@@ -66,14 +71,17 @@ class NotificationRepository extends NotificationTemplate {
         sound: false,
       );
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        debugPrint("Message received: ${message.notification!.body}");
-        sendNotification(
+        debugPrint(
+            "Foreground Message received: ${message.notification!.body}");
+        sendImageNotification(
           body: message.data['message'] ?? message.contentAvailable.toString(),
           title: message.data['title'] ?? message.notification!.title!,
+          imageUrl: message.notification!.android!.imageUrl!
         );
       });
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        debugPrint("Message received: ${message.notification!.body}");
+        debugPrint(
+            "Background Message received: ${message.notification!.body}");
         sendNotification(
           body: message.data['message'] ?? message.contentAvailable.toString(),
           title: message.data['title'] ?? message.notification!.title!,
@@ -102,5 +110,34 @@ class NotificationRepository extends NotificationTemplate {
         ),
       ),
     );
+  }
+
+  @override
+  Future<void> sendImageNotification(
+      {required String title,
+      required String body,
+      required String imageUrl}) async {
+    try {
+      final String bigPicturePath = await AppRepository()
+          .downloadAndSaveFile(url: imageUrl, fileName: 'bigPicture');
+      final BigPictureStyleInformation bigPictureStyleInformation =
+          BigPictureStyleInformation(FilePathAndroidBitmap(bigPicturePath),
+              // largeIcon: FilePathAndroidBitmap(largeIconPath),
+              contentTitle: title,
+              htmlFormatContentTitle: true,
+              summaryText: body,
+              htmlFormatSummaryText: true);
+      final AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails("fcm", 'normal Notifications',
+              channelDescription: "This is the notifications normal channel",
+              styleInformation: bigPictureStyleInformation);
+      final NotificationDetails notificationDetails =
+          NotificationDetails(android: androidNotificationDetails);
+      await flutterLocalNotificationsPlugin.show(
+          id++, 'big text title', 'silent body', notificationDetails);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error sending image notification");
+    }
   }
 }

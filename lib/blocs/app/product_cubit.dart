@@ -55,10 +55,12 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> createProduct({required ProductModel product}) async {
+  Future<void> createProduct(
+      {required ProductModel product, required bool allowBidding}) async {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
-      await _productProvider.createProduct(product: product);
+      await _productProvider.createProduct(
+          product: product, allowBidding: allowBidding);
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(

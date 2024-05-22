@@ -19,4 +19,9 @@ class NotificationProvider extends NotificationTemplate {
   Future<void> sendNotification({required String title, required String body}) {
     return _notificationRepository.sendNotification(title: title, body: body);
   }
+  
+  @override
+  Future<void> sendImageNotification({required String title, required String body, required String imageUrl}) {
+    return _notificationRepository.sendImageNotification(title: title, body: body, imageUrl: imageUrl);
+  }
 }
