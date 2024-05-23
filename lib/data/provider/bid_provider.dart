@@ -15,7 +15,7 @@ class BidProvider extends BidTemplate {
   Future<bool> deleteBid({required String id}) {
     return _bidRepository.deleteBid(id: id);
   }
-
+  
   @override
   Future<List<BidModel>> getProductBids({required String productId}) {
     return _bidRepository.getProductBids(productId: productId);
@@ -29,11 +29,5 @@ class BidProvider extends BidTemplate {
   @override
   Future<bool> updateBid({required BidModel bid}) {
     return _bidRepository.updateBid(bid: bid);
-  }
-  
-  @override
-  Future<bool> notifyWinner() {
-    // TODO: implement notifyWinner
-    throw UnimplementedError();
   }
 }

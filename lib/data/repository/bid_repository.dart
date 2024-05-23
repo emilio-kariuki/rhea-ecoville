@@ -9,7 +9,6 @@ abstract class BidTemplate {
   Future<bool> deleteBid({required String id});
   Future<List<BidModel>> getProductBids({required String productId});
   Future<List<BidModel>> getUserBids({required String userId});
-  Future<bool> notifyWinner();
 }
 
 class BidRepository extends BidTemplate {
@@ -96,7 +95,8 @@ class BidRepository extends BidTemplate {
           .select(
             "ecoville_user(*), ecoville_product(*), *",
           )
-          .eq('productId', productId);
+          .eq('productId', productId)
+          .order("price", ascending: false);
       debugPrint("Bids are: $response");
       final bids = response.map((e) => BidModel.fromJson(e)).toList();
       return bids;
@@ -110,7 +110,7 @@ class BidRepository extends BidTemplate {
   Future<List<BidModel>> getUserBids({required String userId}) async {
     try {
       final bids =
-          await supabase.from(TABLE_BIDDING).select("*").eq('userId', userId);
+          await supabase.from(TABLE_BIDDING).select("ecoville_product(*),ecoville_user(*), *").eq('userId', userId);
       return bids.map((e) => BidModel.fromJson(e)).toList();
     } catch (error) {
       debugPrint("Error fetching user bids: $error");
@@ -118,18 +118,5 @@ class BidRepository extends BidTemplate {
     }
   }
   
-  @override
-  Future<bool> notifyWinner() async{
-    try{
-      final response = await supabase.from(TABLE_BIDDING).select("ecoville_user(*), ecoville_product(*)").order("price", ascending: false).limit(1);
-      final winner = BidModel.fromJson(response.first);
-      final product = await _productProvider.getProduct(id: winner.productId);
-      // await _productProvider.updateProduct(product: product.copyWith(winnerId: winner.userId));
-      return true;
-
-    }catch(error){
-      debugPrint("Error notifying the winner: $error");
-      throw Exception("Error notifying the winner: $error");
-    }
-  }
+  
 }
