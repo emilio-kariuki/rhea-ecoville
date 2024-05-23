@@ -1,6 +1,5 @@
 export 'package:flutter/rendering.dart';
 export 'package:flutter/material.dart';
-export '../views/authentication/authentication.dart';
 export 'package:supabase_flutter/supabase_flutter.dart';
 export 'package:go_router/go_router.dart';
 export 'package:ecoville/utilities/utilities.dart';
@@ -28,3 +27,6 @@ export 'package:url_launcher/url_launcher.dart';
 export 'package:share_plus/share_plus.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:path_provider/path_provider.dart';
+export 'package:flutter_native_splash/flutter_native_splash.dart';
+export 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart'
+    hide IndexedWidgetBuilder;

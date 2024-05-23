@@ -1,6 +1,7 @@
+import 'package:ecoville/blocs/app/auth_cubit.dart';
 import 'package:ecoville/shared/complete_button.dart';
-import 'package:ecoville/shared/outline_button.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:ecoville/views/authentication/widgets/terms_of_service.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -8,64 +9,95 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffE7EDDD),
-      body: SafeArea(
-        bottom: false,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              children: [
-                SvgPicture.asset(
-                  AppImages.welcome,
-                  height: 55 * SizeConfig.heightMultiplier,
-                  width: MediaQuery.sizeOf(context).width,
-                  color: green,
-                ),
-                const Spacer(),
-                Text(
-                  'Welcome to Ecoville!',
-                  style: GoogleFonts.inter(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage(AppImages.welcome),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    AppImages.ecoville,
+                    height: 8 * SizeConfig.heightMultiplier,
+                    width: 8 * SizeConfig.heightMultiplier,
+                  ),
+                  Gap(2 * SizeConfig.widthMultiplier),
+                  Text(
+                    APP_NAME,
+                    style: GoogleFonts.rubikBubbles(
+                      color: Colors.white,
+                      fontSize: 50,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              Gap(3 * SizeConfig.heightMultiplier),
+              Text(
+                "\"$APP_DESCRIPTION\"",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.rubikBubbles(
+                    color: Colors.white,
                     fontSize: 3 * SizeConfig.textMultiplier,
-                    color: tertiary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Gap(1 * SizeConfig.heightMultiplier),
-                Text(
-                  'Ecoville is a platform that connects you to\npeople who share the same passion for\nsustainability and the environment.',
-                  style: GoogleFonts.inter(
-                      fontSize: 2 * SizeConfig.textMultiplier,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                      height: 1.3),
-                  textAlign: TextAlign.center,
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    children: [
-                      CompleteButton(
-                        text: 'Get Started',
+                    fontWeight: FontWeight.w600,
+                    height: 1.1),
+              ),
+              Gap(2 * SizeConfig.heightMultiplier),
+              BlocProvider(
+                create: (context) => AuthCubit(),
+                child: Builder(builder: (context) {
+                  return BlocConsumer<AuthCubit, AuthenticationState>(
+                    listener: (context, state) {
+                      if (state.status == AuthStatus.success) {
+                        Navigator.pushNamed(context, Routes.home);
+                      }
+                    },
+                    builder: (context, state) {
+                      return CompleteButton(
+                        isLoading: state.status == AuthStatus.loading,
+                        text: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              AppImages.google,
+                              height: 3 * SizeConfig.heightMultiplier,
+                              width: 3 * SizeConfig.heightMultiplier,
+                            ),
+                            Gap(1 * SizeConfig.widthMultiplier),
+                            Text(
+                              "Sign in with Google",
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 2 * SizeConfig.textMultiplier,
+                                color: black,
+                              ),
+                            ),
+                          ],
+                        ),
+                        function: () =>
+                            context.read<AuthCubit>().signInWithGoogle(),
                         width: 80 * SizeConfig.widthMultiplier,
                         height: 7 * SizeConfig.heightMultiplier,
-                        function: () => context.push(AppRoute.login),
-                        backgroundColor: green,
-                      ),
-                      Gap(1.5 * SizeConfig.heightMultiplier),
-                      OutlineButton(
-                        text: 'Sign Up',
-                        width: 80 * SizeConfig.widthMultiplier,
-                        height: 7 * SizeConfig.heightMultiplier,
-                        function: () => context.push(AppRoute.register),
-                      ),
-                    ],
-                  ),
-                ),
-                Gap(4 * SizeConfig.heightMultiplier),
-              ],
-            ),
+                        borderRadius: 10,
+                        backgroundColor: white,
+                      );
+                    },
+                  );
+                }),
+              ),
+              Gap(1 * SizeConfig.heightMultiplier),
+              const TermsOfService()
+            ],
           ),
         ),
       ),

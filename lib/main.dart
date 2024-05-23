@@ -3,7 +3,8 @@ import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/views/home/home.dart';
+import 'package:ecoville/views/authentication/welcome_page.dart';
+import 'package:ecoville/views/home.dart';
 import 'package:flutter/services.dart';
 
 @pragma('vm:entry-point')
@@ -22,7 +23,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   initLocator();
   await Supabase.initialize(
       url: "https://fuvjfsjfehyistbfkmkg.supabase.co",
@@ -42,7 +44,10 @@ void main() async {
   await NotificationRepository().getNotificationToken();
 
   runApp(const MainApp());
+  FlutterNativeSplash.remove();
 }
+
+
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -73,7 +78,7 @@ class Checker extends StatelessWidget {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, state) {
         return state.status == AuthenticationStatus.authenticated
-            ? const HomePage()
+            ? const Home()
             : const WelcomePage();
       },
     );

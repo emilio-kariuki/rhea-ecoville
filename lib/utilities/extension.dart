@@ -1,8 +1,4 @@
 // ignore_for_file: inference_failure_on_instance_creation
-
-
-
-
 import 'package:ecoville/utilities/packages.dart';
 
 extension StringExtension on String {

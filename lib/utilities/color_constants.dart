@@ -4,7 +4,7 @@ Color white = const Color(0xFFFFFFFF);
 Color black = const Color(0xFF000000);
 
 Color primary = const Color(0xFFFFFFFF);
-Color secondary = const Color(0xFF004D3F);
+Color secondary = const Color(0xFF045311);
 Color tertiary = const Color(0xFF0F2028);
 
 Color red = const Color(0xFFD32F2F);
@@ -15,4 +15,4 @@ Color hintColor = const Color(0xFFBDBDBD);
 Color lightGrey = const Color(0xFFE0E0E0);
 Color grey = const Color(0xFF9E9E9E);
 
-Color darkGrey = const Color(0xFF424242);
+Color darkGrey = const Color(0xFF2C2C2C);

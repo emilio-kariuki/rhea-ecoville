@@ -41,16 +41,52 @@ dependencies:
   url_launcher: ^6.2.6
   share_plus: ^9.0.0
   path_provider: ^2.1.3
+  animated_bottom_navigation_bar: ^1.3.3
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/ecoville.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/ecoville.png"
+    background_color: "#030533"
+    theme_color: "#030533"
+  windows:
+    generate: true
+    image_path: "assets/ecoville.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/ecoville.png"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/ecoville.png
+  color_dark: "#121212"
+  image_dark: assets/ecoville.png
+
+  android_12:
+    image: assets/ecoville.png
+    icon_background_color: "#ffffff"
+    image_dark: assets/ecoville.png
+    icon_background_color_dark: "#121212"
+
+  web: false
+
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/authentication/
-    - assets/general/
+    - assets/images/
     - assets/icons/

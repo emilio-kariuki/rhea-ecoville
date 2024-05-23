@@ -9,13 +9,10 @@ Deno.serve(async (_) => {
       "ecoville_user(*), ecoville_product(*), *",
     );
     for (const bid of data!) {
-      console.log("data ", data)
       const currentTime = Date.now();
-      console.log("currentTime ", currentTime);
       const splitEndTime = bid.ecoville_product.endBiddingTime.split(" ");
       const newDateTime = `${splitEndTime}Z`;
       const endTime = Date.parse(newDateTime);
-      console.log("endTime ", endTime);
       const minutes = Math.ceil(
         (endTime - currentTime) / (1000 * 60),
       ) - 180;

@@ -2,9 +2,9 @@ import 'package:ecoville/data/provider/auth_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/utilities/packages.dart';
 
-class AuthCubit extends Cubit<AuthState> {
+class AuthCubit extends Cubit<AuthenticationState> {
   final _authProvider = service<AuthProvider>();
-  AuthCubit() : super(AuthState());
+  AuthCubit() : super(AuthenticationState());
 
   Future<void> signInWithGoogle() async {
     emit(state.copyWith(status: AuthStatus.loading));
@@ -35,20 +35,20 @@ class AuthCubit extends Cubit<AuthState> {
 
 enum AuthStatus { initial, loading, success }
 
-class AuthState {
+class AuthenticationState {
   final AuthStatus status;
   final String message;
 
-  AuthState({
+  AuthenticationState({
     this.status = AuthStatus.initial,
     this.message = '',
   });
 
-  AuthState copyWith({
+  AuthenticationState copyWith({
     AuthStatus? status,
     String? message,
   }) {
-    return AuthState(
+    return AuthenticationState(
       status: status ?? this.status,
       message: message ?? this.message,
     );

@@ -3,12 +3,12 @@
 const String APP_NAME = 'Ecoville';
 const String APP_VERSION = '1.0.0';
 const String APP_DESCRIPTION =
-    'Ecoville is a mobile application that helps users to manage their waste and earn money from it.';
+    'Your Waste is Someone\'s Treasure.';
 const String APP_URL = 'https://ecoville.site';
 const String APP_DEVELOPER = 'Ecoville Team';
 const String APP_DEVELOPER_URL = 'https://ecoville.site';
-const String APP_EMAIL = "emilio113kariuki@gmail.com";
-const String APP_PHONE = '+254 796 250 443';
+const String APP_EMAIL = "emiliokariuki0@gmail.com";
+const String APP_PHONE = '+254796250443';
 const String APP_ADDRESS = 'Nairobi, Kenya';
 const String APP_LICENSE = 'MIT';
 const String GOOGLE_MAPS_API_KEY = "AIzaSyBkOlEK3rAUxsL0xGiD5XaP22QjbP9vZq8";
