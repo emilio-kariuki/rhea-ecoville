@@ -71,7 +71,6 @@ jobs:
 
       - name: Create 'whatsnew' Directory
         run: mkdir -p distribution/
-      
       - name: Deploy to Internal Sharing
         uses: r0adkll/upload-google-play@v1
         with:
