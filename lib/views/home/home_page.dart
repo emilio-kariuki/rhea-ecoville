@@ -1,3 +1,4 @@
+import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/home/widgets/categories_section.dart';
 import 'package:ecoville/views/home/widgets/product_container.dart';
@@ -24,15 +25,18 @@ class HomePage extends StatelessWidget {
                 width: 4 * SizeConfig.heightMultiplier,
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration:
-                    BoxDecoration(color: lightGrey, shape: BoxShape.circle),
-                child: SvgPicture.asset(
-                  AppImages.notifications,
-                  height: 2.8 * SizeConfig.heightMultiplier,
-                  width: 2.8 * SizeConfig.heightMultiplier,
-                  color: black,
+              GestureDetector(
+                onTap: () => context.read<NavigationCubit>().changePage(page: 3),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration:
+                      BoxDecoration(color: lightGrey, shape: BoxShape.circle),
+                  child: SvgPicture.asset(
+                    AppImages.notifications,
+                    height: 2.8 * SizeConfig.heightMultiplier,
+                    width: 2.8 * SizeConfig.heightMultiplier,
+                    color: black,
+                  ),
                 ),
               ),
               Gap(1 * SizeConfig.widthMultiplier),
@@ -62,6 +66,7 @@ class HomePage extends StatelessWidget {
               const WatchedItems(),
               const YourDeals(),
               const WatchedItems(),
+              const RecommendedItems()
             ],
           ),
         ),
@@ -83,7 +88,7 @@ class RecentItems extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: SectionTitle(
             title: 'Your Recently Viewed Items',
             onTap: () {},
@@ -97,8 +102,51 @@ class RecentItems extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.only(
-                left: index == 0 ? 15 : 0,
-                right: index == 4 ? 15 : 0,
+                left: index == 0 ? 10 : 0,
+                right: index == 4 ? 10 : 0,
+              ),
+              child: ProductContainer(width: width),
+            ),
+            separatorBuilder: (context, index) =>
+                Gap(1.3 * SizeConfig.widthMultiplier),
+            itemCount: 5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class RecommendedItems extends StatelessWidget {
+  const RecommendedItems({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: SectionTitle(
+            title: 'Recommended Items',
+            onTap: () {},
+          ),
+        ),
+        Gap(2.5 * SizeConfig.heightMultiplier),
+        SizedBox(
+          height: height * 0.32,
+          child: ListView.separated(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) => Padding(
+              padding: EdgeInsets.only(
+                left: index == 0 ? 10 : 0,
+                right: index == 4 ? 10 : 0,
               ),
               child: ProductContainer(width: width),
             ),
@@ -124,7 +172,7 @@ class WatchedItems extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: SectionTitle(
             title: 'Your Watched Items',
             onTap: () {},
@@ -138,8 +186,8 @@ class WatchedItems extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.only(
-                left: index == 0 ? 15 : 0,
-                right: index == 4 ? 15 : 0,
+                left: index == 0 ? 10 : 0,
+                right: index == 4 ? 10 : 0,
               ),
               child: ProductContainer(width: width),
             ),
@@ -166,7 +214,7 @@ class YourDeals extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: SectionTitle(
             title: 'Your Deals',
             onTap: () {},
@@ -180,8 +228,8 @@ class YourDeals extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.only(
-                left: index == 0 ? 15 : 0,
-                right: index == 4 ? 15 : 0,
+                left: index == 0 ? 10 : 0,
+                right: index == 4 ? 10 : 0,
               ),
               child: ProductContainer(width: width),
             ),

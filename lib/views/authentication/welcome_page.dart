@@ -59,7 +59,7 @@ class WelcomePage extends StatelessWidget {
                   return BlocConsumer<AuthCubit, AuthenticationState>(
                     listener: (context, state) {
                       if (state.status == AuthStatus.success) {
-                        Navigator.pushNamed(context, Routes.home);
+                        context.pushNamed( Routes.home);
                       }
                     },
                     builder: (context, state) {

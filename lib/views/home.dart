@@ -15,22 +15,6 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
-    supabase
-        .channel('public:ecoville_user')
-        .onPostgresChanges(
-            event: PostgresChangeEvent.update,
-            schema: 'public',
-            table: 'ecoville_user',
-            filter: PostgresChangeFilter(
-              type: PostgresChangeFilterType.eq,
-              column: 'id',
-              value: supabase.auth.currentUser!.id,
-            ),
-            callback: (payload) {
-              debugPrint('Change received: ${payload.toString()}');
-            })
-        .subscribe();
   }
 
   Widget getBody() {
@@ -75,7 +59,6 @@ class _HomeState extends State<Home> {
         return SizedBox(
           height: height * 0.09,
           child: AnimatedBottomNavigationBar.builder(
-            key: homeTabNavigatorKey,
             elevation: 0,
             backgroundColor: white,
             notchSmoothness: NotchSmoothness.softEdge,

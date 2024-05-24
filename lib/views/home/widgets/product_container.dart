@@ -63,7 +63,7 @@ class ProductContainer extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                               color: white, shape: BoxShape.circle),
                           child: Center(

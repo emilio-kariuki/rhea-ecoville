@@ -11,7 +11,7 @@ class MainPageSearch extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.read<NavigationCubit>().changePage(page: 1),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 19),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
         decoration: BoxDecoration(
           color: lightGrey,
