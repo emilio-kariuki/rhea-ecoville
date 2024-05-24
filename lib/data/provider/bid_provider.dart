@@ -1,4 +1,4 @@
-import 'package:ecoville/data/repository/Bid_repository.dart';
+import 'package:ecoville/data/repository/bid_repository.dart';
 import 'package:ecoville/models/bid_model.dart';
 
 class BidProvider extends BidTemplate {
