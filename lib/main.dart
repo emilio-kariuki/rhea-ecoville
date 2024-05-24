@@ -1,4 +1,5 @@
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
+import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
@@ -47,16 +48,21 @@ void main() async {
   FlutterNativeSplash.remove();
 }
 
-
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthenticationCubit()..appStarted(),
-      lazy: false,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthenticationCubit()..appStarted(),
+          lazy: false,
+        ),
+        BlocProvider(
+          create: (context) => NavigationCubit(),
+        ),
+      ],
       child: LayoutBuilder(builder: (context, constraints) {
         SizeConfig().init(constraints);
         return MaterialApp.router(

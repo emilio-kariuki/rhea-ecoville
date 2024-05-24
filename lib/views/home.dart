@@ -1,5 +1,7 @@
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:ecoville/views/account/account_page.dart';
+import 'package:ecoville/views/home/home_page.dart';
 import 'package:flutter/services.dart';
 
 class Home extends StatefulWidget {
@@ -33,15 +35,11 @@ class _HomeState extends State<Home> {
 
   Widget getBody() {
     final pages = <Widget>[
-      const Center(
-        child: Text('Home'),
-      ),
+      HomePage(),
       const Center(
         child: Text('Search'),
       ),
-      const Center(
-        child: Text('account'),
-      ),
+      AccountPage(),
       const Center(
         child: Text('notifications'),
       ),
@@ -58,12 +56,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NavigationCubit(),
-      child: Scaffold(
-        body: getBody(),
-        bottomNavigationBar: getFooter(context),
-      ),
+    return Scaffold(
+      body: getBody(),
+      bottomNavigationBar: getFooter(context),
     );
   }
 
@@ -80,8 +75,9 @@ class _HomeState extends State<Home> {
         return SizedBox(
           height: height * 0.09,
           child: AnimatedBottomNavigationBar.builder(
+            key: homeTabNavigatorKey,
             elevation: 0,
-            backgroundColor: Colors.transparent,
+            backgroundColor: white,
             notchSmoothness: NotchSmoothness.softEdge,
             itemCount: items.length,
             safeAreaValues: const SafeAreaValues(
