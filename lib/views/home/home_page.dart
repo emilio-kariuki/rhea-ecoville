@@ -1,4 +1,6 @@
+import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
+import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/home/widgets/categories_section.dart';
 import 'package:ecoville/views/home/widgets/product_container.dart';
@@ -7,7 +9,7 @@ import 'widgets/page_search.dart';
 import 'widgets/section_title.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,32 +27,15 @@ class HomePage extends StatelessWidget {
                 width: 4 * SizeConfig.heightMultiplier,
               ),
               const Spacer(),
-              GestureDetector(
-                onTap: () => context.read<NavigationCubit>().changePage(page: 3),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration:
-                      BoxDecoration(color: lightGrey, shape: BoxShape.circle),
-                  child: SvgPicture.asset(
-                    AppImages.notifications,
-                    height: 2.8 * SizeConfig.heightMultiplier,
-                    width: 2.8 * SizeConfig.heightMultiplier,
-                    color: black,
-                  ),
-                ),
+              IconContainer(
+                icon: AppImages.notifications,
+                function: () =>
+                    context.read<NavigationCubit>().changePage(page: 3),
               ),
               Gap(1 * SizeConfig.widthMultiplier),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration:
-                    BoxDecoration(color: lightGrey, shape: BoxShape.circle),
-                child: SvgPicture.asset(
-                  AppImages.cart,
-                  height: 2.8 * SizeConfig.heightMultiplier,
-                  width: 2.8 * SizeConfig.heightMultiplier,
-                  color: black,
-                ),
-              )
+              IconContainer(
+                  icon: AppImages.cart,
+                  function: () => context.pushNamed(Routes.cart)),
             ],
           ),
           bottom: const PreferredSize(
@@ -82,7 +67,6 @@ class RecentItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
     return Column(
@@ -95,28 +79,33 @@ class RecentItems extends StatelessWidget {
           ),
         ),
         Gap(2.5 * SizeConfig.heightMultiplier),
-        SizedBox(
-          height: height * 0.32,
-          child: ListView.separated(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(
-                left: index == 0 ? 10 : 0,
-                right: index == 4 ? 10 : 0,
+        BlocBuilder<ProductCubit, ProductState>(
+          builder: (context, state) {
+            return SizedBox(
+              height: height * 0.32,
+              child: ListView.separated(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(
+                    left: index == 0 ? 10 : 0,
+                    right: index == (state.products.length - 1) ? 10 : 0,
+                  ),
+                  child: ProductContainer(
+                    product: state.products[index],
+                  ),
+                ),
+                separatorBuilder: (context, index) =>
+                    Gap(1.3 * SizeConfig.widthMultiplier),
+                itemCount: state.products.length,
               ),
-              child: ProductContainer(width: width),
-            ),
-            separatorBuilder: (context, index) =>
-                Gap(1.3 * SizeConfig.widthMultiplier),
-            itemCount: 5,
-          ),
+            );
+          },
         ),
       ],
     );
   }
 }
-
 
 class RecommendedItems extends StatelessWidget {
   const RecommendedItems({
@@ -125,7 +114,6 @@ class RecommendedItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
     return Column(
@@ -148,7 +136,7 @@ class RecommendedItems extends StatelessWidget {
                 left: index == 0 ? 10 : 0,
                 right: index == 4 ? 10 : 0,
               ),
-              child: ProductContainer(width: width),
+              child: ProductContainer(),
             ),
             separatorBuilder: (context, index) =>
                 Gap(1.3 * SizeConfig.widthMultiplier),
@@ -167,7 +155,6 @@ class WatchedItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Column(
       children: [
@@ -189,7 +176,7 @@ class WatchedItems extends StatelessWidget {
                 left: index == 0 ? 10 : 0,
                 right: index == 4 ? 10 : 0,
               ),
-              child: ProductContainer(width: width),
+              child: ProductContainer(),
             ),
             separatorBuilder: (context, index) =>
                 Gap(1.3 * SizeConfig.widthMultiplier),
@@ -201,7 +188,6 @@ class WatchedItems extends StatelessWidget {
   }
 }
 
-
 class YourDeals extends StatelessWidget {
   const YourDeals({
     super.key,
@@ -209,7 +195,6 @@ class YourDeals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Column(
       children: [
@@ -231,7 +216,7 @@ class YourDeals extends StatelessWidget {
                 left: index == 0 ? 10 : 0,
                 right: index == 4 ? 10 : 0,
               ),
-              child: ProductContainer(width: width),
+              child: ProductContainer(),
             ),
             separatorBuilder: (context, index) =>
                 Gap(1.3 * SizeConfig.widthMultiplier),

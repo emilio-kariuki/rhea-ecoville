@@ -11,6 +11,7 @@ class ProductCubit extends Cubit<ProductState> {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
       final products = await _productProvider.getProducts();
+            debugPrint("Products: $products");
       emit(state.copyWith(
         status: ProductStatus.success,
         products: products,

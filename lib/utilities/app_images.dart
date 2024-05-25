@@ -36,6 +36,10 @@ class AppImages {
   static const String filter = 'assets/icons/filter.svg';
   static const String category = 'assets/icons/category.svg';
   static const String bids = 'assets/icons/bids.svg';
+  static const String more = 'assets/icons/more.svg';
+  static const String messages = 'assets/icons/messages.svg';
+    static const String calendar = 'assets/icons/calendar.svg';
+
 
   static const String ecoville = 'assets/ecoville.svg';
   static const String ecovilleName = 'assets/name.svg';

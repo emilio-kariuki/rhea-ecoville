@@ -1,17 +1,18 @@
-
+import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class ProductContainer extends StatelessWidget {
   const ProductContainer({
     super.key,
-    required this.width,
+    this.product,
   });
 
-  final double width;
+  final ProductModel ?product;
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return SizedBox(
       width: width * 0.435,
       child: Stack(
@@ -26,19 +27,19 @@ class ProductContainer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              onPressed: () => context.push('/details'),
+              onPressed: () => context.push('/home/details'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   NetworkImageContainer(
-                    imageUrl: AppImages.defaultImage,
-                    height:  width * 0.435,
+                    imageUrl: product?.image[0] ?? AppImages.defaultImage,
+                    height: width * 0.435,
                     borderRadius: BorderRadius.circular(20),
                     width: width,
                   ),
                   Gap(1.3 * SizeConfig.heightMultiplier),
                   Text(
-                    'Plastic Bottle, 1L - 12 pieces pack',
+                    product?.name ?? 'Plastic Bottle, 1L - 12 pieces pack',
                     maxLines: 2,
                     style: GoogleFonts.inter(
                         color: black,
@@ -48,7 +49,7 @@ class ProductContainer extends StatelessWidget {
                   ),
                   Gap(0.8 * SizeConfig.heightMultiplier),
                   Text(
-                    '\$1000',
+                    "\$${product?.startingPrice ?? 12.99}",
                     style: GoogleFonts.inter(
                         color: black,
                         fontSize: 2.2 * SizeConfig.textMultiplier,
@@ -57,27 +58,27 @@ class ProductContainer extends StatelessWidget {
                   ),
                 ],
               )),
-               Positioned.fill(
-                      top: 1.5 * SizeConfig.heightMultiplier,
-                      right: 1.5 * SizeConfig.heightMultiplier,
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: white, shape: BoxShape.circle),
-                          child: Center(
-                            widthFactor: 1,
-                            heightFactor: 1,
-                            child: SvgPicture.asset(
-                              AppImages.favourite,
-                              height: 3 * SizeConfig.heightMultiplier,
-                              width: 3 * SizeConfig.heightMultiplier,
-                              color: black,
-                            ),
-                          ),
-                        ),
-                      ))
+          Positioned.fill(
+              top: 1.5 * SizeConfig.heightMultiplier,
+              right: 1.5 * SizeConfig.heightMultiplier,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration:
+                      BoxDecoration(color: white, shape: BoxShape.circle),
+                  child: Center(
+                    widthFactor: 1,
+                    heightFactor: 1,
+                    child: SvgPicture.asset(
+                      AppImages.favouriteSolid,
+                      height: 3 * SizeConfig.heightMultiplier,
+                      width: 3 * SizeConfig.heightMultiplier,
+                      color: black,
+                    ),
+                  ),
+                ),
+              ))
         ],
       ),
     );

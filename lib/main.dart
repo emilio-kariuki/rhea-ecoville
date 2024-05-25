@@ -1,11 +1,12 @@
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
+import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/authentication/welcome_page.dart';
-import 'package:ecoville/views/home.dart';
+import 'package:ecoville/views/home/home_page.dart';
 import 'package:flutter/services.dart';
 
 @pragma('vm:entry-point')
@@ -20,7 +21,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       body: notification.body!,
       imageUrl: notification.android!.imageUrl!);
 
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
 }
 
 void main() async {
@@ -62,11 +63,17 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => NavigationCubit(),
         ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => ProductCubit()..getProducts(),
+        ),
       ],
       child: LayoutBuilder(builder: (context, constraints) {
         SizeConfig().init(constraints);
         return MaterialApp.router(
-          routerConfig: AppRouter.appRouter,
+          routerDelegate: appRouter.routerDelegate,
+          routeInformationParser: appRouter.routeInformationParser,
+          routeInformationProvider: appRouter.routeInformationProvider,
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.light,
           title: "Ecoville",
@@ -84,7 +91,7 @@ class Checker extends StatelessWidget {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, state) {
         return state.status == AuthenticationStatus.authenticated
-            ? const Home()
+            ? HomePage()
             : const WelcomePage();
       },
     );

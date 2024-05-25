@@ -81,7 +81,7 @@ class ProductRepository extends ProductTemplate {
     try {
       final response = await supabase
           .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_category(*)");
+          .select("ecoville_user(*), *, ecoville_product_category(*)");
       final products = response.map((e) => ProductModel.fromJson(e)).toList();
       return products;
     } catch (error) {

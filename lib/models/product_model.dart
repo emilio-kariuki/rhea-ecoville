@@ -102,7 +102,7 @@ class ProductModel {
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         user: UserModel.fromJson(json["ecoville_user"]),
-        category: Category.fromJson(json["ecoville_category"]),
+        category: Category.fromJson(json["ecoville_product_category"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -121,7 +121,7 @@ class ProductModel {
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
         "ecoville_user": user.toJson(),
-        "ecoville_category": category.toJson(),
+        "ecoville_product_category": category.toJson(),
       };
 }
 

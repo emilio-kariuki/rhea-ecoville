@@ -13,6 +13,6 @@ Color lightGreen = const Color(0xFF37A67E);
 Color yellow = const Color(0xFFC2FA6B);
 Color hintColor = const Color(0xFFBDBDBD);
 Color lightGrey = const Color(0xFFF8F8F8);
-Color grey = Color.fromARGB(255, 237, 237, 237);
+Color grey = const Color.fromARGB(255, 237, 237, 237);
 
 Color darkGrey = const Color(0xFF2C2C2C);

@@ -7,6 +7,7 @@ abstract class UserTemplate {
   Future<bool> createUser({required UserModel user});
   Future<UserModel> getUser();
   Future<UserModel> updateUser({required UserModel user});
+  Future<bool> sendUserInteractions({required String userId, required String interaction, required String productId});
 }
 
 class UserRepository extends UserTemplate {
@@ -77,5 +78,11 @@ class UserRepository extends UserTemplate {
       debugPrint(e.toString());
       throw Exception('Error updating user');
     }
+  }
+  
+  @override
+  Future<bool> sendUserInteractions({required String userId, required String interaction, required String productId}) {
+    // TODO: implement sendUserInteractions
+    throw UnimplementedError();
   }
 }

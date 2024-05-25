@@ -20,5 +20,11 @@ class UserProvider extends UserTemplate {
   Future<UserModel> updateUser({required UserModel user}) {
     return _userRepository.updateUser(user: user);
   }
+  
+  @override
+  Future<bool> sendUserInteractions({required String userId, required String interaction, required String productId}) {
+    // TODO: implement sendUserInteractions
+    throw UnimplementedError();
+  }
 
 }
