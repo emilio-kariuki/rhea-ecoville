@@ -67,10 +67,12 @@ final GoRouter appRouter = GoRouter(initialLocation: '/home', routes: [
         pageBuilder: (context, state) => MaterialPage(child: HomePage()),
         routes: [
           GoRoute(
-            path: 'details',
-            name: Routes.details,
-            builder: (context, state) =>  ProductDetailsPage(),
-          ),
+              path: 'details/:id',
+              name: Routes.details,
+              builder: (context, state) {
+                final id = state.pathParameters['id'];
+                return ProductDetailsPage(id: id!);
+              }),
         ],
         redirect: (context, state) {
           final user = supabase.auth.currentUser;

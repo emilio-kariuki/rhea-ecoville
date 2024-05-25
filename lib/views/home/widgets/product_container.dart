@@ -8,7 +8,7 @@ class ProductContainer extends StatelessWidget {
     this.product,
   });
 
-  final ProductModel ?product;
+  final ProductModel? product;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,9 @@ class ProductContainer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              onPressed: () => context.push('/home/details'),
+              onPressed: () => context.push(
+                    '/home/details/${product!.id}',
+                  ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

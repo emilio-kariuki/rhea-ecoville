@@ -4,13 +4,14 @@ import 'package:ecoville/blocs/minimal/page_cubit.dart';
 import 'package:ecoville/shared/border_button.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/icon_container.dart';
+import 'package:ecoville/shared/loading_circle.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/home/widgets/product_container.dart';
-import 'package:ecoville/views/home/widgets/section_title.dart';
 
 class ProductDetailsPage extends StatelessWidget {
-  ProductDetailsPage({super.key});
+  ProductDetailsPage({super.key, required this.id});
+  final String id;
 
   final _pageController = PageController();
 
@@ -19,8 +20,10 @@ class ProductDetailsPage extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return BlocBuilder<ProductCubit, ProductState>(
+      buildWhen: (previous, current) => previous.product != current.product,
+      bloc: context.read<ProductCubit>()..getProduct(id: id),
       builder: (context, state) {
-        return Scaffold(
+        return  state.status == ProductStatus.loading ? const LoadingCircle() : Scaffold(
             backgroundColor: white,
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(8 * SizeConfig.heightMultiplier),
@@ -76,7 +79,7 @@ class ProductDetailsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BlocBuilder<PageCubit, PageState>(
-                      builder: (context, state) {
+                      builder: (context, pstate) {
                         return SizedBox(
                           height: height * 0.5,
                           child: PageView.builder(
@@ -90,12 +93,12 @@ class ProductDetailsPage extends StatelessWidget {
                                     .read<PageCubit>()
                                     .changePage(page: value);
                               },
-                              itemCount: 10,
+                              itemCount: state.product!.image.length,
                               itemBuilder: (context, index) {
                                 return Stack(
                                   children: [
                                     NetworkImageContainer(
-                                      imageUrl: AppImages.defaultImage,
+                                      imageUrl: state.product!.image[index],
                                       borderRadius: BorderRadius.zero,
                                       height: height,
                                       width: width,
@@ -109,7 +112,7 @@ class ProductDetailsPage extends StatelessWidget {
                     ),
                     Gap(1 * SizeConfig.widthMultiplier),
                     BlocBuilder<PageCubit, PageState>(
-                      builder: (context, state) {
+                      builder: (context, pstate) {
                         return SizedBox(
                           height: height * 0.11,
                           child: ListView.separated(
@@ -132,7 +135,7 @@ class ProductDetailsPage extends StatelessWidget {
                                               .changePage(page: index);
                                         },
                                         child: NetworkImageContainer(
-                                          imageUrl: AppImages.defaultImage,
+                                          imageUrl: state.product!.image[index],
                                           height: height * 0.1,
                                           width: height * 0.11,
                                           fit: BoxFit.cover,
@@ -148,7 +151,8 @@ class ProductDetailsPage extends StatelessWidget {
                                   ),
                               separatorBuilder: (context, index) =>
                                   Gap(1 * SizeConfig.widthMultiplier),
-                              itemCount: 10),
+                              itemCount: state.product!.image.length
+                              ),
                         );
                       },
                     ),
@@ -159,10 +163,10 @@ class ProductDetailsPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Plastic Bottle, 1L - 12 pieces pack, 1L - 12 pieces pack, 1L - 12 pieces.",
+                            state.product!.name,
                             style: GoogleFonts.inter(
                                 color: black,
-                                fontSize: 2.8 * SizeConfig.textMultiplier,
+                                fontSize: 2.5 * SizeConfig.textMultiplier,
                                 fontWeight: FontWeight.bold,
                                 height: 1.2),
                           ),
@@ -373,11 +377,12 @@ class ProductDetailsPage extends StatelessWidget {
                                         fontWeight: FontWeight.w600,
                                         height: 1.2),
                                   ),
+                                  Gap(0.4 * SizeConfig.heightMultiplier),
                                   Text(
                                     "90% Positive Rating",
                                     style: GoogleFonts.inter(
                                         color: black,
-                                        fontSize: 2 * SizeConfig.textMultiplier,
+                                        fontSize: 1.8 * SizeConfig.textMultiplier,
                                         fontWeight: FontWeight.w500,
                                         height: 1.2),
                                   ),

@@ -67,7 +67,7 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<ProductModel> getProduct({required String id}) async {
     try {
-      final response = await supabase.from(TABLE_PRODUCT).select().eq('id', id);
+      final response = await supabase.from(TABLE_PRODUCT).select("ecoville_user(*), *, ecoville_product_category(*)").eq('id', id);
       final product = ProductModel.fromJson(response.first);
       return product;
     } catch (e) {
