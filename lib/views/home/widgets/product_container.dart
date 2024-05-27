@@ -29,6 +29,9 @@ class ProductContainer extends StatelessWidget {
               ),
               onPressed: () => context.push(
                     '/home/details/${product!.id}',
+                    extra: {
+                      'title': product!.name,
+                    }
                   ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

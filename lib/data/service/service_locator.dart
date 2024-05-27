@@ -5,6 +5,7 @@ import 'package:ecoville/data/provider/bid_provider.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
+import 'package:ecoville/data/provider/rating_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
 import 'package:ecoville/data/repository/app_repository.dart';
 import 'package:ecoville/data/repository/auth_repository.dart';
@@ -12,6 +13,7 @@ import 'package:ecoville/data/repository/bid_repository.dart';
 import 'package:ecoville/data/repository/location_repository.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/repository/product_repository.dart';
+import 'package:ecoville/data/repository/rating_repository.dart';
 import 'package:ecoville/data/repository/user_repository.dart';
 import 'package:get_it/get_it.dart';
 
@@ -41,5 +43,8 @@ void initLocator() {
     ..registerLazySingleton<BidRepository>(() => BidRepository())
     ..registerLazySingleton<LocationProvider>(
         () => LocationProvider(locationRepository: service()))
-    ..registerLazySingleton<LocationRepository>(() => LocationRepository());
+    ..registerLazySingleton<LocationRepository>(() => LocationRepository())
+    ..registerLazySingleton<RatingProvider>(
+        () => RatingProvider(ratingRepository: service()))
+    ..registerLazySingleton<RatingRepository>(() => RatingRepository());
 }

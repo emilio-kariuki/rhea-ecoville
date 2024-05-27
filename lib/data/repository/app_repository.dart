@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:dio/dio.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:flutter/services.dart';
@@ -64,9 +65,13 @@ class AppRepository extends AppTemplate {
   @override
   Future<void> launchMap({required double lat, required double long}) async {
     try {
-      final mapUrl =
-          'https://www.google.com/maps/search/?api=1&query=$lat,$long';
-      await launchUrl(Uri.parse(mapUrl));
+      final intent = AndroidIntent(
+          action: 'action_view',
+          data: 'google.navigation:q=$lat,$long',
+          // data: Uri.encodeFull(
+          //     'google.navigation:q=Taronga+Zoo,+Sydney+Australia&avoid=tf'),
+          package: 'com.google.android.apps.maps');
+      intent.launch();
     } catch (e) {
       debugPrint('Error launching broswer $e');
     }
@@ -173,7 +178,8 @@ class AppRepository extends AppTemplate {
   }
 
   @override
-  Future<String> downloadAndSaveFile({required String url, required String fileName}) async {
+  Future<String> downloadAndSaveFile(
+      {required String url, required String fileName}) async {
     final Directory directory = await getApplicationDocumentsDirectory();
     final String filePath = '${directory.path}/$fileName';
     final response = await Dio().get(

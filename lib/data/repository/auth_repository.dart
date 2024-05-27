@@ -27,9 +27,9 @@ class AuthRepository extends AuthTemplate {
   Future<bool> signInWithGoogle() async {
     try {
       const webClientId =
-          '377119171510-chp0j4b1u1f638ajsosufe39cc8ha3qk.apps.googleusercontent.com';
+          '593038226855-9sig16n4amih1hg6egik5rps21m5u4iq.apps.googleusercontent.com';
       const iosClientId =
-          '377119171510-66892ga8mr2q9e02akq47efjj28of08v.apps.googleusercontent.com';
+          '593038226855-iq9b65tu6bohevl82a5qj8gffdg87uli.apps.googleusercontent.com';
 
       final GoogleSignIn googleSignIn = GoogleSignIn(
         signInOption: SignInOption.standard,

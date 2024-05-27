@@ -71,7 +71,11 @@ final GoRouter appRouter = GoRouter(initialLocation: '/home', routes: [
               name: Routes.details,
               builder: (context, state) {
                 final id = state.pathParameters['id'];
-                return ProductDetailsPage(id: id!);
+                final data = state.extra;
+                return ProductDetailsPage(
+                  id: id!,
+                  title: (data as Map)['title'],
+                );
               }),
         ],
         redirect: (context, state) {

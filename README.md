@@ -3,7 +3,7 @@
 A new Flutter project.
 
 [] - add the real products data in the product details page
-[] - add shimmer for the products page
+[x] - add shimmer for the products page
 [] - add the following features:
 [] - add the seller details
 [] - add the buy features for the user

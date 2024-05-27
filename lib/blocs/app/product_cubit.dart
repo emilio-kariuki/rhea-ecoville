@@ -18,7 +18,7 @@ class ProductCubit extends Cubit<ProductState> {
       ));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -29,7 +29,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success, product: product));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -41,7 +41,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success, products: products));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -52,7 +52,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success, products: products));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -65,7 +65,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -76,7 +76,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -87,7 +87,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -100,7 +100,7 @@ class ProductCubit extends Cubit<ProductState> {
           status: ProductStatus.success, savedProducts: savedProducts));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -112,7 +112,7 @@ class ProductCubit extends Cubit<ProductState> {
           status: ProductStatus.success, savedProducts: savedProducts));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -123,7 +123,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -134,7 +134,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -145,7 +145,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.success));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -157,7 +157,7 @@ class ProductCubit extends Cubit<ProductState> {
           status: ProductStatus.success, watchedProducts: watchedProducts));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -169,7 +169,7 @@ class ProductCubit extends Cubit<ProductState> {
           status: ProductStatus.success, productsNearby: productsNearby));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 
@@ -182,12 +182,12 @@ class ProductCubit extends Cubit<ProductState> {
           status: ProductStatus.success, similarProducts: similarProducts));
     } catch (e) {
       emit(
-          state.copyWith(status: ProductStatus.success, message: e.toString()));
+          state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
 }
 
-enum ProductStatus { initial, created, updated, loading, success }
+enum ProductStatus { initial, created, updated, loading, success, error }
 
 class ProductState {
   final ProductModel? product;

@@ -1,5 +1,6 @@
 // ignore_for_file: inference_failure_on_instance_creation
 import 'package:ecoville/utilities/packages.dart';
+import 'package:intl/intl.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -14,7 +15,45 @@ extension StringExtension on String {
   String toException() {
     return split(":")[1].trim();
   }
+
+  String toDate() {
+    final date = DateTime.parse(this);
+    return DateFormat.yMMMMd().format(date);
+  }
+
+  String timeAgo() {
+    final now = DateTime.now();
+    final date = DateTime.parse(this);
+    final difference = now.difference(date);
+
+    if (difference.inDays >= 30) {
+      final months = (difference.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'} ago';
+    } else if (difference.inDays >= 7) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+    } else {
+      return 'just now';
+    }
+  }
+
+  String formatAmount() {
+    double amount = double.parse(this);
+    String formattedAmount = amount.toStringAsFixed(2);
+    final parts = formattedAmount.split('.');
+    final RegExp regex = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    parts[0] =
+        parts[0].replaceAllMapped(regex, (Match match) => '${match[1]},');
+    return parts.join('.');
+  }
 }
+
 
 extension ErrorToast on BuildContext {
   

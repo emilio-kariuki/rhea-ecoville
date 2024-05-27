@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,21 +46,30 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDD3DMSYIfzxl2wPfPPeEKr3xsaKng_k9Q',
+    appId: '1:593038226855:web:4adc1a332d9e0280a3f282',
+    messagingSenderId: '593038226855',
+    projectId: 'ecoville-eville',
+    authDomain: 'ecoville-eville.firebaseapp.com',
+    storageBucket: 'ecoville-eville.appspot.com',
+    measurementId: 'G-P5DJWWL669',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBiU_QFvfNozRYRR0pROPKn7E74PC6JaSw',
-    appId: '1:847413989991:android:4109d427cd58fbedc63ac2',
-    messagingSenderId: '847413989991',
-    projectId: 'ecoville-picsa',
-    storageBucket: 'ecoville-picsa.appspot.com',
+    apiKey: 'AIzaSyBoWzh8kMrlCb8UUwC4QiByVVU8b25qZD8',
+    appId: '1:593038226855:android:30c3efb5dc76b05ba3f282',
+    messagingSenderId: '593038226855',
+    projectId: 'ecoville-eville',
+    storageBucket: 'ecoville-eville.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAeH6EmdXQPSHoKNkQ9PXBUfQWEZEPAtGo',
-    appId: '1:847413989991:ios:31b53462e7c684f6c63ac2',
-    messagingSenderId: '847413989991',
-    projectId: 'ecoville-picsa',
-    storageBucket: 'ecoville-picsa.appspot.com',
-    iosClientId: '847413989991-cqd0pooc8mv9e8s02v81nuu46ii9fqpr.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBQK-kl6iycUWbpXGHweVv_oFUWGcMNR7w',
+    appId: '1:593038226855:ios:6783337e6be00310a3f282',
+    messagingSenderId: '593038226855',
+    projectId: 'ecoville-eville',
+    storageBucket: 'ecoville-eville.appspot.com',
     iosBundleId: 'com.ecoville.eville',
   );
 }

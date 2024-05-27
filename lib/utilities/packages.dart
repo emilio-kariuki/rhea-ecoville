@@ -30,3 +30,4 @@ export 'package:path_provider/path_provider.dart';
 export 'package:flutter_native_splash/flutter_native_splash.dart';
 export 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart'
     hide IndexedWidgetBuilder;
+export 'package:uuid/uuid.dart';

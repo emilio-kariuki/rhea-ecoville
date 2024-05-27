@@ -20,6 +20,7 @@ const String TABLE_BIDDING = 'ecoville_bidding';
 const String TABLE_BIDDING_HISTORY = 'ecoville_bidding_history';
 const String TABLE_BIDDING_WINNER = 'ecoville_bidding_winner';
 const String TABLE_NOTIFICATION = 'ecoville_notification';
+const String TABLE_RATING = 'ecoville_ratings';
 const String TABLE_BUCKET = 'ecoville';
 const String TABLE_IMAGES = 'ecoville_images';
 const String LOCAL_DATABASE = "products.db";

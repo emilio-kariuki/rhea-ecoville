@@ -43,7 +43,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await NotificationRepository().initializeNotifications();
-  await NotificationRepository().getNotificationToken();
+  // await NotificationRepository().getNotificationToken();
 
   runApp(const MainApp());
   FlutterNativeSplash.remove();
