@@ -43,6 +43,13 @@ extension StringExtension on String {
     }
   }
 
+  String encrypt() {
+    final splitString = this.split('');
+    final firstSubstring = splitString[0];
+    final lastSubstring = splitString[splitString.length - 1];
+    return "$lastSubstring***$firstSubstring";
+  }
+
   String formatAmount() {
     double amount = double.parse(this);
     String formattedAmount = amount.toStringAsFixed(2);
@@ -54,9 +61,7 @@ extension StringExtension on String {
   }
 }
 
-
 extension ErrorToast on BuildContext {
-  
   void showErrorToast({
     required String title,
     required String message,
@@ -253,7 +258,7 @@ extension ErrorToast on BuildContext {
     return;
   }
 
-   Future<void> saveString(String key, String value) async {
+  Future<void> saveString(String key, String value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, value);
   }
@@ -262,5 +267,4 @@ extension ErrorToast on BuildContext {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
   }
- 
 }

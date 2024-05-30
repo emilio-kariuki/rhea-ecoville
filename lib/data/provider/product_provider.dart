@@ -1,4 +1,5 @@
 import 'package:ecoville/data/repository/product_repository.dart';
+import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 
 class ProductProvider extends ProductTemplate {
@@ -7,8 +8,10 @@ class ProductProvider extends ProductTemplate {
       : _productRepository = productRepository;
 
   @override
-  Future<bool> createProduct({required ProductModel product, required bool allowBidding}) {
-    return _productRepository.createProduct(product: product, allowBidding: allowBidding);
+  Future<bool> createProduct(
+      {required ProductModel product, required bool allowBidding}) {
+    return _productRepository.createProduct(
+        product: product, allowBidding: allowBidding);
   }
 
   @override
@@ -38,7 +41,7 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<bool> saveProduct({required ProductModel product}) {
+  Future<bool> saveProduct({required LocalProductModel product}) {
     return _productRepository.saveProduct(product: product);
   }
 
@@ -53,17 +56,17 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<List<ProductModel>> getSavedProducts() {
+  Future<List<LocalProductModel>> getSavedProducts() {
     return _productRepository.getSavedProducts();
   }
 
   @override
-  Future<bool> watchProduct({required ProductModel product}) {
+  Future<bool> watchProduct({required LocalProductModel product}) {
     return _productRepository.watchProduct(product: product);
   }
 
   @override
-  Future<List<ProductModel>> getWatchedProducts() {
+  Future<List<LocalProductModel>> getWatchedProducts() {
     return _productRepository.getWatchedProducts();
   }
 
@@ -80,5 +83,35 @@ class ProductProvider extends ProductTemplate {
   @override
   Future<List<ProductModel>> getSimilarProducts({required String productId}) {
     return _productRepository.getSimilarProducts(productId: productId);
+  }
+
+  @override
+  Future<bool> addProductToWishlist({required LocalProductModel product}) {
+    return _productRepository.addProductToWishlist(product: product);
+  }
+
+  @override
+  Future<List<LocalProductModel>> getWishlistProducts() {
+    return _productRepository.getWishlistProducts();
+  }
+
+  @override
+  Future<List<LocalProductModel>> getLikedProducts() {
+    return _productRepository.getLikedProducts();
+  }
+
+  @override
+  Future<bool> likeProduct({required LocalProductModel product}) {
+    return _productRepository.likeProduct(product: product);
+  }
+
+  @override
+  Future<bool> unlikeProduct({required String id}) {
+    return _productRepository.unlikeProduct(id: id);
+  }
+
+  @override
+  Future<bool> removeFromWishlist({required String id}) {
+    return _productRepository.removeFromWishlist(id: id);
   }
 }

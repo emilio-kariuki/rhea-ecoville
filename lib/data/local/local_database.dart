@@ -1,4 +1,4 @@
-import 'package:ecoville/models/product_model.dart';
+import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class DatabaseHelper {
@@ -6,8 +6,11 @@ class DatabaseHelper {
 
   static const _productDatabase = LOCAL_DATABASE;
   static const _databaseVersion = LOCAL_DATABASE_VERSION;
-  static const productsTable = LOCAL_TABLE_PRODUCTS;
+  static const savedTable = LOCAL_TABLE_PRODUCT_SAVED;
   static const watchedTable = LOCAL_TABLE_WATCHED;
+  static const wishlistTable = LOCAL_TABLE_WISHLIST;
+    static const favouriteTable = LOCAL_TABLE_FAVOURITE;
+
 
   Future<Database> init() async {
     try {
@@ -28,38 +31,45 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute(
       '''
-          CREATE TABLE IF NOT EXISTS $productsTable (
+          CREATE TABLE IF NOT EXISTS $savedTable (
           "id" text PRIMARY KEY NOT NULL,
+          "image" text,
           "name" text,
-          "description" text,
           "price" double precision,
-          "image" text[],
-          "address" json,
-          "userId" text NOT NULL,
-          "user" json,
-          "category" json,
-          "categoryId" text,
-          "createdAt" timestamp DEFAULT now() NOT NULL,
-          "updatedAt" timestamp DEFAULT CURRENT_TIMESTAMP
+          "userId" text NOT NULL
         )
           ''',
     );
-
     await db.execute(
       '''
           CREATE TABLE IF NOT EXISTS $watchedTable (
           "id" text PRIMARY KEY NOT NULL,
+          "image" text,
           "name" text,
-          "description" text,
           "price" double precision,
-          "image" text[],
-          "address" json,
-          "userId" text NOT NULL,
-          "user" json,
-          "category" json,
-          "categoryId" text,
-          "createdAt" timestamp DEFAULT now() NOT NULL,
-          "updatedAt" timestamp DEFAULT CURRENT_TIMESTAMP
+          "userId" text NOT NULL
+        )
+          ''',
+    );
+    await db.execute(
+      '''
+          CREATE TABLE IF NOT EXISTS $wishlistTable (
+          "id" text PRIMARY KEY NOT NULL,
+          "image" text,
+          "name" text,
+          "price" double precision,
+          "userId" text NOT NULL
+        )
+          ''',
+    );
+    await db.execute(
+      '''
+          CREATE TABLE IF NOT EXISTS $favouriteTable (
+          "id" text PRIMARY KEY NOT NULL,
+          "image" text,
+          "name" text,
+          "price" double precision,
+          "userId" text NOT NULL
         )
           ''',
     );
@@ -67,7 +77,7 @@ class DatabaseHelper {
 
   Future insertLocalProduct({
     required Database db,
-    required ProductModel product,
+    required LocalProductModel product,
     required String table,
   }) async {
     try {
@@ -83,14 +93,14 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<ProductModel>> getLocalProducts({
+  Future<List<LocalProductModel>> getLocalProducts({
     required Database db,
     required String table,
   }) async {
     try {
       return db.transaction((txn) async {
         final response = await txn.query(table);
-        return response.map((e) => ProductModel.fromJson(e)).toList();
+        return response.map((e) => LocalProductModel.fromJson(e)).toList();
       });
     } catch (e) {
       debugPrint(e.toString());
@@ -98,7 +108,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<ProductModel>> getUserLocalProducts({
+  Future<List<LocalProductModel>> getUserLocalProducts({
     required Database db,
     required String table,
   }) async {
@@ -111,7 +121,7 @@ class DatabaseHelper {
           whereArgs: [id],
         );
 
-        final products = response.map((e) => ProductModel.fromJson(e)).toList();
+        final products = response.map((e) => LocalProductModel.fromJson(e)).toList();
         return products;
       });
     } catch (e) {
@@ -120,7 +130,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<ProductModel>> searchLocalServices({
+  Future<List<LocalProductModel>> searchLocalProducts({
     required Database db,
     required String query,
     required String table,
@@ -133,7 +143,7 @@ class DatabaseHelper {
           whereArgs: ['%$query%'],
         );
 
-        return response.map((e) => ProductModel.fromJson(e)).toList();
+        return response.map((e) => LocalProductModel.fromJson(e)).toList();
       });
     } catch (e) {
       debugPrint(e.toString());

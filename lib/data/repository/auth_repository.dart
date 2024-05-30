@@ -27,7 +27,7 @@ class AuthRepository extends AuthTemplate {
   Future<bool> signInWithGoogle() async {
     try {
       const webClientId =
-          '593038226855-9sig16n4amih1hg6egik5rps21m5u4iq.apps.googleusercontent.com';
+          '593038226855-uvj1tfavckdas0b90fgue1ojf2jnafr7.apps.googleusercontent.com';
       const iosClientId =
           '593038226855-iq9b65tu6bohevl82a5qj8gffdg87uli.apps.googleusercontent.com';
 
@@ -53,6 +53,7 @@ class AuthRepository extends AuthTemplate {
         idToken: idToken,
         accessToken: accessToken,
       );
+      debugPrint("the response is $response");
       final token = await _notificationService.getNotificationToken();
       await _userService.createUser(
         user: UserModel(

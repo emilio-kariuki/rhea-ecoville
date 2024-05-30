@@ -70,6 +70,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '593038226855',
     projectId: 'ecoville-eville',
     storageBucket: 'ecoville-eville.appspot.com',
+    androidClientId: '593038226855-ahb69bc9468r8epmgnmqnjadnfcjhsgr.apps.googleusercontent.com',
+    iosClientId: '593038226855-iq9b65tu6bohevl82a5qj8gffdg87uli.apps.googleusercontent.com',
     iosBundleId: 'com.ecoville.eville',
   );
 }

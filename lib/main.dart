@@ -1,5 +1,6 @@
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
+import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
@@ -43,7 +44,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await NotificationRepository().initializeNotifications();
-  // await NotificationRepository().getNotificationToken();
+  await NotificationRepository().getNotificationToken();
 
   runApp(const MainApp());
   FlutterNativeSplash.remove();
@@ -66,6 +67,10 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           lazy: false,
           create: (context) => ProductCubit()..getProducts(),
+        ),
+         BlocProvider(
+          lazy: false,
+          create: (context) => UserCubit()..getUser(),
         ),
       ],
       child: LayoutBuilder(builder: (context, constraints) {
@@ -91,7 +96,7 @@ class Checker extends StatelessWidget {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, state) {
         return state.status == AuthenticationStatus.authenticated
-            ? HomePage()
+            ? const HomePage()
             : const WelcomePage();
       },
     );

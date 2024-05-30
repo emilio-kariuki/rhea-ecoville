@@ -4,6 +4,7 @@ import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/home/widgets/categories_section.dart';
 import 'package:ecoville/views/home/widgets/product_container.dart';
+import 'package:ecoville/views/home/widgets/product_list_shimmer.dart';
 
 import 'widgets/page_search.dart';
 import 'widgets/section_title.dart';
@@ -48,10 +49,10 @@ class HomePage extends StatelessWidget {
               CategoriesSection(),
               Gap(3.5 * SizeConfig.heightMultiplier),
               const RecentItems(),
-              const WatchedItems(),
-              const YourDeals(),
-              const WatchedItems(),
-              const RecommendedItems()
+              // const WatchedItems(),
+              // const YourDeals(),
+              // const WatchedItems(),
+              // const RecommendedItems()
             ],
           ),
         ),
@@ -80,26 +81,30 @@ class RecentItems extends StatelessWidget {
         ),
         Gap(2.5 * SizeConfig.heightMultiplier),
         BlocBuilder<ProductCubit, ProductState>(
+          buildWhen: (previous, current) =>
+              previous.products != current.products,
           builder: (context, state) {
-            return SizedBox(
-              height: height * 0.32,
-              child: ListView.separated(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) => Padding(
-                  padding: EdgeInsets.only(
-                    left: index == 0 ? 10 : 0,
-                    right: index == (state.products.length - 1) ? 10 : 0,
-                  ),
-                  child: ProductContainer(
-                    product: state.products[index],
-                  ),
-                ),
-                separatorBuilder: (context, index) =>
-                    Gap(1.3 * SizeConfig.widthMultiplier),
-                itemCount: state.products.length,
-              ),
-            );
+            return state.status == ProductStatus.loading
+                ? const ProductListShimmer()
+                : SizedBox(
+                    height: height * 0.32,
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => Padding(
+                        padding: EdgeInsets.only(
+                          left: index == 0 ? 10 : 0,
+                          right: index == (state.products.length - 1) ? 10 : 0,
+                        ),
+                        child: ProductContainer(
+                          product: state.products[index],
+                        ),
+                      ),
+                      separatorBuilder: (context, index) =>
+                          Gap(1.3 * SizeConfig.widthMultiplier),
+                      itemCount: state.products.length,
+                    ),
+                  );
           },
         ),
       ],
@@ -136,7 +141,7 @@ class RecommendedItems extends StatelessWidget {
                 left: index == 0 ? 10 : 0,
                 right: index == 4 ? 10 : 0,
               ),
-              child: ProductContainer(),
+              child: Container(),
             ),
             separatorBuilder: (context, index) =>
                 Gap(1.3 * SizeConfig.widthMultiplier),
@@ -176,7 +181,7 @@ class WatchedItems extends StatelessWidget {
                 left: index == 0 ? 10 : 0,
                 right: index == 4 ? 10 : 0,
               ),
-              child: ProductContainer(),
+              child: Container(),
             ),
             separatorBuilder: (context, index) =>
                 Gap(1.3 * SizeConfig.widthMultiplier),
@@ -216,7 +221,7 @@ class YourDeals extends StatelessWidget {
                 left: index == 0 ? 10 : 0,
                 right: index == 4 ? 10 : 0,
               ),
-              child: ProductContainer(),
+              child: Container(),
             ),
             separatorBuilder: (context, index) =>
                 Gap(1.3 * SizeConfig.widthMultiplier),

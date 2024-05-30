@@ -17,8 +17,8 @@ class IconContainer extends StatelessWidget {
         decoration: BoxDecoration(color: lightGrey, shape: BoxShape.circle),
         child: SvgPicture.asset(
           icon,
-          height: 2.8 * SizeConfig.heightMultiplier,
-          width: 2.8 * SizeConfig.heightMultiplier,
+          height: 2.5 * SizeConfig.heightMultiplier,
+          width: 2.5 * SizeConfig.heightMultiplier,
           color: black,
         ),
       ),

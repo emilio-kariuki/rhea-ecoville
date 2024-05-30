@@ -31,7 +31,9 @@ class BorderButton extends StatelessWidget {
       child: OutlinedButton(
           onPressed: isDisabled ?? false ? () {} : function,
           style: OutlinedButton.styleFrom(
-            backgroundColor: Colors.transparent,
+            backgroundColor: white,
+            foregroundColor: white,
+            surfaceTintColor: white,
             side: BorderSide(
               color: isDisabled ?? false ? hintColor : backgroundColor ?? green,
               width: 1.5,

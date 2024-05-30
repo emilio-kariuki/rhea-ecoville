@@ -1,5 +1,6 @@
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -11,7 +12,6 @@ class ProductCubit extends Cubit<ProductState> {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
       final products = await _productProvider.getProducts();
-            debugPrint("Products: $products");
       emit(state.copyWith(
         status: ProductStatus.success,
         products: products,
@@ -91,7 +91,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> saveProduct({required ProductModel product}) async {
+  Future<void> saveProduct({required LocalProductModel product}) async {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
       await _productProvider.saveProduct(product: product);
@@ -127,7 +127,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> watchProduct({required ProductModel product}) async {
+  Future<void> watchProduct({required LocalProductModel product}) async {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
       await _productProvider.watchProduct(product: product);
@@ -193,9 +193,9 @@ class ProductState {
   final ProductModel? product;
   final List<ProductModel> products;
   final List<ProductModel> productsNearby;
-  final List<ProductModel> savedProducts;
+  final List<LocalProductModel> savedProducts;
   final List<ProductModel> similarProducts;
-  final List<ProductModel> watchedProducts;
+  final List<LocalProductModel> watchedProducts;
   final ProductStatus status;
   final String message;
 
@@ -203,9 +203,9 @@ class ProductState {
     this.product,
     this.products = const <ProductModel>[],
     this.productsNearby = const <ProductModel>[],
-    this.savedProducts = const <ProductModel>[],
+    this.savedProducts = const <LocalProductModel>[],
     this.similarProducts = const <ProductModel>[],
-    this.watchedProducts = const <ProductModel>[],
+    this.watchedProducts = const <LocalProductModel>[],
     this.status = ProductStatus.initial,
     this.message = '',
   });
@@ -214,9 +214,9 @@ class ProductState {
     ProductModel? product,
     List<ProductModel>? products,
     List<ProductModel>? productsNearby,
-    List<ProductModel>? savedProducts,
+    List<LocalProductModel>? savedProducts,
     List<ProductModel>? similarProducts,
-    List<ProductModel>? watchedProducts,
+    List<LocalProductModel>? watchedProducts,
     ProductStatus? status,
     String? message,
   }) {

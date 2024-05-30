@@ -7,7 +7,10 @@ abstract class UserTemplate {
   Future<bool> createUser({required UserModel user});
   Future<UserModel> getUser();
   Future<UserModel> updateUser({required UserModel user});
-  Future<bool> sendUserInteractions({required String userId, required String interaction, required String productId});
+  Future<bool> sendUserInteractions(
+      {required String userId,
+      required String interaction,
+      required String productId});
 }
 
 class UserRepository extends UserTemplate {
@@ -46,7 +49,6 @@ class UserRepository extends UserTemplate {
   Future<UserModel> getUser() async {
     try {
       final id = supabase.auth.currentUser!.id;
-      debugPrint("id: $id");
       final response = await supabase.from(TABLE_USERS).select().eq('id', id);
       final user = UserModel.fromJson(response.first);
       return user;
@@ -79,9 +81,12 @@ class UserRepository extends UserTemplate {
       throw Exception('Error updating user');
     }
   }
-  
+
   @override
-  Future<bool> sendUserInteractions({required String userId, required String interaction, required String productId}) {
+  Future<bool> sendUserInteractions(
+      {required String userId,
+      required String interaction,
+      required String productId}) {
     // TODO: implement sendUserInteractions
     throw UnimplementedError();
   }

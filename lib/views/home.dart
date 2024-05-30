@@ -30,8 +30,15 @@ class _HomeState extends State<Home> {
       {'icon': AppImages.search, 'name': "Search"},
       {'icon': AppImages.profile, 'name': "Account"},
       {'icon': AppImages.notifications, 'name': "Inbox"},
+      {'icon': AppImages.sale, 'name': "Selling"},
     ];
-    final List<String> routes = ['/home', '/search', '/account', '/inbox'];
+    final List<String> routes = [
+      '/home',
+      '/search',
+      '/account',
+      '/inbox',
+      '/selling'
+    ];
 
     return BlocConsumer<NavigationCubit, NavigationState>(
       listener: (context, state) {

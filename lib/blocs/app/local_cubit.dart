@@ -1,13 +1,13 @@
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
-import 'package:ecoville/models/product_model.dart';
+import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class LocalCubit extends Cubit<LocalState> {
   final _productProvider = service<ProductProvider>();
   LocalCubit() : super(LocalState());
 
-  Future<void> saveProduct({required ProductModel product}) async {
+  Future<void> saveProduct({required LocalProductModel product}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
       await _productProvider.saveProduct(product: product);
@@ -57,13 +57,13 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
-  Future<void> watchProduct({required ProductModel product}) async {
+  Future<void> watchProduct({required LocalProductModel product}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
       await _productProvider.watchProduct(product: product);
       emit(state.copyWith(
         status: LocalStatus.success,
-        message: "Product saved successfully",
+        message: "Product watched successfully",
       ));
     } catch (error) {
       emit(state.copyWith(
@@ -90,6 +90,91 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
+  Future<void> getWishlistProducts() async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      final wishlistProducts = await _productProvider.getWishlistProducts();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        wishlistProducts: wishlistProducts,
+        message: "Product saved successfully",
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> likeProduct({required LocalProductModel product}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+
+      await _productProvider.likeProduct(product: product);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: "Product added to favourite.",
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> getLikedProducts() async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      final likedProducts = await _productProvider.getLikedProducts();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        likedProducts: likedProducts,
+        message: "Product saved successfully",
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> unLikeProduct({required String id}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _productProvider.unwatchProduct(id: id);
+      await _productProvider.unlikeProduct(id: id);
+      await getLikedProducts();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> unSaveProduct({required String id}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _productProvider.unwatchProduct(id: id);
+      await _productProvider.unsaveProduct(id: id);
+      await getSavedProduct();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
   Future<void> unwatchProduct({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
@@ -106,33 +191,73 @@ class LocalCubit extends Cubit<LocalState> {
       ));
     }
   }
+
+  Future<void> addProductToWishlist(
+      {required LocalProductModel product}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _productProvider.addProductToWishlist(product: product);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> removeProductFromWishlist({required String id}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _productProvider.unwatchProduct(id: id);
+      await _productProvider.removeFromWishlist(id: id);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
 }
 
 enum LocalStatus { initial, loading, success }
 
 class LocalState {
   final LocalStatus status;
-  final List<ProductModel> savedProducts;
-  final List<ProductModel> watchedProducts;
+  final List<LocalProductModel> savedProducts;
+  final List<LocalProductModel> watchedProducts;
+  final List<LocalProductModel> wishlistProducts;
+  final List<LocalProductModel> likedProducts;
   final String message;
 
   LocalState({
     this.status = LocalStatus.initial,
     this.savedProducts = const [],
     this.watchedProducts = const [],
+    this.wishlistProducts = const [],
+    this.likedProducts = const [],
     this.message = '',
   });
 
   LocalState copyWith({
     LocalStatus? status,
-    List<ProductModel>? savedProducts,
-    List<ProductModel>? watchedProducts,
+    List<LocalProductModel>? savedProducts,
+    List<LocalProductModel>? watchedProducts,
+    List<LocalProductModel>? wishlistProducts,
+    List<LocalProductModel>? likedProducts,
     String? message,
   }) {
     return LocalState(
       status: status ?? this.status,
       savedProducts: savedProducts ?? this.savedProducts,
       watchedProducts: watchedProducts ?? this.watchedProducts,
+      wishlistProducts: wishlistProducts ?? this.wishlistProducts,
+      likedProducts: likedProducts ?? this.likedProducts,
       message: message ?? this.message,
     );
   }

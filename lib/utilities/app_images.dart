@@ -20,6 +20,7 @@ class AppImages {
   static const String mail = 'assets/icons/mail.svg';
   static const String menu = 'assets/icons/menu.svg';
   static const String notifications = 'assets/icons/notifications.svg';
+  static const String notificationSolid = 'assets/icons/notificationSolid.svg';
   static const String offer = 'assets/icons/offer.svg';
   static const String phone = 'assets/icons/phone.svg';
   static const String pin = 'assets/icons/pin.svg';
@@ -27,6 +28,7 @@ class AppImages {
   static const String purchase = 'assets/icons/purchase.svg';
   static const String right = 'assets/icons/right.svg';
   static const String save = 'assets/icons/save.svg';
+  static const String saveSolid = 'assets/icons/saveSolid.svg';
   static const String search = 'assets/icons/search.svg';
   static const String settings = 'assets/icons/settings.svg';
   static const String share = 'assets/icons/share.svg';
@@ -38,8 +40,17 @@ class AppImages {
   static const String bids = 'assets/icons/bids.svg';
   static const String more = 'assets/icons/more.svg';
   static const String messages = 'assets/icons/messages.svg';
-    static const String calendar = 'assets/icons/calendar.svg';
-
+  static const String calendar = 'assets/icons/calendar.svg';
+  static const String recent = 'assets/icons/recent.svg';
+  static const String again = 'assets/icons/again.svg';
+  static const String sale = 'assets/icons/sale.svg';
+  static const String payment = 'assets/icons/payment.svg';
+  static const String help = 'assets/icons/help.svg';
+  static const String listings = 'assets/icons/listings.svg';
+  static const String edit = 'assets/icons/edit.svg';
+  static const String camera = 'assets/icons/camera.svg';
+  static const String ship = 'assets/icons/ship.svg';
+  static const String wishlist = 'assets/icons/wishlist.svg';
 
   static const String ecoville = 'assets/ecoville.svg';
   static const String ecovilleName = 'assets/name.svg';

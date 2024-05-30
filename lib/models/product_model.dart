@@ -21,14 +21,18 @@ class ProductModel {
   final String categoryId;
   final String userId;
   final bool allowBidding;
-  final int startingPrice;
-  final int currentPrice;
+  final bool favourite;
+  final bool wishlist;
+  final bool saved;
+  final double startingPrice;
+  final double currentPrice;
   final DateTime startBiddingTime;
   final DateTime endBiddingTime;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final UserModel user;
-  final Category category;
+  final UserModel? user;
+  final Category? category;
+  final String condition;
 
   ProductModel({
     required this.id,
@@ -39,14 +43,18 @@ class ProductModel {
     required this.categoryId,
     required this.userId,
     required this.allowBidding,
+    required this.favourite,
+    required this.wishlist,
+    required this.saved,
     required this.startingPrice,
     required this.currentPrice,
     required this.startBiddingTime,
     required this.endBiddingTime,
     required this.createdAt,
     required this.updatedAt,
-    required this.user,
-    required this.category,
+    this.user,
+    this.category,
+    required this.condition,
   });
 
   ProductModel copyWith({
@@ -58,14 +66,18 @@ class ProductModel {
     String? categoryId,
     String? userId,
     bool? allowBidding,
-    int? startingPrice,
-    int? currentPrice,
+    bool? favourite,
+    bool? wishlist,
+    bool? saved,
+    double? startingPrice,
+    double? currentPrice,
     DateTime? startBiddingTime,
     DateTime? endBiddingTime,
     DateTime? createdAt,
     DateTime? updatedAt,
     UserModel? user,
     Category? category,
+    String? condition,
   }) =>
       ProductModel(
         id: id ?? this.id,
@@ -76,6 +88,9 @@ class ProductModel {
         categoryId: categoryId ?? this.categoryId,
         userId: userId ?? this.userId,
         allowBidding: allowBidding ?? this.allowBidding,
+        favourite: favourite ?? this.favourite,
+        wishlist: wishlist ?? this.wishlist,
+        saved: saved ?? this.saved,
         startingPrice: startingPrice ?? this.startingPrice,
         currentPrice: currentPrice ?? this.currentPrice,
         startBiddingTime: startBiddingTime ?? this.startBiddingTime,
@@ -84,6 +99,7 @@ class ProductModel {
         updatedAt: updatedAt ?? this.updatedAt,
         user: user ?? this.user,
         category: category ?? this.category,
+        condition: condition ?? this.category!.name,
       );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -95,6 +111,9 @@ class ProductModel {
         categoryId: json["categoryId"],
         userId: json["userId"],
         allowBidding: json["allowBidding"],
+        favourite: json['favourite'],
+        wishlist: json['wishlist'],
+        saved: json['saved'],
         startingPrice: json["startingPrice"],
         currentPrice: json["currentPrice"],
         startBiddingTime: DateTime.parse(json["startBiddingTime"]),
@@ -103,6 +122,7 @@ class ProductModel {
         updatedAt: DateTime.parse(json["updatedAt"]),
         user: UserModel.fromJson(json["ecoville_user"]),
         category: Category.fromJson(json["ecoville_product_category"]),
+        condition: json["condition"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -114,14 +134,18 @@ class ProductModel {
         "categoryId": categoryId,
         "userId": userId,
         "allowBidding": allowBidding,
+        "favourite": favourite,
+        "wishlist": wishlist,
+        "saved": saved,
         "startingPrice": startingPrice,
         "currentPrice": currentPrice,
         "startBiddingTime": startBiddingTime.toIso8601String(),
         "endBiddingTime": endBiddingTime.toIso8601String(),
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
-        "ecoville_user": user.toJson(),
-        "ecoville_product_category": category.toJson(),
+        "ecoville_user": user!.toJson(),
+        "ecoville_product_category": category!.toJson(),
+        "condition": condition,
       };
 }
 

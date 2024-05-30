@@ -1,6 +1,7 @@
 import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -14,14 +15,20 @@ abstract class ProductTemplate {
       {required ProductModel product, required bool allowBidding});
   Future<bool> updateProduct({required ProductModel product});
   Future<bool> deleteProduct({required String id});
-  Future<bool> saveProduct({required ProductModel product});
-  Future<List<ProductModel>> getSavedProducts();
+  Future<bool> saveProduct({required LocalProductModel product});
+  Future<List<LocalProductModel>> getSavedProducts();
   Future<bool> unsaveProduct({required String id});
-  Future<bool> watchProduct({required ProductModel product});
+  Future<bool> watchProduct({required LocalProductModel product});
   Future<bool> unwatchProduct({required String id});
-  Future<List<ProductModel>> getWatchedProducts();
+  Future<List<LocalProductModel>> getWatchedProducts();
+  Future<bool> addProductToWishlist({required LocalProductModel product});
+  Future<List<LocalProductModel>> getWishlistProducts();
+  Future<bool> removeFromWishlist({required String id});
   Future<List<ProductModel>> getNearbyProducts();
   Future<List<ProductModel>> getSimilarProducts({required String productId});
+  Future<bool> likeProduct({required LocalProductModel product});
+  Future<List<LocalProductModel>> getLikedProducts();
+  Future<bool> unlikeProduct({required String id});
 }
 
 class ProductRepository extends ProductTemplate {
@@ -67,8 +74,29 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<ProductModel> getProduct({required String id}) async {
     try {
-      final response = await supabase.from(TABLE_PRODUCT).select("ecoville_user(*), *, ecoville_product_category(*)").eq('id', id);
-      final product = ProductModel.fromJson(response.first);
+      final db = await _dbHelper.init();
+      final wishlist =
+          await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_WISHLIST);
+      final saved = await _dbHelper.getLocalProducts(
+          db: db, table: LOCAL_TABLE_PRODUCT_SAVED);
+      final favourite = await _dbHelper.getLocalProducts(
+          db: db, table: LOCAL_TABLE_FAVOURITE);
+      final response = await supabase
+          .from(TABLE_PRODUCT)
+          .select("ecoville_user(*), *, ecoville_product_category(*)")
+          .eq('id', id);
+      var product = ProductModel.fromJson(response.first);
+      final isWishlist = wishlist.isEmpty
+          ? false
+          : wishlist.any((element) => element.id == product.id);
+      final isSaved = saved.isEmpty
+          ? false
+          : saved.any((element) => element.id == product.id);
+      final isFavourite = favourite.isEmpty
+          ? false
+          : favourite.any((element) => element.id == product.id);
+      product = product.copyWith(
+          wishlist: isWishlist, saved: isSaved, favourite: isFavourite);
       return product;
     } catch (e) {
       debugPrint(e.toString());
@@ -79,10 +107,21 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> getProducts() async {
     try {
+      final db = await _dbHelper.init();
+      final favourites = await _dbHelper.getLocalProducts(
+          db: db, table: LOCAL_TABLE_FAVOURITE);
       final response = await supabase
           .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_product_category(*)");
-      final products = response.map((e) => ProductModel.fromJson(e)).toList();
+          .select("ecoville_user(*), *, ecoville_product_category(*)")
+          .limit(10);
+      var products = response.map((e) => ProductModel.fromJson(e)).toList();
+      debugPrint("network products: $products");
+      if (favourites.isNotEmpty) {
+        products = products.map((e) {
+          final isFavourite = favourites.any((element) => element.id == e.id);
+          return e.copyWith(favourite: isFavourite);
+        }).toList();
+      }
       return products;
     } catch (error) {
       debugPrint(error.toString());
@@ -123,12 +162,11 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<bool> saveProduct({required ProductModel product}) async {
+  Future<bool> saveProduct({required LocalProductModel product}) async {
     try {
       final db = await _dbHelper.init();
-
       await _dbHelper.insertLocalProduct(
-          db: db, product: product, table: LOCAL_TABLE_PRODUCTS);
+          db: db, product: product, table: LOCAL_TABLE_PRODUCT_SAVED);
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -142,7 +180,7 @@ class ProductRepository extends ProductTemplate {
       final db = await _dbHelper.init();
 
       await _dbHelper.deleteLocalProduct(
-          db: db, id: id, table: LOCAL_TABLE_PRODUCTS);
+          db: db, id: id, table: LOCAL_TABLE_PRODUCT_SAVED);
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -151,11 +189,11 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<List<ProductModel>> getSavedProducts() async {
+  Future<List<LocalProductModel>> getSavedProducts() async {
     try {
       final db = await _dbHelper.init();
       final savedProducts = await _dbHelper.getUserLocalProducts(
-          db: db, table: LOCAL_TABLE_PRODUCTS);
+          db: db, table: LOCAL_TABLE_PRODUCT_SAVED);
       return savedProducts;
     } catch (error) {
       debugPrint(error.toString());
@@ -164,7 +202,7 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<List<ProductModel>> getWatchedProducts() async {
+  Future<List<LocalProductModel>> getWatchedProducts() async {
     try {
       final db = await _dbHelper.init();
       final savedProducts = await _dbHelper.getUserLocalProducts(
@@ -191,7 +229,7 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<bool> watchProduct({required ProductModel product}) async {
+  Future<bool> watchProduct({required LocalProductModel product}) async {
     try {
       final db = await _dbHelper.init();
 
@@ -256,6 +294,87 @@ class ProductRepository extends ProductTemplate {
     } catch (error) {
       debugPrint(error.toString());
       throw Exception("Error getting the similar products, $error");
+    }
+  }
+
+  @override
+  Future<bool> addProductToWishlist(
+      {required LocalProductModel product}) async {
+    try {
+      final db = await _dbHelper.init();
+      final savedProducts = await _dbHelper.insertLocalProduct(
+          db: db, product: product, table: LOCAL_TABLE_WISHLIST);
+      return savedProducts;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error inserting the wishlist product, $error");
+    }
+  }
+
+  @override
+  Future<List<LocalProductModel>> getWishlistProducts() async {
+    try {
+      final db = await _dbHelper.init();
+      final savedProducts =
+          await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_WISHLIST);
+      return savedProducts;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the wishlist products, $error");
+    }
+  }
+
+  @override
+  Future<List<LocalProductModel>> getLikedProducts() async {
+    try {
+      final db = await _dbHelper.init();
+      final savedProducts = await _dbHelper.getUserLocalProducts(
+          db: db, table: LOCAL_TABLE_FAVOURITE);
+      return savedProducts;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the liked products, $error");
+    }
+  }
+
+  @override
+  Future<bool> likeProduct({required LocalProductModel product}) async {
+    try {
+      final db = await _dbHelper.init();
+      await _dbHelper.insertLocalProduct(
+          db: db, product: product, table: LOCAL_TABLE_FAVOURITE);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
+    }
+  }
+
+  @override
+  Future<bool> unlikeProduct({required String id}) async {
+    try {
+      final db = await _dbHelper.init();
+
+      await _dbHelper.deleteLocalProduct(
+          db: db, id: id, table: LOCAL_TABLE_FAVOURITE);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
+    }
+  }
+
+  @override
+  Future<bool> removeFromWishlist({required String id}) async {
+    try {
+      final db = await _dbHelper.init();
+
+      await _dbHelper.deleteLocalProduct(
+          db: db, id: id, table: LOCAL_TABLE_WISHLIST);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
     }
   }
 }

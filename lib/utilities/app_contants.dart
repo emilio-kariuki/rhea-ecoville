@@ -2,8 +2,7 @@
 
 const String APP_NAME = 'Ecoville';
 const String APP_VERSION = '1.0.0';
-const String APP_DESCRIPTION =
-    'Your Waste is Someone\'s Treasure.';
+const String APP_DESCRIPTION = 'Your Waste is Someone\'s Treasure.';
 const String APP_URL = 'https://ecoville.site';
 const String APP_DEVELOPER = 'Ecoville Team';
 const String APP_DEVELOPER_URL = 'https://ecoville.site';
@@ -25,6 +24,10 @@ const String TABLE_BUCKET = 'ecoville';
 const String TABLE_IMAGES = 'ecoville_images';
 const String LOCAL_DATABASE = "products.db";
 const int LOCAL_DATABASE_VERSION = 1;
-const String LOCAL_TABLE_PRODUCTS = "products";
+const String LOCAL_TABLE_PRODUCT_SAVED = "savedProducts";
 const String LOCAL_TABLE_WATCHED = "watchedTable";
+const String LOCAL_TABLE_WISHLIST = "wishlistTable";
+const String LOCAL_TABLE_FAVOURITE = "favouriteTable";
+
+
 const double NEARBY_RADIUS = 1000;

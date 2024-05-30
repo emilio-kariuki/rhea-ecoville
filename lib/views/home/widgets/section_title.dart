@@ -16,7 +16,7 @@ class SectionTitle extends StatelessWidget {
           title,
           style: GoogleFonts.inter(
               color: black,
-              fontSize: 2.5 * SizeConfig.textMultiplier,
+              fontSize: 2.2 * SizeConfig.textMultiplier,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.1),
         ),
@@ -27,7 +27,7 @@ class SectionTitle extends StatelessWidget {
             'See all',
             style: GoogleFonts.quicksand(
                 color: black,
-                fontSize: 1.9 * SizeConfig.textMultiplier,
+                fontSize: 1.8 * SizeConfig.textMultiplier,
                 fontWeight: FontWeight.w600,
                 decoration: TextDecoration.underline),
           ),

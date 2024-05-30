@@ -13,3 +13,4 @@ A new Flutter project.
 [] - add the add to favourite feature
 [] - add the other sellers items page
 [] - add the rating feature for the seller
+

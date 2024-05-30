@@ -5,10 +5,12 @@ abstract class RatingTemplate {
   Future<bool> addRating(
       {required String productId,
       required String description,
+      required String sellerId,
       required double rating});
   Future<List<RatingModel>> getSellerRatings({required String userId});
   Future<List<RatingModel>> getProductRatings(
       {required String productId,});
+
 }
 
 class RatingRepository extends RatingTemplate {
@@ -16,6 +18,7 @@ class RatingRepository extends RatingTemplate {
   Future<bool> addRating(
       {required String productId,
       required String description,
+      required String sellerId,
       required double rating}) async {
     try {
       final userId = supabase.auth.currentUser!.id;
@@ -25,7 +28,8 @@ class RatingRepository extends RatingTemplate {
         "userId": userId,
         "productId": productId,
         "rating": rating,
-        "description": description
+        "description": description,
+        "sellerId": sellerId,
       });
       return true;
     } catch (error) {
@@ -57,12 +61,14 @@ class RatingRepository extends RatingTemplate {
   @override
   Future<List<RatingModel>> getSellerRatings({required String userId}) async {
     try {
-
       final response = await supabase
           .from(TABLE_RATING)
-          .select("user:ecoville_user(*), product:ecoville_product(*), *")
-          .eq("userId", userId);
+          .select(
+              "user:ecoville_user(*), *"
+          )
+          .eq("sellerId", userId);
       final rating = response.map((e) => RatingModel.fromJson(e)).toList();
+      debugPrint("the rating is $rating");
       return rating;
     } catch (error) {
       debugPrint(error.toString());
