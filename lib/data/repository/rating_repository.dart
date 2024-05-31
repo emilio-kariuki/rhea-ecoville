@@ -68,7 +68,6 @@ class RatingRepository extends RatingTemplate {
           )
           .eq("sellerId", userId);
       final rating = response.map((e) => RatingModel.fromJson(e)).toList();
-      debugPrint("the rating is $rating");
       return rating;
     } catch (error) {
       debugPrint(error.toString());

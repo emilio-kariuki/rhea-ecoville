@@ -1,4 +1,5 @@
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
+import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
@@ -66,11 +67,15 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           lazy: false,
-          create: (context) => ProductCubit()..getProducts(),
+          create: (context) => ProductCubit()..getProducts()..getNearbyProducts(),
         ),
          BlocProvider(
           lazy: false,
           create: (context) => UserCubit()..getUser(),
+        ),
+         BlocProvider(
+          lazy: false,
+          create: (context) => LocalCubit(),
         ),
       ],
       child: LayoutBuilder(builder: (context, constraints) {

@@ -91,7 +91,7 @@ class ProductContainer extends StatelessWidget {
                     return BlocListener<LocalCubit, LocalState>(
                       listener: (context, state) {
                         if (state.status == LocalStatus.success) {
-                          context.read<ProductCubit>().getProducts();
+                          context..read<ProductCubit>().getProducts()..read<ProductCubit>().getNearbyProducts();
                         }
                       },
                       child: GestureDetector(

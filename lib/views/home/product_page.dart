@@ -87,7 +87,7 @@ class ProductDetailsPage extends StatelessWidget {
                                               height: 1.2),
                                         ),
                                         Text(
-                                          "0% Positive Rating",
+                                          "90% Positive Rating",
                                           style: GoogleFonts.inter(
                                               color: black,
                                               fontSize: 1.6 *
@@ -650,7 +650,7 @@ class RatingContainer extends StatelessWidget {
           ]),
       Gap(2 * SizeConfig.heightMultiplier),
       Text(
-        rating.description,
+        rating.review,
         style: GoogleFonts.inter(
             color: black,
             fontSize: 1.8 * SizeConfig.textMultiplier,

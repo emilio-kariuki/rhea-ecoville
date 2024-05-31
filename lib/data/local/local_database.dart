@@ -9,13 +9,12 @@ class DatabaseHelper {
   static const savedTable = LOCAL_TABLE_PRODUCT_SAVED;
   static const watchedTable = LOCAL_TABLE_WATCHED;
   static const wishlistTable = LOCAL_TABLE_WISHLIST;
-    static const favouriteTable = LOCAL_TABLE_FAVOURITE;
-
+  static const favouriteTable = LOCAL_TABLE_FAVOURITE;
+  static const cartTable = LOCAL_TABLE_CART;
 
   Future<Database> init() async {
     try {
       final path = join(await getDatabasesPath(), _productDatabase);
-
       _db = await openDatabase(
         path,
         version: _databaseVersion,
@@ -73,6 +72,17 @@ class DatabaseHelper {
         )
           ''',
     );
+    await db.execute(
+      '''
+          CREATE TABLE IF NOT EXISTS $cartTable (
+          "id" text PRIMARY KEY NOT NULL,
+          "image" text,
+          "name" text,
+          "price" double precision,
+          "userId" text NOT NULL
+        )
+          ''',
+    );
   }
 
   Future insertLocalProduct({
@@ -121,7 +131,8 @@ class DatabaseHelper {
           whereArgs: [id],
         );
 
-        final products = response.map((e) => LocalProductModel.fromJson(e)).toList();
+        final products =
+            response.map((e) => LocalProductModel.fromJson(e)).toList();
         return products;
       });
     } catch (e) {

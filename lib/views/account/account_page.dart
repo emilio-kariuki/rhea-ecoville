@@ -19,12 +19,6 @@ class _AccountPageState extends State<AccountPage> {
       'page': Routes.watchlist
     },
     {
-      "name": "Saved",
-      'description': "Searches, sellers, feed",
-      'icon': AppImages.favourite,
-      'page': Routes.saved
-    },
-    {
       "name": "Wishlist",
       'description': "Your wishlist items",
       'icon': AppImages.wishlist,
@@ -46,7 +40,7 @@ class _AccountPageState extends State<AccountPage> {
       "name": "Recently viewed",
       'description': "Listing your recently viewed",
       'icon': AppImages.recent,
-      'page': Routes.cart
+      'page': Routes.watchlist
     },
     {
       "name": "Categories",
@@ -67,6 +61,18 @@ class _AccountPageState extends State<AccountPage> {
       'description': "Notifications in one place",
       'icon': AppImages.notifications,
       'page': Routes.cart
+    },
+    {
+      "name": "Saved",
+      'description': "Searches, sellers, feed",
+      'icon': AppImages.favourite,
+      'page': Routes.saved
+    },
+    {
+      "name": "Liked",
+      'description': "Your liked items",
+      'icon': AppImages.favourite,
+      'page': Routes.liked
     },
   ];
   List<Map<String, dynamic>> accountList = [
@@ -127,9 +133,11 @@ class _AccountPageState extends State<AccountPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BlocBuilder<UserCubit, UserState>(
-                  buildWhen: (previous,current) => previous.user != current.user,
+                  buildWhen: (previous, current) =>
+                      previous.user != current.user,
                   builder: (context, state) {
-                    return state.status == UserStatus.success && state.user != null
+                    return state.status == UserStatus.success &&
+                            state.user != null
                         ? Row(
                             children: [
                               Container(
@@ -197,7 +205,9 @@ class _AccountPageState extends State<AccountPage> {
                       icon: shoppingList[index]['icon'],
                       name: shoppingList[index]['name'],
                       description: shoppingList[index]['description'],
-                      function: () => context.pushNamed(shoppingList[index]['page'],),
+                      function: () => context.pushNamed(
+                        shoppingList[index]['page'],
+                      ),
                     );
                   },
                   separatorBuilder: (context, index) =>
@@ -223,7 +233,9 @@ class _AccountPageState extends State<AccountPage> {
                       icon: shortcutList[index]['icon'],
                       name: shortcutList[index]['name'],
                       description: shortcutList[index]['description'],
-                      function: () {},
+                      function: () => context.pushNamed(
+                        shortcutList[index]['page'],
+                      ),
                     );
                   },
                   separatorBuilder: (context, index) =>
@@ -249,7 +261,9 @@ class _AccountPageState extends State<AccountPage> {
                       icon: accountList[index]['icon'],
                       name: accountList[index]['name'],
                       description: accountList[index]['description'],
-                      function: () {},
+                      function: () => context.pushNamed(
+                        accountList[index]['page'],
+                      ),
                     );
                   },
                   separatorBuilder: (context, index) =>
