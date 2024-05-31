@@ -18,7 +18,7 @@ class RatingModel {
   final String userId;
   final String sellerId;
   final String productId;
-  final String description;
+  final String review;
   final double rating;
   final DateTime createdAt;
   final UserModel user;
@@ -30,7 +30,7 @@ class RatingModel {
     required this.sellerId,
     required this.productId,
     required this.rating,
-    required this.description,
+    required this.review,
     required this.createdAt,
     required this.user,
     // required this.product,
@@ -42,7 +42,7 @@ class RatingModel {
     String? sellerId,
     String? productId,
     double? rating,
-    String? description,
+    String? review,
     DateTime? createdAt,
     UserModel? user,
     // ProductModel? product,
@@ -53,7 +53,7 @@ class RatingModel {
         sellerId: sellerId ?? this.sellerId,
         productId: productId ?? this.productId,
         rating: rating ?? this.rating,
-        description: description ?? this.description,
+        review: review ?? this.review,
         createdAt: createdAt ?? this.createdAt,
         user: user ?? this.user,
         // product: product ?? this.product,
@@ -65,7 +65,7 @@ class RatingModel {
         sellerId: json["sellerId"],
         productId: json["productId"],
         rating: json["rating"],
-        description: json["description"],
+        review: json["review"],
         createdAt: DateTime.parse(json["createdAt"]),
         user: UserModel.fromJson(json["user"]),
         // product: ProductModel.fromJson(json["product"]),
@@ -77,7 +77,7 @@ class RatingModel {
         "sellerId": sellerId,
         "productId": productId,
         "rating": rating,
-        "description": description,
+        "review": review,
         "createdAt": createdAt.toIso8601String(),
         // "product": product.toJson(),
       };
