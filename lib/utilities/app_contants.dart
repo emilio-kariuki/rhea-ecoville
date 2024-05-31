@@ -28,6 +28,8 @@ const String LOCAL_TABLE_PRODUCT_SAVED = "savedProducts";
 const String LOCAL_TABLE_WATCHED = "watchedTable";
 const String LOCAL_TABLE_WISHLIST = "wishlistTable";
 const String LOCAL_TABLE_FAVOURITE = "favouriteTable";
+const String LOCAL_TABLE_CART = "cartTable";
 
 
-const double NEARBY_RADIUS = 1000;
+
+const double NEARBY_RADIUS = 100000; // in cm
