@@ -1,6 +1,7 @@
 import 'package:ecoville/main.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/views/account/account_page.dart';
+import 'package:ecoville/views/account/favourite_product_page.dart';
 import 'package:ecoville/views/account/saved_products_page.dart';
 import 'package:ecoville/views/account/watchlist_product_page.dart';
 import 'package:ecoville/views/account/wishlist_products_page.dart';
@@ -163,6 +164,12 @@ final GoRouter appRouter = GoRouter(initialLocation: '/home', routes: [
                 builder: (context, state) {
                   return const WatchlistProductsPage();
                 }),
+                GoRoute(
+                path: 'liked',
+                name: Routes.liked,
+                builder: (context, state) {
+                  return const LikedProductsPage();
+                }),
           ]),
       GoRoute(
         path: '/inbox',
@@ -206,4 +213,6 @@ class Routes {
   static const String saved = '/saved';
   static const String wishlist = '/wishlist';
   static const String watchlist = '/watchlist';
+    static const String liked = '/liked';
+
 }
