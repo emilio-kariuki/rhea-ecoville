@@ -57,9 +57,9 @@ class LocationRepository extends LocationTemplate {
   Future<bool> isWithinRadiusFromCurrentLocation(
       {required Position end, required double radius}) async {
     try {
-      final currentLocation = await getCurrentLocation();
-      return Geolocator.distanceBetween(currentLocation.latitude,
-              currentLocation.longitude, end.latitude, end.longitude) <=
+      // final currentLocation = await getCurrentLocation();
+      return Geolocator.distanceBetween(36.37922730152364, 0.16847997445628804,
+              end.latitude, end.longitude) <=
           radius;
     } catch (e) {
       debugPrint(e.toString());

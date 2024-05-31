@@ -246,28 +246,38 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getNearbyProducts() async {
     try {
       var nearbyProducts = <ProductModel>[];
-      final userId = supabase.auth.currentUser!.id;
-      final response =
-          await supabase.from(TABLE_PRODUCT).select().neq('userId', userId);
-      response.map((e) => ProductModel.fromJson(e)).toList().map((e) async {
+      // final userId = supabase.auth.currentUser!.id;
+      final db = await _dbHelper.init();
+      final favourites = await _dbHelper.getLocalProducts(
+          db: db, table: LOCAL_TABLE_FAVOURITE);
+      final response = await supabase.from(TABLE_PRODUCT).select("ecoville_user(*), ecoville_product_category(*),*");
+      for (var e in response) {
+        final product = ProductModel.fromJson(e);
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
                 end: Position(
-                    longitude: e.address.lat,
-                    latitude: e.address.lon,
+                    longitude: product.address.lat,
+                    latitude: product.address.lon,
                     timestamp: DateTime.now(),
-                    accuracy: 0.0,
-                    altitude: 0.0,
-                    heading: 0.0,
-                    altitudeAccuracy: 0.0,
-                    headingAccuracy: 0.0,
-                    speed: 0.0,
-                    speedAccuracy: 0),
+                    accuracy: 1.0,
+                    altitude: 1.0,
+                    heading: 1.0,
+                    altitudeAccuracy: 1.0,
+                    headingAccuracy: 1.0,
+                    speed: 0,
+                    speedAccuracy: 1),
                 radius: NEARBY_RADIUS);
+
         if (isWithinRange) {
-          nearbyProducts.add(e);
+          nearbyProducts.add(product);
         }
-      });
+      }
+       if (favourites.isNotEmpty) {
+        nearbyProducts = nearbyProducts.map((e) {
+          final isFavourite = favourites.any((element) => element.id == e.id);
+          return e.copyWith(favourite: isFavourite);
+        }).toList();
+      }
       return nearbyProducts;
     } catch (error) {
       debugPrint(error.toString());

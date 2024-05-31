@@ -49,6 +49,7 @@ class HomePage extends StatelessWidget {
               CategoriesSection(),
               Gap(3.5 * SizeConfig.heightMultiplier),
               const RecentItems(),
+              const NearbyItems()
               // const WatchedItems(),
               // const YourDeals(),
               // const WatchedItems(),
@@ -57,6 +58,59 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class NearbyItems extends StatelessWidget {
+  const NearbyItems({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: SectionTitle(
+            title: 'Your Products Nearby',
+            onTap: () {},
+          ),
+        ),
+        Gap(2.5 * SizeConfig.heightMultiplier),
+        BlocBuilder<ProductCubit, ProductState>(
+          buildWhen: (previous, current) =>
+              previous.productsNearby != current.productsNearby,
+          builder: (context, state) {
+            return state.status == ProductStatus.loading
+                ? const ProductListShimmer()
+                : SizedBox(
+                    height: height * 0.32,
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => Padding(
+                        padding: EdgeInsets.only(
+                          left: index == 0 ? 10 : 0,
+                          right: index == (state.productsNearby.length - 1)
+                              ? 10
+                              : 0,
+                        ),
+                        child: ProductContainer(
+                          product: state.productsNearby[index],
+                        ),
+                      ),
+                      separatorBuilder: (context, index) =>
+                          Gap(1.3 * SizeConfig.widthMultiplier),
+                      itemCount: state.productsNearby.length,
+                    ),
+                  );
+          },
+        ),
+      ],
     );
   }
 }
