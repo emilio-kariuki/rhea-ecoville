@@ -9,14 +9,14 @@ class CategoriesSection extends StatelessWidget {
     {'name': "Categories", "icon": AppImages.category, "page": ""},
     {'name': "Deals", "icon": AppImages.flash, "page": ""},
     {'name': "Saved", "icon": AppImages.favourite, "page": '/account/saved'},
-    {'name': "Wishlist", "icon": AppImages.favourite, "page":'/account/wishlist'},
+    {'name': "Wishlist", "icon": AppImages.wishlist, "page":'/account/wishlist'},
     {'name': "Bids", "icon": AppImages.bids, "page": ""},
   ];
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 5 * SizeConfig.heightMultiplier,
+      height: 4 * SizeConfig.heightMultiplier,
       child: ListView.separated(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -34,22 +34,22 @@ class CategoriesSection extends StatelessWidget {
                 border: Border.all(color: black, width: 0.8),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1),
                 child: Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SvgPicture.asset(
                         categories[index]['icon'],
-                        height: 2.5 * SizeConfig.heightMultiplier,
-                        width: 2.5 * SizeConfig.heightMultiplier,
+                        height: 2 * SizeConfig.heightMultiplier,
+                        width: 2 * SizeConfig.heightMultiplier,
                       ),
                       Gap(1 * SizeConfig.widthMultiplier),
                       Text(
                         categories[index]['name'],
                         style: GoogleFonts.quicksand(
                           color: black,
-                          fontSize: 1.9 * SizeConfig.textMultiplier,
+                          fontSize: 1.6 * SizeConfig.textMultiplier,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

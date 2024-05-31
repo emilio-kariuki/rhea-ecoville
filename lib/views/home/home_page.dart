@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             children: [
               CategoriesSection(),
-              Gap(3.5 * SizeConfig.heightMultiplier),
+              Gap(3 * SizeConfig.heightMultiplier),
               const RecentItems(),
               const NearbyItems()
               // const WatchedItems(),
