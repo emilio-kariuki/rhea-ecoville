@@ -20,6 +20,14 @@ class AuthRepository extends AuthTemplate {
     if (user == null) {
       return false;
     }
+    await Posthog().identify(
+      userId: user.id,
+      userPropertiesSetOnce: {
+        'email': user.email!,
+        'name': user.userMetadata?['full_name'],
+        'avatar_url': user.userMetadata?['avatar_url'],
+      }
+    );
     return true;
   }
 
