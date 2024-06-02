@@ -17,7 +17,7 @@ class RatingsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height;
-    final width = MediaQuery.sizeOf(context).width;
+    // final width = MediaQuery.sizeOf(context).width;
     return Scaffold(
         backgroundColor: white,
         appBar: AppBar(

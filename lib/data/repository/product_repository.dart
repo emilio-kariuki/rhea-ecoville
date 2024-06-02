@@ -34,6 +34,7 @@ abstract class ProductTemplate {
 class ProductRepository extends ProductTemplate {
   final _dbHelper = service<DatabaseHelper>();
   final _locationProvider = service<LocationProvider>();
+  
   @override
   Future<bool> createProduct(
       {required ProductModel product, required bool allowBidding}) async {
@@ -250,7 +251,9 @@ class ProductRepository extends ProductTemplate {
       final db = await _dbHelper.init();
       final favourites = await _dbHelper.getLocalProducts(
           db: db, table: LOCAL_TABLE_FAVOURITE);
-      final response = await supabase.from(TABLE_PRODUCT).select("ecoville_user(*), ecoville_product_category(*),*");
+      final response = await supabase
+          .from(TABLE_PRODUCT)
+          .select("ecoville_user(*), ecoville_product_category(*),*");
       for (var e in response) {
         final product = ProductModel.fromJson(e);
         final isWithinRange =
@@ -272,7 +275,7 @@ class ProductRepository extends ProductTemplate {
           nearbyProducts.add(product);
         }
       }
-       if (favourites.isNotEmpty) {
+      if (favourites.isNotEmpty) {
         nearbyProducts = nearbyProducts.map((e) {
           final isFavourite = favourites.any((element) => element.id == e.id);
           return e.copyWith(favourite: isFavourite);
@@ -289,13 +292,15 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getSimilarProducts(
       {required String productId}) async {
     try {
+      
       final response =
           await supabase.from(TABLE_PRODUCT).select().eq('id', productId);
+          debugPrint("getting similar products");
       final product = ProductModel.fromJson(response.first);
       final category = product.categoryId;
       final similarResponse = await supabase
           .from(TABLE_PRODUCT)
-          .select()
+          .select('ecoville_product_category(*), ecoville_user(*),*')
           .eq('categoryId', category)
           .neq('id', productId)
           .ilike("name", '%${product.name}%')

@@ -68,7 +68,7 @@ class ProductContainer extends StatelessWidget {
                         ),
                         Gap(0.8 * SizeConfig.heightMultiplier),
                         Text(
-                          "\$${product.startingPrice}",
+                          "Kes${product.startingPrice}",
                           style: GoogleFonts.inter(
                               color: black,
                               fontSize: 2.2 * SizeConfig.textMultiplier,

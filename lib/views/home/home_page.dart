@@ -151,6 +151,7 @@ class RecentItems extends StatelessWidget {
                           right: index == (state.products.length - 1) ? 10 : 0,
                         ),
                         child: ProductContainer(
+                          key: UniqueKey(),
                           product: state.products[index],
                         ),
                       ),
@@ -286,3 +287,5 @@ class YourDeals extends StatelessWidget {
     );
   }
 }
+
+

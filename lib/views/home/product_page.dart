@@ -412,7 +412,7 @@ class SellerSection extends StatelessWidget {
                   "Joined ${state.product!.createdAt.toString().timeAgo()}",
                   style: GoogleFonts.inter(
                       color: black,
-                      fontSize: 2 * SizeConfig.textMultiplier,
+                      fontSize: 1.8 * SizeConfig.textMultiplier,
                       fontWeight: FontWeight.w500,
                       height: 1.2),
                 );
@@ -434,7 +434,7 @@ class SellerSection extends StatelessWidget {
               "Usually responds within 24 hours",
               style: GoogleFonts.inter(
                   color: black,
-                  fontSize: 2 * SizeConfig.textMultiplier,
+                  fontSize: 1.8 * SizeConfig.textMultiplier,
                   fontWeight: FontWeight.w500,
                   height: 1.2),
             ),

@@ -67,7 +67,7 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           lazy: false,
-          create: (context) => ProductCubit()..getProducts()..getNearbyProducts(),
+          create: (context) => ProductCubit()..getProducts()..getNearbyProducts()..getSimilarProducts(productId: "adfasdf-asdfasd-asdfasdf"),
         ),
          BlocProvider(
           lazy: false,
