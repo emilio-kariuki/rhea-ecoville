@@ -24,6 +24,7 @@ class ProductModel {
   final bool favourite;
   final bool wishlist;
   final bool saved;
+  final int quantity;
   final double startingPrice;
   final double currentPrice;
   final DateTime startBiddingTime;
@@ -55,6 +56,7 @@ class ProductModel {
     this.user,
     this.category,
     required this.condition,
+    this.quantity = 1,
   });
 
   ProductModel copyWith({
@@ -78,6 +80,7 @@ class ProductModel {
     UserModel? user,
     Category? category,
     String? condition,
+    int? quantity,
   }) =>
       ProductModel(
         id: id ?? this.id,
@@ -100,6 +103,7 @@ class ProductModel {
         user: user ?? this.user,
         category: category ?? this.category,
         condition: condition ?? this.category!.name,
+        quantity: quantity ?? this.quantity,
       );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -123,6 +127,7 @@ class ProductModel {
         user: UserModel.fromJson(json["ecoville_user"]),
         category: Category.fromJson(json["ecoville_product_category"]),
         condition: json["condition"],
+        quantity: json['quantity'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -146,6 +151,7 @@ class ProductModel {
         "ecoville_user": user!.toJson(),
         "ecoville_product_category": category!.toJson(),
         "condition": condition,
+        "quantity": quantity,
       };
 }
 
