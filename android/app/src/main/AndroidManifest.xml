@@ -56,8 +56,7 @@
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
-              />
-             
+              />             
             <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -71,7 +70,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
         <service android:name="com.google.firebase.messaging.FirebaseMessagingService" android:exported="false" android:directBootAware="true">
             <intent-filter android:priority="-500">
@@ -112,6 +110,10 @@
         <meta-data
             android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/provider_paths"/>
+        <meta-data android:name="com.posthog.posthog.API_KEY" android:value="phc_dzenEWvS3a24U3HQnwYkMyp8YjgCUEF3Q1030jPK3ln" />
+        <meta-data android:name="com.posthog.posthog.POSTHOG_HOST" android:value="https://us.i.posthog.com" />  <!-- usually 'https://us.i.posthog.com' or 'https://eu.i.posthog.com' -->
+        <meta-data android:name="com.posthog.posthog.TRACK_APPLICATION_LIFECYCLE_EVENTS" android:value="true" />
+        <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
         </provider>
     </application>
 </manifest>

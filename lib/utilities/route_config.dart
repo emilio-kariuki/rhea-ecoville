@@ -16,9 +16,14 @@ import 'package:ecoville/views/seller/rating_items.dart';
 import 'package:ecoville/views/seller/sellers_items.dart';
 import 'package:ecoville/views/seller/selling_page.dart';
 
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final GoRouter appRouter = GoRouter(initialLocation: '/home', routes: [
+final GoRouter appRouter = GoRouter(
+    observers: [
+    PosthogObserver(),
+  ],
+  initialLocation: '/home', routes: [
   GoRoute(
     path: '/checker',
     pageBuilder: (context, state) => CustomTransitionPage<void>(

@@ -126,6 +126,11 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - PostHog (3.4.0)
+  - posthog_flutter (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - PostHog (~> 3.0)
   - PromisesObjC (2.4.0)
   - SDWebImage (5.19.2):
     - SDWebImage/Core (= 5.19.2)
@@ -159,6 +164,7 @@ DEPENDENCIES:
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - posthog_flutter (from `.symlinks/plugins/posthog_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
@@ -181,6 +187,7 @@ SPEC REPOS:
     - libwebp
     - Mantle
     - nanopb
+    - PostHog
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
@@ -210,6 +217,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  posthog_flutter:
+    :path: ".symlinks/plugins/posthog_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -248,6 +257,8 @@ SPEC CHECKSUMS:
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  PostHog: e2caad3a1cec69da9a82eb7347e6045128b5a484
+  posthog_flutter: e80defebf021b13375b351c838c9b87d769d7546
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: dfe95b2466a9823cf9f0c6d01217c06550d7b29a
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
@@ -259,4 +270,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
 
-COCOAPODS: 1.15.0
+COCOAPODS: 1.15.2
