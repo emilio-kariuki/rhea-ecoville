@@ -32,3 +32,4 @@ export 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
     hide IndexedWidgetBuilder;
 export 'package:uuid/uuid.dart';
 export 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+export 'package:posthog_flutter/posthog_flutter.dart';
