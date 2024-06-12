@@ -26,5 +26,10 @@ class UserProvider extends UserTemplate {
     // TODO: implement sendUserInteractions
     throw UnimplementedError();
   }
+  
+  @override
+  Future<UserModel> getUserById({required String id}) {
+    return _userRepository.getUserById(id: id);
+  }
 
 }

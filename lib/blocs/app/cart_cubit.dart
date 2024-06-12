@@ -7,15 +7,61 @@ class CartCubit extends Cubit<CartState> {
   final _cartProvider = service<CartProvider>();
   CartCubit() : super(CartState());
 
-  // Future<void> addItemToCart({required LocalProductModel product}) async {
-  //   emit(state.copyWith(status: CartStatus.initial));
-  //   try {
-      
-  //     emit(state.copyWith(status: CartStatus.success, cartItems: cartItems));
-  //   } catch (e) {
-  //     emit(state.copyWith(status: CartStatus.error, message: e.toString()));
-  //   }
-  // }
+  Future<void> addItemToCart({required LocalProductModel product}) async {
+    emit(state.copyWith(status: CartStatus.initial));
+    try {
+      final result = await _cartProvider.addToCart(product: product);
+      if (result) {
+        emit(state.copyWith(status: CartStatus.success));
+      } else {
+        emit(state.copyWith(
+            status: CartStatus.error, message: 'Failed to add item to cart'));
+      }
+    } catch (e) {
+      emit(state.copyWith(status: CartStatus.error, message: e.toString()));
+    }
+  }
+
+  Future<void> getCartItems() async {
+    emit(state.copyWith(status: CartStatus.loading));
+    try {
+      final cartItems = await _cartProvider.getCartProducts();
+      emit(state.copyWith(status: CartStatus.success, cartItems: cartItems));
+    } catch (e) {
+      emit(state.copyWith(status: CartStatus.error, message: e.toString()));
+    }
+  }
+
+  Future<void> removeItemFromCart({required String id}) async {
+    emit(state.copyWith(status: CartStatus.initial));
+    try {
+      final result = await _cartProvider.removeFromCart(id: id);
+      if (result) {
+        emit(state.copyWith(status: CartStatus.success));
+      } else {
+        emit(state.copyWith(
+            status: CartStatus.error,
+            message: 'Failed to remove item from cart'));
+      }
+    } catch (e) {
+      emit(state.copyWith(status: CartStatus.error, message: e.toString()));
+    }
+  }
+
+  Future<void> clearCart() async {
+    emit(state.copyWith(status: CartStatus.initial));
+    try {
+      final result = await _cartProvider.clearCart();
+      if (result) {
+        emit(state.copyWith(status: CartStatus.success));
+      } else {
+        emit(state.copyWith(
+            status: CartStatus.error, message: 'Failed to clear cart'));
+      }
+    } catch (e) {
+      emit(state.copyWith(status: CartStatus.error, message: e.toString()));
+    }
+  }
 }
 
 enum CartStatus { initial, loading, success, error }

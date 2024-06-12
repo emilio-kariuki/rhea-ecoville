@@ -1,7 +1,7 @@
 import 'package:ecoville/blocs/app/auth_cubit.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/views/authentication/widgets/terms_of_service.dart';
+import 'package:ecoville/screens/authentication/widgets/terms_of_service.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});

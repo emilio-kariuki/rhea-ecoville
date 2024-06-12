@@ -24,6 +24,7 @@ class ProductModel {
   final bool favourite;
   final bool wishlist;
   final bool saved;
+  final bool cart;
   final int quantity;
   final double startingPrice;
   final double currentPrice;
@@ -47,6 +48,7 @@ class ProductModel {
     required this.favourite,
     required this.wishlist,
     required this.saved,
+    required this.cart,
     required this.startingPrice,
     required this.currentPrice,
     required this.startBiddingTime,
@@ -71,6 +73,7 @@ class ProductModel {
     bool? favourite,
     bool? wishlist,
     bool? saved,
+    bool? cart,
     double? startingPrice,
     double? currentPrice,
     DateTime? startBiddingTime,
@@ -94,6 +97,7 @@ class ProductModel {
         favourite: favourite ?? this.favourite,
         wishlist: wishlist ?? this.wishlist,
         saved: saved ?? this.saved,
+        cart: cart ?? this.cart,
         startingPrice: startingPrice ?? this.startingPrice,
         currentPrice: currentPrice ?? this.currentPrice,
         startBiddingTime: startBiddingTime ?? this.startBiddingTime,
@@ -118,6 +122,7 @@ class ProductModel {
         favourite: json['favourite'],
         wishlist: json['wishlist'],
         saved: json['saved'],
+        cart: json['cart'],
         startingPrice: json["startingPrice"],
         currentPrice: json["currentPrice"],
         startBiddingTime: DateTime.parse(json["startBiddingTime"]),
@@ -142,6 +147,7 @@ class ProductModel {
         "favourite": favourite,
         "wishlist": wishlist,
         "saved": saved,
+        "cart": cart,
         "startingPrice": startingPrice,
         "currentPrice": currentPrice,
         "startBiddingTime": startBiddingTime.toIso8601String(),

@@ -6,6 +6,7 @@ import 'package:ecoville/utilities/packages.dart';
 abstract class UserTemplate {
   Future<bool> createUser({required UserModel user});
   Future<UserModel> getUser();
+  Future<UserModel> getUserById({required String id});
   Future<UserModel> updateUser({required UserModel user});
   Future<bool> sendUserInteractions(
       {required String userId,
@@ -89,5 +90,18 @@ class UserRepository extends UserTemplate {
       required String productId}) {
     // TODO: implement sendUserInteractions
     throw UnimplementedError();
+  }
+  
+  @override
+  Future<UserModel> getUserById({required String id}) async{
+    debugPrint('Getting user by id');
+    try{
+      final response = await supabase.from(TABLE_USERS).select().eq('id', id);
+      final user = UserModel.fromJson(response.first);
+      return user;
+    }catch(e){
+      debugPrint(e.toString());
+      throw Exception('Error getting user by id');
+    }
   }
 }

@@ -1,6 +1,5 @@
 import 'package:ecoville/data/repository/cart_repository.dart';
 import 'package:ecoville/models/local_product_model.dart';
-import 'package:ecoville/models/rating_model.dart';
 
 class CartProvider extends CartTemplate {
   final CartRepository _cartRepository;

@@ -1,4 +1,4 @@
-import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
+import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -25,11 +25,37 @@ class InboxPage extends StatelessWidget {
         actions: [
           IconContainer(icon: AppImages.search, function: () {}),
           Gap(1 * SizeConfig.widthMultiplier),
-          IconContainer(
-              icon: AppImages.cart,
-              function: () =>
-                  context.read<NavigationCubit>().changePage(page: 1)),
-          Gap(1 * SizeConfig.widthMultiplier),
+           BlocBuilder<LocalCubit, LocalState>(
+                builder: (context, state) {
+                  return Stack(
+                    children: [
+                      IconContainer(
+                          icon: AppImages.cart,
+                          function: () => context.pushNamed(Routes.cart)),
+                      if (state.cartItems.isNotEmpty)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              color: Color(0xffF4521E),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              state.cartItems.length.toString(),
+                              style: GoogleFonts.inter(
+                                color: darkGrey,
+                                fontSize: 1.3 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
           IconContainer(
               icon: AppImages.more, function: () => context.push(Routes.cart)),
           Gap(1 * SizeConfig.widthMultiplier),

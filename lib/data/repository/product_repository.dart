@@ -34,7 +34,7 @@ abstract class ProductTemplate {
 class ProductRepository extends ProductTemplate {
   final _dbHelper = service<DatabaseHelper>();
   final _locationProvider = service<LocationProvider>();
-  
+
   @override
   Future<bool> createProduct(
       {required ProductModel product, required bool allowBidding}) async {
@@ -82,6 +82,8 @@ class ProductRepository extends ProductTemplate {
           db: db, table: LOCAL_TABLE_PRODUCT_SAVED);
       final favourite = await _dbHelper.getLocalProducts(
           db: db, table: LOCAL_TABLE_FAVOURITE);
+      final cart =
+          await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_CART);
       final response = await supabase
           .from(TABLE_PRODUCT)
           .select("ecoville_user(*), *, ecoville_product_category(*)")
@@ -96,8 +98,15 @@ class ProductRepository extends ProductTemplate {
       final isFavourite = favourite.isEmpty
           ? false
           : favourite.any((element) => element.id == product.id);
+
+      final isCart = cart.isEmpty
+          ? false
+          : cart.any((element) => element.id == product.id);
       product = product.copyWith(
-          wishlist: isWishlist, saved: isSaved, favourite: isFavourite);
+          wishlist: isWishlist,
+          saved: isSaved,
+          favourite: isFavourite,
+          cart: isCart);
       return product;
     } catch (e) {
       debugPrint(e.toString());
@@ -116,7 +125,6 @@ class ProductRepository extends ProductTemplate {
           .select("ecoville_user(*), *, ecoville_product_category(*)")
           .limit(10);
       var products = response.map((e) => ProductModel.fromJson(e)).toList();
-      debugPrint("network products: $products");
       if (favourites.isNotEmpty) {
         products = products.map((e) {
           final isFavourite = favourites.any((element) => element.id == e.id);
@@ -292,10 +300,9 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getSimilarProducts(
       {required String productId}) async {
     try {
-      
       final response =
           await supabase.from(TABLE_PRODUCT).select().eq('id', productId);
-          debugPrint("getting similar products");
+      debugPrint("getting similar products");
       final product = ProductModel.fromJson(response.first);
       final category = product.categoryId;
       final similarResponse = await supabase

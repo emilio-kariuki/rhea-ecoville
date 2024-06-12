@@ -27,6 +27,16 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
+  Future<void> getUserById({required String id}) async {
+    emit(state.copyWith(status: UserStatus.loading));
+    try {
+      final user = await _userProvider.getUserById(id: id);
+      emit(state.copyWith(user: user, status: UserStatus.success));
+    } catch (e) {
+      emit(state.copyWith(status: UserStatus.success, message: e.toString()));
+    }
+  }
+
 }
 
 enum UserStatus { initial, loading, success }

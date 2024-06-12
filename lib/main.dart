@@ -1,3 +1,4 @@
+import 'package:ecoville/blocs/app/address_cubit.dart';
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
@@ -7,8 +8,8 @@ import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/views/authentication/welcome_page.dart';
-import 'package:ecoville/views/home/home_page.dart';
+import 'package:ecoville/screens/authentication/welcome_page.dart';
+import 'package:ecoville/screens/home/home_page.dart';
 import 'package:flutter/services.dart';
 
 @pragma('vm:entry-point')
@@ -67,15 +68,22 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           lazy: false,
-          create: (context) => ProductCubit()..getProducts()..getNearbyProducts()..getSimilarProducts(productId: "adfasdf-asdfasd-asdfasdf"),
+          create: (context) => ProductCubit()
+            ..getProducts()
+            ..getNearbyProducts()
+            ..getSimilarProducts(productId: "adfasdf-asdfasd-asdfasdf"),
         ),
-         BlocProvider(
+        BlocProvider(
           lazy: false,
           create: (context) => UserCubit()..getUser(),
         ),
-         BlocProvider(
+        BlocProvider(
           lazy: false,
-          create: (context) => LocalCubit(),
+          create: (context) => LocalCubit()..getCartProducts(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => AddressCubit()..getAddresses(),
         ),
       ],
       child: LayoutBuilder(builder: (context, constraints) {

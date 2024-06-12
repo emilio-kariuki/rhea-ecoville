@@ -10,8 +10,8 @@ import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/views/home/widgets/product_container.dart';
-import 'package:ecoville/views/home/widgets/product_shimmer.dart';
+import 'package:ecoville/screens/home/widgets/product_container.dart';
+import 'package:ecoville/screens/home/widgets/product_shimmer.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   ProductDetailsPage({super.key, required this.id, required this.title});
@@ -171,19 +171,55 @@ class ProductDetailsPage extends StatelessWidget {
                                     ),
                                     function: () {}),
                                 Gap(1 * SizeConfig.heightMultiplier),
-                                BorderButton(
-                                    height: 6 * SizeConfig.heightMultiplier,
-                                    borderRadius: 30,
-                                    text: Text(
-                                      "Add to Cart",
-                                      style: GoogleFonts.inter(
-                                          color: green,
-                                          fontSize:
-                                              1.8 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 0.1),
-                                    ),
-                                    function: () {}),
+                                BlocConsumer<LocalCubit, LocalState>(
+                                  listener: (context, state) {
+                                    if (state.status == LocalStatus.success) {
+                                      context.read<ProductCubit>().getProduct(id: id);
+                                    }
+                                  },
+                                  builder: (context, localState) {
+                                    return BlocBuilder<ProductCubit,
+                                        ProductState>(
+                                      builder: (context, state) {
+                                        return BorderButton(
+                                            height:
+                                                6 * SizeConfig.heightMultiplier,
+                                            borderRadius: 30,
+                                            text: Text(
+                                              state.product!.cart
+                                                  ? "View in Cart"
+                                                  : "Add to Cart",
+                                              style: GoogleFonts.inter(
+                                                  color: green,
+                                                  fontSize: 1.8 *
+                                                      SizeConfig.textMultiplier,
+                                                  fontWeight: FontWeight.w600,
+                                                  letterSpacing: 0.1),
+                                            ),
+                                            function: () => state.product!.cart
+                                                ? context
+                                                    .pushNamed(Routes.cart)
+                                                : context
+                                                    .read<LocalCubit>()
+                                                    .addProductToCart(
+                                                        product: LocalProductModel(
+                                                            id: state
+                                                                .product!.id,
+                                                            name: state
+                                                                .product!.name,
+                                                            image: state
+                                                                .product!
+                                                                .image[0],
+                                                            userId: state
+                                                                .product!
+                                                                .userId,
+                                                            startingPrice: state
+                                                                .product!
+                                                                .startingPrice)));
+                                      },
+                                    );
+                                  },
+                                ),
                                 Gap(1 * SizeConfig.heightMultiplier),
                                 BlocBuilder<ProductCubit, ProductState>(
                                   buildWhen: (previous, current) =>
@@ -874,9 +910,42 @@ class ProductAppBar extends StatelessWidget {
           function: () => context.read<NavigationCubit>().changePage(page: 1),
         ),
         Gap(1 * SizeConfig.widthMultiplier),
-        IconContainer(
-            icon: AppImages.cart,
-            function: () => context.pushNamed(Routes.cart)),
+         BlocConsumer<LocalCubit, LocalState>(
+          listener: (context, state) {
+                if (state.status == LocalStatus.success) {
+                  context.read<LocalCubit>().getCartProducts();
+                }
+              },
+                builder: (context, state) {
+                  return Stack(
+                    children: [
+                      IconContainer(
+                          icon: AppImages.cart,
+                          function: () => context.pushNamed(Routes.cart)),
+                      if (state.cartItems.isNotEmpty)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              color: Color(0xffF4521E),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              state.cartItems.length.toString(),
+                              style: GoogleFonts.inter(
+                                color: darkGrey,
+                                fontSize: 1.3 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
         Gap(1 * SizeConfig.widthMultiplier),
         BlocProvider(
           create: (context) => LocalCubit(),

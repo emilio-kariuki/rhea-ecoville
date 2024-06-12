@@ -1,4 +1,5 @@
 import 'package:ecoville/data/local/local_database.dart';
+import 'package:ecoville/data/provider/address_provider.dart';
 import 'package:ecoville/data/provider/app_provider.dart';
 import 'package:ecoville/data/provider/auth_provider.dart';
 import 'package:ecoville/data/provider/bid_provider.dart';
@@ -8,6 +9,7 @@ import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/provider/rating_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
+import 'package:ecoville/data/repository/address_repository.dart';
 import 'package:ecoville/data/repository/app_repository.dart';
 import 'package:ecoville/data/repository/auth_repository.dart';
 import 'package:ecoville/data/repository/bid_repository.dart';
@@ -51,5 +53,9 @@ void initLocator() {
     ..registerLazySingleton<RatingRepository>(() => RatingRepository())
     ..registerLazySingleton<CartProvider>(
         () => CartProvider(cartRepository: service()))
-    ..registerLazySingleton<CartRepository>(() => CartRepository());
+    ..registerLazySingleton<CartRepository>(() => CartRepository())
+    ..registerLazySingleton<AddressProvider>(
+        () => AddressProvider(addressRepository: service()))
+    ..registerLazySingleton<AddressRepository>(() => AddressRepository())
+    ;
 }

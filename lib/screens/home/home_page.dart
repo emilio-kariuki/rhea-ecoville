@@ -1,10 +1,11 @@
+import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/views/home/widgets/categories_section.dart';
-import 'package:ecoville/views/home/widgets/product_container.dart';
-import 'package:ecoville/views/home/widgets/product_list_shimmer.dart';
+import 'package:ecoville/screens/home/widgets/categories_section.dart';
+import 'package:ecoville/screens/home/widgets/product_container.dart';
+import 'package:ecoville/screens/home/widgets/product_list_shimmer.dart';
 
 import 'widgets/page_search.dart';
 import 'widgets/section_title.dart';
@@ -34,9 +35,37 @@ class HomePage extends StatelessWidget {
                     context.read<NavigationCubit>().changePage(page: 3),
               ),
               Gap(1 * SizeConfig.widthMultiplier),
-              IconContainer(
-                  icon: AppImages.cart,
-                  function: () => context.pushNamed(Routes.cart)),
+              BlocBuilder<LocalCubit, LocalState>(
+                builder: (context, state) {
+                  return Stack(
+                    children: [
+                      IconContainer(
+                          icon: AppImages.cart,
+                          function: () => context.pushNamed(Routes.cart)),
+                      if (state.cartItems.isNotEmpty)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              color: Color(0xffF4521E),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              state.cartItems.length.toString(),
+                              style: GoogleFonts.inter(
+                                color: darkGrey,
+                                fontSize: 1.3 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
           bottom: const PreferredSize(
@@ -287,5 +316,3 @@ class YourDeals extends StatelessWidget {
     );
   }
 }
-
-

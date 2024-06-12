@@ -78,6 +78,8 @@ class _HomeState extends State<Home> {
                   child: SvgPicture.asset(
                     itemz['icon'] as String,
                     color: isActive ? secondary : darkGrey,
+                    height: 2.5 * SizeConfig.heightMultiplier,
+                    width: 2.5 * SizeConfig.widthMultiplier
                   ),
                 ),
                 const Gap(3),
@@ -86,7 +88,7 @@ class _HomeState extends State<Home> {
                   style: GoogleFonts.inter(
                     color: isActive ? secondary : darkGrey,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontSize: 1.6 * SizeConfig.textMultiplier,
                   ),
                 )
               ],

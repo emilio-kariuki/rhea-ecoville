@@ -29,6 +29,9 @@ const String LOCAL_TABLE_WATCHED = "watchedTable";
 const String LOCAL_TABLE_WISHLIST = "wishlistTable";
 const String LOCAL_TABLE_FAVOURITE = "favouriteTable";
 const String LOCAL_TABLE_CART = "cartTable";
+const String LOCAL_TABLE_PRODUCT = "productTable";
+const String LOCAL_TABLE_ADDRESS = "addressTable";
+
 
 
 

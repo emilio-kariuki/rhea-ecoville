@@ -2,7 +2,7 @@ import 'package:ecoville/blocs/app/rating_cubit.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/views/home/product_page.dart';
+import 'package:ecoville/screens/home/product_page.dart';
 
 class RatingsItem extends StatelessWidget {
   const RatingsItem(

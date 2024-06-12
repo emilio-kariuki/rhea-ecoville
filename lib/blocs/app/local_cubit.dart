@@ -1,3 +1,4 @@
+import 'package:ecoville/data/provider/cart_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/local_product_model.dart';
@@ -5,6 +6,8 @@ import 'package:ecoville/utilities/packages.dart';
 
 class LocalCubit extends Cubit<LocalState> {
   final _productProvider = service<ProductProvider>();
+  final _cartProvider = service<CartProvider>();
+
   LocalCubit() : super(LocalState());
 
   Future<void> saveProduct({required LocalProductModel product}) async {
@@ -141,6 +144,23 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
+  Future<void> getCartProducts() async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      final cartItems = await _cartProvider.getCartProducts();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        cartItems: cartItems,
+        message: "Cart items fetched successfully",
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
   Future<void> unLikeProduct({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
@@ -208,11 +228,41 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
+  Future<void> addProductToCart({required LocalProductModel product}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _cartProvider.addToCart(product: product);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
   Future<void> removeProductFromWishlist({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
       await _productProvider.unwatchProduct(id: id);
       await _productProvider.removeFromWishlist(id: id);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> removeProductFromCart({required String id}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _cartProvider.removeFromCart(id: id);
       emit(state.copyWith(
         status: LocalStatus.success,
       ));
@@ -233,6 +283,7 @@ class LocalState {
   final List<LocalProductModel> watchedProducts;
   final List<LocalProductModel> wishlistProducts;
   final List<LocalProductModel> likedProducts;
+  final List<LocalProductModel> cartItems;
   final String message;
 
   LocalState({
@@ -241,6 +292,7 @@ class LocalState {
     this.watchedProducts = const [],
     this.wishlistProducts = const [],
     this.likedProducts = const [],
+    this.cartItems = const [],
     this.message = '',
   });
 
@@ -250,6 +302,7 @@ class LocalState {
     List<LocalProductModel>? watchedProducts,
     List<LocalProductModel>? wishlistProducts,
     List<LocalProductModel>? likedProducts,
+    List<LocalProductModel>? cartItems,
     String? message,
   }) {
     return LocalState(
@@ -258,6 +311,7 @@ class LocalState {
       watchedProducts: watchedProducts ?? this.watchedProducts,
       wishlistProducts: wishlistProducts ?? this.wishlistProducts,
       likedProducts: likedProducts ?? this.likedProducts,
+      cartItems: cartItems ?? this.cartItems,
       message: message ?? this.message,
     );
   }
