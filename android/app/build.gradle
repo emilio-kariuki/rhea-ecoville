@@ -50,8 +50,8 @@ android {
         applicationId "com.ecoville.eville"
         minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
-        versionCode 5
-        versionName "0.2.2"
+        versionCode 6
+        versionName "0.2.3"
     }
 
     signingConfigs {

@@ -123,6 +123,7 @@ class ProductRepository extends ProductTemplate {
       final response = await supabase
           .from(TABLE_PRODUCT)
           .select("ecoville_user(*), *, ecoville_product_category(*)")
+          .eq('sold', false)
           .limit(10);
       var products = response.map((e) => ProductModel.fromJson(e)).toList();
       if (favourites.isNotEmpty) {

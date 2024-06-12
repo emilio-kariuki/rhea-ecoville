@@ -4,25 +4,26 @@ import 'package:ecoville/models/address_model.dart';
 import 'package:ecoville/shared/input_field.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/utilities/utilities.dart';
+import 'package:flutter/material.dart';
 
 class EditAddressPage extends StatelessWidget {
   EditAddressPage({super.key, required this.id});
 
   final String id;
 
-  final _nameController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
 
-  final _phoneController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
 
-  final _addressLine1Controller = TextEditingController();
+  TextEditingController _addressLine1Controller = TextEditingController();
 
-  final _addressLine2Controller = TextEditingController();
+  TextEditingController _addressLine2Controller = TextEditingController();
 
-  final _cityController = TextEditingController();
+  TextEditingController _cityController = TextEditingController();
 
-  final _countryController = TextEditingController();
+  TextEditingController _countryController = TextEditingController();
 
-  final _postalCodeController = TextEditingController();
+  TextEditingController _postalCodeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -32,8 +33,6 @@ class EditAddressPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AddressCubit, AddressState>(
       bloc: context.read<AddressCubit>()..getAddressById(id: id),
-      listenWhen: (previous, current) => current.addresses != previous.addresses,
-      buildWhen: (previous, current) => current.addresses != previous.addresses,
       listener: (context, state) {
         if (state.status == AddressStatus.success) {
           _nameController.text = state.selectedAddress!.name;

@@ -51,7 +51,7 @@ class ProductContainer extends StatelessWidget {
                     children: [
                       NetworkImageContainer(
                         imageUrl: product.image[0],
-                        height: width * 0.4,
+                        height: width * 0.37,
                         borderRadius: BorderRadius.circular(15),
                         width: width,
                       ),
