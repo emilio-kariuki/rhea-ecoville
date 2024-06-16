@@ -1,5 +1,6 @@
 import { sendNotification } from "../utilities/send_notification.ts";
 import { supabase } from "../utilities/supabase.ts";
+import { updateNotification } from "../utilities/update_notification.ts";
 
 Deno.serve(async (req) => {
   const { products, user } = await req.json();
@@ -9,7 +10,7 @@ Deno.serve(async (req) => {
     }).eq("id", product);
   }
 
-  const {data} = await supabase.from("ecoville_user").select().eq("id", user);
+  const { data } = await supabase.from("ecoville_user").select().eq("id", user);
   console.log("userData ", data[0]);
   const token = data[0].token;
   console.log("token ", token);
@@ -21,6 +22,12 @@ Deno.serve(async (req) => {
       token: token,
     },
   );
+  await updateNotification({
+    title: "You have purchased a product!",
+    content:
+      "Congratulations! You have successfully purchased a product. Thank you for shopping with us!",
+    userId: user,
+  });
   return new Response(
     JSON.stringify(
       { message: "Products have been purchased." },

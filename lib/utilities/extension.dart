@@ -28,16 +28,16 @@ extension StringExtension on String {
 
     if (difference.inDays >= 30) {
       final months = (difference.inDays / 30).floor();
-      return '$months ${months == 1 ? 'month' : 'months'} ago';
+      return '$months ${months == 1 ? 'mon' : 'mons'} ago';
     } else if (difference.inDays >= 7) {
       final weeks = (difference.inDays / 7).floor();
       return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
     } else if (difference.inDays > 0) {
       return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hr' : 'hrs'} ago';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'min' : 'mins'} ago';
     } else {
       return 'just now';
     }

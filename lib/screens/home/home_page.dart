@@ -11,15 +11,25 @@ import 'package:ecoville/screens/home/widgets/product_list_shimmer.dart';
 import 'widgets/page_search.dart';
 import 'widgets/section_title.dart';
 
-class HomePage extends StatelessWidget {
-   HomePage({super.key});
+class HomePage extends StatefulWidget {
+  HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: white,
       appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -33,6 +43,11 @@ class HomePage extends StatelessWidget {
                 width: 4 * SizeConfig.heightMultiplier,
               ),
               const Spacer(),
+              IconContainer(
+                icon: AppImages.messages,
+                function: () => context.pushNamed(Routes.messages),
+              ),
+              Gap(1 * SizeConfig.widthMultiplier),
               IconContainer(
                 icon: AppImages.notifications,
                 function: () =>
@@ -79,12 +94,12 @@ class HomePage extends StatelessWidget {
         backgroundColor: white,
         color: green,
         onRefresh: () async {
-            context
-              ..read<ProductCubit>().getProducts()
-              ..read<ProductCubit>().getNearbyProducts()
-              ..read<LocalCubit>().getWatchedProduct();
+          context
+            ..read<ProductCubit>().getProducts()
+            ..read<ProductCubit>().getNearbyProducts()
+            ..read<LocalCubit>().getWatchedProduct();
           return Future.delayed(const Duration(seconds: 1));
-          },
+        },
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Padding(

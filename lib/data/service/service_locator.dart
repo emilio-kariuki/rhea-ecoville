@@ -5,6 +5,7 @@ import 'package:ecoville/data/provider/auth_provider.dart';
 import 'package:ecoville/data/provider/bid_provider.dart';
 import 'package:ecoville/data/provider/cart_provider.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
+import 'package:ecoville/data/provider/message_provider.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/payment_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
@@ -16,6 +17,7 @@ import 'package:ecoville/data/repository/auth_repository.dart';
 import 'package:ecoville/data/repository/bid_repository.dart';
 import 'package:ecoville/data/repository/cart_repository.dart';
 import 'package:ecoville/data/repository/location_repository.dart';
+import 'package:ecoville/data/repository/message_repository.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/repository/payment_repository.dart';
 import 'package:ecoville/data/repository/product_repository.dart';
@@ -62,5 +64,8 @@ void initLocator() {
     ..registerLazySingleton<PaymentProvider>(
         () => PaymentProvider(paymentRepository: service()))
     ..registerLazySingleton<PaymentRepository>(() => PaymentRepository())
+    ..registerLazySingleton<MessageProvider>(
+        () => MessageProvider(messageRepository: service()))
+    ..registerLazySingleton<MessageRepository>(() => MessageRepository())
     ;
 }

@@ -1,4 +1,5 @@
 import { FcmClient } from "https://deno.land/x/firebase_messaging@1.0.4/mod.ts";
+import { updateNotification } from "./update_notification.ts";
 const serviceAccount = {
   "type": "service_account",
   "project_id": "ecoville-eville",
@@ -34,6 +35,7 @@ export async function sendNotification({
   };
   try {
     const message = await fcmClient.sendNotification(notification);
+    
     console.log("notification message ", message);
   } catch (error) {
     console.error(error);

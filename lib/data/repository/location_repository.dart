@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'dart:math';
 

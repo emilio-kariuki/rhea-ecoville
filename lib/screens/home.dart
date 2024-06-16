@@ -1,3 +1,4 @@
+import 'package:ecoville/blocs/app/notification_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:flutter/services.dart';
@@ -11,13 +12,41 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  @override
-  void initState() {
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {
+    supabase
+        ..channel('public:$TABLE_NOTIFICATION')
+        .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: TABLE_NOTIFICATION,
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'userId',
+              value: supabase.auth.currentUser!.id,
+            ),
+            callback: (payload) {
+              debugPrint('Change received: ${payload.toString()}');
+              context.read<NotificationCubit>().getAllNotifications();
+            })
+        .subscribe()
+        ..channel('public:$TABLE_MESSAGE')
+        .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: TABLE_MESSAGE,
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'userId',
+              value: supabase.auth.currentUser!.id,
+            ),
+            callback: (payload) {
+              debugPrint('Change received: ${payload.toString()}');
+              
+            })
+        .subscribe();
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: getFooter(context),
@@ -75,12 +104,10 @@ class _HomeState extends State<Home> {
                           ? secondary.withOpacity(0.2)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(20)),
-                  child: SvgPicture.asset(
-                    itemz['icon'] as String,
-                    color: isActive ? secondary : darkGrey,
-                    height: 2.5 * SizeConfig.heightMultiplier,
-                    width: 2.5 * SizeConfig.widthMultiplier
-                  ),
+                  child: SvgPicture.asset(itemz['icon'] as String,
+                      color: isActive ? secondary : darkGrey,
+                      height: 2.5 * SizeConfig.heightMultiplier,
+                      width: 2.5 * SizeConfig.widthMultiplier),
                 ),
                 const Gap(3),
                 Text(

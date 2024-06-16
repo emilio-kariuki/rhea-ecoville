@@ -1,4 +1,5 @@
 import 'package:ecoville/blocs/app/local_cubit.dart';
+import 'package:ecoville/blocs/app/message_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/rating_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
@@ -98,10 +99,41 @@ class ProductDetailsPage extends StatelessWidget {
                                       ],
                                     ),
                                     const Spacer(),
-                                    IconContainer(
-                                      icon: AppImages.messages,
-                                      function: () {},
-                                    ),
+                                    state.product!.userId !=
+                                            supabase.auth.currentUser!.id
+                                        ? BlocProvider(
+                                            create: (context) => MessageCubit(),
+                                            child: Builder(
+                                              builder: (context) {
+                                                return BlocListener<MessageCubit,
+                                                    MessageState>(
+                                                  listener: (context, state) {
+                                                    debugPrint(
+                                                        "Message State: ${state.status}");
+                                                    if (state.status ==
+                                                        MessageStatus.success) {
+                                                      context.push(Routes.messages);
+                                                    }
+                                                  },
+                                                  child: IconContainer(
+                                                    icon: AppImages.messages,
+                                                    function: () => state
+                                                                .product!.userId !=
+                                                            supabase.auth
+                                                                .currentUser!.id
+                                                        ? context
+                                                            .read<MessageCubit>()
+                                                            .createConversation(
+                                                                sellerId: state
+                                                                    .product!
+                                                                    .userId)
+                                                        : null,
+                                                  ),
+                                                );
+                                              }
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
                                   ],
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),

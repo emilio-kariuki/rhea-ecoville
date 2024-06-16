@@ -1,3 +1,4 @@
+import 'package:ecoville/blocs/app/auth_cubit.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -52,9 +53,23 @@ class SettingsPage extends StatelessWidget {
                 title: "Change Password",
                 function: () {},
               ),
-              SettingsTile(
-                title: "Sign Out",
-                function: () {},
+              BlocProvider(
+                create: (context) => AuthCubit(),
+                child: Builder(
+                  builder: (context) {
+                    return BlocListener<AuthCubit, AuthenticationState>(
+                      listener: (context, state) {
+                        if (state.status == AuthStatus.success) {
+                          context.goNamed(Routes.welcome);
+                        }
+                      },
+                      child: SettingsTile(
+                        title: "Sign Out",
+                        function: () => context.read<AuthCubit>().signOut(),
+                      ),
+                    );
+                  }
+                ),
               ),
               Divider(
                 height: 40,
@@ -73,7 +88,6 @@ class SettingsPage extends StatelessWidget {
                 title: "Customer Service",
                 function: () {},
               ),
-              
               Divider(
                 height: 40,
                 color: Colors.grey[300],

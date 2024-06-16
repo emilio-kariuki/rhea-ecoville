@@ -1,6 +1,8 @@
 import 'package:ecoville/main.dart';
 import 'package:ecoville/screens/account/categories_page.dart';
 import 'package:ecoville/screens/cart/checkout_page.dart';
+import 'package:ecoville/screens/messages/chat_page.dart';
+import 'package:ecoville/screens/messages/messages_page.dart';
 import 'package:ecoville/screens/settings/add_address_page.dart';
 import 'package:ecoville/screens/settings/address_page.dart';
 import 'package:ecoville/screens/settings/edit_address_page.dart';
@@ -142,6 +144,43 @@ final GoRouter appRouter = GoRouter(
         },
       ),
       GoRoute(
+          path: '/messages',
+          name: Routes.messages,
+          builder: (context, state) => const MessagesPage(),
+          redirect: (context, state) {
+            final user = supabase.auth.currentUser;
+            if (user == null) {
+              return '/welcome';
+            }
+            return null;
+          },
+          routes: [
+            GoRoute(
+              path: 'chat/:seller/:conversationId',
+              pageBuilder: (context, state) {
+                final id = state.pathParameters['seller'];
+                final conversationId = state.pathParameters['conversationId'];
+                return CustomTransitionPage<void>(
+                  key: state.pageKey,
+                  child: ChatPage(
+                    sellerId: id!,
+                    conversationId: conversationId!,
+                  ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) =>
+                          FadeTransition(opacity: animation, child: child),
+                );
+              },
+              redirect: (context, state) {
+                final user = supabase.auth.currentUser;
+                if (user == null) {
+                  return '/welcome';
+                }
+                return null;
+              },
+            ),
+          ]),
+      GoRoute(
         path: '/welcome',
         name: Routes.welcome,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
@@ -182,7 +221,6 @@ final GoRouter appRouter = GoRouter(
                       name: (data)['name'],
                     );
                   }),
-              
             ],
             redirect: (context, state) {
               final user = supabase.auth.currentUser;
@@ -242,12 +280,12 @@ final GoRouter appRouter = GoRouter(
                     builder: (context, state) {
                       return const LikedProductsPage();
                     }),
-                    GoRoute(
-                  path: 'categories',
-                  name: Routes.categories,
-                  builder: (context, state) {
-                    return const CategoriesPage();
-                  }),
+                GoRoute(
+                    path: 'categories',
+                    name: Routes.categories,
+                    builder: (context, state) {
+                      return const CategoriesPage();
+                    }),
               ]),
           GoRoute(
             path: '/inbox',
@@ -259,8 +297,7 @@ final GoRouter appRouter = GoRouter(
               }
               return null;
             },
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: InboxPage()),
+            pageBuilder: (context, state) => MaterialPage(child: InboxPage()),
           ),
           GoRoute(
             path: '/selling',
@@ -299,4 +336,5 @@ class Routes {
   static const String address = '/address';
   static const String addAddress = '/addAddress';
   static const String editAddress = '/editAddress';
+  static const String messages = '/messages';
 }

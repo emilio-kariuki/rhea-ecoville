@@ -1,5 +1,7 @@
 import 'package:ecoville/blocs/app/auth_cubit.dart';
+import 'package:ecoville/blocs/app/message_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
+import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/screens/authentication/widgets/terms_of_service.dart';
@@ -14,25 +16,32 @@ class WelcomePage extends StatelessWidget {
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage(AppImages.welcome),
-          ),
+          color: Colors.black
+          // image: DecorationImage(
+          //   fit: BoxFit.cover,
+          //   image: AssetImage(AppImages.welcome),
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               const Spacer(),
+              SvgPicture.asset(
+                    AppImages.ecoville,
+                    height: 25 * SizeConfig.heightMultiplier,
+                    width: 25 * SizeConfig.heightMultiplier,
+                  ),
+              const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(
-                    AppImages.ecoville,
-                    height: 8 * SizeConfig.heightMultiplier,
-                    width: 8 * SizeConfig.heightMultiplier,
-                  ),
-                  Gap(2 * SizeConfig.widthMultiplier),
+                  // SvgPicture.asset(
+                  //   AppImages.ecoville,
+                  //   height: 8 * SizeConfig.heightMultiplier,
+                  //   width: 8 * SizeConfig.heightMultiplier,
+                  // ),
+                  // Gap(2 * SizeConfig.widthMultiplier),
                   Text(
                     APP_NAME,
                     style: GoogleFonts.rubikBubbles(
@@ -43,7 +52,6 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              Gap(3 * SizeConfig.heightMultiplier),
               Text(
                 "\"$APP_DESCRIPTION\"",
                 textAlign: TextAlign.center,
@@ -62,6 +70,8 @@ class WelcomePage extends StatelessWidget {
                       if (state.status == AuthStatus.success) {
                         context
                           ..read<ProductCubit>().getProducts()
+                          ..read<MessageCubit>().getConversations()
+                          ..read<UserCubit>().getUser()
                           ..read<ProductCubit>().getNearbyProducts()
                           ..read<ProductCubit>().getSimilarProducts(
                               productId: "adfasdf-asdfasd-asdfasdf")

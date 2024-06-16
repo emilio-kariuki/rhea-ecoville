@@ -1,6 +1,8 @@
 import 'package:ecoville/blocs/app/address_cubit.dart';
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
 import 'package:ecoville/blocs/app/local_cubit.dart';
+import 'package:ecoville/blocs/app/message_cubit.dart';
+import 'package:ecoville/blocs/app/notification_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
@@ -72,6 +74,16 @@ class MainApp extends StatelessWidget {
           create: (context) => ProductCubit()
             ..getProducts()
             ..getNearbyProducts()
+        ),
+         BlocProvider(
+          lazy: false,
+          create: (context) => NotificationCubit()
+            ..getAllNotifications()
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => MessageCubit()
+            ..getConversations()
         ),
         BlocProvider(
           lazy: false,

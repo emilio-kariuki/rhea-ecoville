@@ -1,7 +1,6 @@
 import 'package:ecoville/data/provider/address_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/address_model.dart';
-import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class AddressCubit extends Cubit<AddressState> {

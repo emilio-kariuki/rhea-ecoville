@@ -20,23 +20,19 @@ class UserRepository extends UserTemplate {
     try {
       final response =
           await supabase.from(TABLE_USERS).select().eq('id', user.id);
-      final location = await service<LocationProvider>().getCurrentLocation();
-      final address = await service<LocationProvider>()
-          .getAddressFromCoordinates(position: location);
+      // final location = await service<LocationProvider>().getCurrentLocation();
+      // final address = await service<LocationProvider>()
+      //     .getAddressFromCoordinates(position: location);
+      //     debugPrint('Address: ${address.city}');
       if (response.isEmpty) {
-        await supabase.from('User').insert({
+        await supabase.from(TABLE_USERS).insert({
           'id': user.id,
           'name': user.name,
           'email': user.email,
           'image': user.image,
           'token': user.token,
           'phone': '',
-          'address': {
-            'city': address.city,
-            'lat': address.latitude,
-            'lon': address.longitude,
-            'country': address.country,
-          }
+          
         });
       }
       return true;

@@ -1,4 +1,5 @@
 import 'package:ecoville/data/repository/app_repository.dart';
+import 'package:ecoville/models/notification_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 int id = 0;
@@ -9,6 +10,10 @@ abstract class NotificationTemplate {
   Future<void> sendImageNotification(
       {required String title, required String body, required String imageUrl});
   Future<String> getNotificationToken();
+  Future<List<NotificationModel>> getNotifications();
+  Future<bool> deleteNotification({required String id});
+  Future<bool> readNotification({required String id});
+  Future<bool> readAllNotifications();
 }
 
 class NotificationRepository extends NotificationTemplate {
@@ -137,6 +142,59 @@ class NotificationRepository extends NotificationTemplate {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception("Error sending image notification");
+    }
+  }
+
+  @override
+  Future<bool> deleteNotification({required String id}) async {
+    try {
+      await supabase.from(TABLE_NOTIFICATION).delete().eq("id", id);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error deleting notification");
+    }
+  }
+
+  @override
+  Future<List<NotificationModel>> getNotifications() async {
+    try {
+      final response = await supabase.from(TABLE_NOTIFICATION).select();
+      return response.map((e) => NotificationModel.fromJson(e)).toList();
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error getting notifications");
+    }
+  }
+
+  @override
+  Future<bool> readAllNotifications() async {
+    try {
+      final response = await supabase.from(TABLE_NOTIFICATION).select();
+      final notifications =
+          response.map((e) => NotificationModel.fromJson(e)).toList();
+      for (var notification in notifications) {
+        await supabase
+            .from(TABLE_NOTIFICATION)
+            .update({"isRead": true}).eq("id", notification.id);
+      }
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error reading all notifications");
+    }
+  }
+
+  @override
+  Future<bool> readNotification({required String id}) async {
+    try {
+      await supabase
+          .from(TABLE_NOTIFICATION)
+          .update({"isRead": true}).eq("id", id);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error reading notification");
     }
   }
 }

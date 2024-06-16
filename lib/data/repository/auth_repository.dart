@@ -14,36 +14,33 @@ abstract class AuthTemplate {
 class AuthRepository extends AuthTemplate {
   final _userService = service<UserProvider>();
   final _notificationService = service<NotificationProvider>();
+  static const webClientId =
+      '593038226855-uvj1tfavckdas0b90fgue1ojf2jnafr7.apps.googleusercontent.com';
+  static const iosClientId =
+      '593038226855-iq9b65tu6bohevl82a5qj8gffdg87uli.apps.googleusercontent.com';
+
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    signInOption: SignInOption.standard,
+    clientId: iosClientId,
+    serverClientId: webClientId,
+  );
   @override
   Future<bool> isSignedIn() async {
     final user = supabase.auth.currentUser;
     if (user == null) {
       return false;
     }
-    await Posthog().identify(
-      userId: user.id,
-      userPropertiesSetOnce: {
-        'email': user.email!,
-        'name': user.userMetadata?['full_name'],
-        'avatar_url': user.userMetadata?['avatar_url'],
-      }
-    );
+    await Posthog().identify(userId: user.id, userPropertiesSetOnce: {
+      'email': user.email!,
+      'name': user.userMetadata?['full_name'],
+      'avatar_url': user.userMetadata?['avatar_url'],
+    });
     return true;
   }
 
   @override
   Future<bool> signInWithGoogle() async {
     try {
-      const webClientId =
-          '593038226855-uvj1tfavckdas0b90fgue1ojf2jnafr7.apps.googleusercontent.com';
-      const iosClientId =
-          '593038226855-iq9b65tu6bohevl82a5qj8gffdg87uli.apps.googleusercontent.com';
-
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        signInOption: SignInOption.standard,
-        clientId: iosClientId,
-        serverClientId: webClientId,
-      );
       final googleUser = await googleSignIn.signIn();
       final googleAuth = await googleUser!.authentication;
       final accessToken = googleAuth.accessToken;
@@ -83,8 +80,7 @@ class AuthRepository extends AuthTemplate {
   Future<bool> signOut() async {
     try {
       await supabase.auth.signOut();
-      await LocalStorageManager(await SharedPreferences.getInstance())
-          .remove('email');
+      await googleSignIn.signOut();
       return true;
     } catch (e) {
       debugPrint(e.toString());
