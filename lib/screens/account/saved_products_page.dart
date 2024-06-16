@@ -10,7 +10,9 @@ class SavedProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LocalCubit()..getSavedProduct()..getCartProducts(),
+      create: (context) => LocalCubit()
+        ..getSavedProduct()
+        ..getCartProducts(),
       child: Scaffold(
         backgroundColor: white,
         appBar: AppBar(
@@ -39,13 +41,7 @@ class SavedProductsPage extends StatelessWidget {
           actions: [
             IconContainer(icon: AppImages.search, function: () {}),
             Gap(1 * SizeConfig.widthMultiplier),
-            
-             BlocConsumer<LocalCubit, LocalState>(
-          listener: (context, state) {
-                if (state.status == LocalStatus.success) {
-                  context.read<LocalCubit>().getCartProducts();
-                }
-              },
+            BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
                 return Stack(
                   children: [

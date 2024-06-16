@@ -51,6 +51,11 @@ class AppImages {
   static const String camera = 'assets/icons/camera.svg';
   static const String ship = 'assets/icons/ship.svg';
   static const String wishlist = 'assets/icons/wishlist.svg';
+  static const String map = 'assets/icons/map.svg';
+  static const String lock = 'assets/icons/lock.svg';
+  static const String shield = 'assets/icons/shield.svg';
+
+
 
   static const String ecoville = 'assets/ecoville.svg';
   static const String ecovilleName = 'assets/name.svg';
@@ -58,6 +63,7 @@ class AppImages {
 
   //* Images
   static const String welcome = 'assets/images/welcome.jpg';
+  static const String mpesa = 'assets/images/mpesa.png';
 
   //* General
   static const String defaultImage = 'https://www.picsa.pro/profile.jpg';

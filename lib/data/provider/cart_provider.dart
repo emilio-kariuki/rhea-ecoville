@@ -25,6 +25,21 @@ class CartProvider extends CartTemplate {
   Future<bool> removeFromCart({required String id}) {
     return _cartRepository.removeFromCart(id: id);
   }
+  
+  @override
+  Future<bool> addToCartLater({required LocalProductModel product}) {
+    return _cartRepository.addToCartLater(product: product);
+  }
+  
+  @override
+  Future<List<LocalProductModel>> getLaterCartProducts() {
+    return _cartRepository.getLaterCartProducts();
+  }
+  
+  @override
+  Future<bool> removeFromCartLater({required String id}) {
+    return _cartRepository.removeFromCartLater(id: id);
+  }
 
 
 }

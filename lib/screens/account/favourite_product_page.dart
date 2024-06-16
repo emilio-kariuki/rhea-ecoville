@@ -39,12 +39,8 @@ class LikedProductsPage extends StatelessWidget {
           actions: [
             IconContainer(icon: AppImages.search, function: () {}),
             Gap(1 * SizeConfig.widthMultiplier),
-              BlocConsumer<LocalCubit, LocalState>(
-          listener: (context, state) {
-                if (state.status == LocalStatus.success) {
-                  context.read<LocalCubit>().getCartProducts();
-                }
-              },
+              BlocBuilder<LocalCubit, LocalState>(
+        
                 builder: (context, state) {
                   return Stack(
                     children: [

@@ -8,6 +8,9 @@ abstract class CartTemplate {
   Future<bool> removeFromCart({required String id});
   Future<List<LocalProductModel>> getCartProducts();
   Future<bool> clearCart();
+  Future<bool> addToCartLater({required LocalProductModel product});
+  Future<bool> removeFromCartLater({required String id});
+  Future<List<LocalProductModel>> getLaterCartProducts();
 }
 
 class CartRepository extends CartTemplate {
@@ -59,6 +62,45 @@ class CartRepository extends CartTemplate {
       return true;
     } catch (error) {
       debugPrint(error.toString());
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> addToCartLater({required LocalProductModel product}) async {
+    try {
+      final db = await _dbHelper.init();
+      await _dbHelper.insertLocalProduct(
+          db: db, product: product, table: LOCAL_TABLE_LATER_CART);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  @override
+  Future<List<LocalProductModel>> getLaterCartProducts() async {
+    try {
+      final db = await _dbHelper.init();
+      final result = await _dbHelper.getLocalProducts(
+          db: db, table: LOCAL_TABLE_LATER_CART);
+      return result;
+    } catch (e) {
+      debugPrint(e.toString());
+      return [];
+    }
+  }
+
+  @override
+  Future<bool> removeFromCartLater({required String id}) async {
+    try {
+      final db = await _dbHelper.init();
+      await _dbHelper.deleteLocalProduct(
+          db: db, id: id, table: LOCAL_TABLE_LATER_CART);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
       return false;
     }
   }

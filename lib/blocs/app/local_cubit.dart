@@ -161,6 +161,23 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
+  Future<void> getLaterCartProducts() async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      final latercCartItems = await _cartProvider.getLaterCartProducts();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        laterCartItems: latercCartItems,
+        message: "Cart items fetched successfully",
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
   Future<void> unLikeProduct({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
@@ -243,6 +260,22 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
+    Future<void> addProductToCartLater({required LocalProductModel product}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _cartProvider.addToCartLater(product: product);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
   Future<void> removeProductFromWishlist({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
@@ -273,9 +306,39 @@ class LocalCubit extends Cubit<LocalState> {
       ));
     }
   }
+
+   Future<void> removeProductFromCartLater({required String id}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _cartProvider.removeFromCartLater(id: id);
+      emit(state.copyWith(
+        status: LocalStatus.removed,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+  Future<void> clearCart() async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+      await _cartProvider.clearCart();
+      emit(state.copyWith(
+        status: LocalStatus.success,
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
 }
 
-enum LocalStatus { initial, loading, success }
+enum LocalStatus { initial, loading,removed, success }
 
 class LocalState {
   final LocalStatus status;
@@ -284,6 +347,7 @@ class LocalState {
   final List<LocalProductModel> wishlistProducts;
   final List<LocalProductModel> likedProducts;
   final List<LocalProductModel> cartItems;
+  final List<LocalProductModel> laterCartItems;
   final String message;
 
   LocalState({
@@ -293,6 +357,7 @@ class LocalState {
     this.wishlistProducts = const [],
     this.likedProducts = const [],
     this.cartItems = const [],
+    this.laterCartItems = const [],
     this.message = '',
   });
 
@@ -303,6 +368,7 @@ class LocalState {
     List<LocalProductModel>? wishlistProducts,
     List<LocalProductModel>? likedProducts,
     List<LocalProductModel>? cartItems,
+    List<LocalProductModel>? laterCartItems,
     String? message,
   }) {
     return LocalState(
@@ -312,6 +378,7 @@ class LocalState {
       wishlistProducts: wishlistProducts ?? this.wishlistProducts,
       likedProducts: likedProducts ?? this.likedProducts,
       cartItems: cartItems ?? this.cartItems,
+      laterCartItems: laterCartItems ?? this.laterCartItems,
       message: message ?? this.message,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/category_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -29,6 +30,7 @@ abstract class ProductTemplate {
   Future<bool> likeProduct({required LocalProductModel product});
   Future<List<LocalProductModel>> getLikedProducts();
   Future<bool> unlikeProduct({required String id});
+  Future<List<CategoryModel>> getCategories();
 }
 
 class ProductRepository extends ProductTemplate {
@@ -267,20 +269,11 @@ class ProductRepository extends ProductTemplate {
         final product = ProductModel.fromJson(e);
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
-                end: Position(
-                    longitude: product.address.lat,
-                    latitude: product.address.lon,
-                    timestamp: DateTime.now(),
-                    accuracy: 1.0,
-                    altitude: 1.0,
-                    heading: 1.0,
-                    altitudeAccuracy: 1.0,
-                    headingAccuracy: 1.0,
-                    speed: 0,
-                    speedAccuracy: 1),
+                longitude: product.address.lon,
+                    latitude: product.address.lat,
                 radius: NEARBY_RADIUS);
-
         if (isWithinRange) {
+
           nearbyProducts.add(product);
         }
       }
@@ -398,6 +391,28 @@ class ProductRepository extends ProductTemplate {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
+    }
+  }
+  
+  @override
+  Future<List<CategoryModel>> getCategories() async{
+    try{
+      final _dbHelper = service<DatabaseHelper>();
+      final db = await _dbHelper.init();
+      final localCategory = await db.query(LOCAL_TABLE_CATEGORY);
+      if(localCategory.isNotEmpty){
+        return localCategory.map((e) => CategoryModel.fromJson(e)).toList();
+      }else{
+        final response = await supabase.from(TABLE_CATEGORY).select();
+        final categories = response.map((e) => CategoryModel.fromJson(e)).toList();
+        categories.forEach((element) async {
+          await db.insert(LOCAL_TABLE_CATEGORY, element.toJson());
+        });
+        return categories;
+      }
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the categories, $error");
     }
   }
 }

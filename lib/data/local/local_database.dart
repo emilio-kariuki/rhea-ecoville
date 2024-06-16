@@ -11,8 +11,10 @@ class DatabaseHelper {
   static const wishlistTable = LOCAL_TABLE_WISHLIST;
   static const favouriteTable = LOCAL_TABLE_FAVOURITE;
   static const cartTable = LOCAL_TABLE_CART;
+  static const laterCartTable = LOCAL_TABLE_LATER_CART;
   static const productTable = LOCAL_TABLE_PRODUCT;
   static const addressTable = LOCAL_TABLE_ADDRESS;
+  static const categoryTable = LOCAL_TABLE_CATEGORY;
 
   Future<Database> init() async {
     try {
@@ -87,6 +89,17 @@ class DatabaseHelper {
     );
     await db.execute(
       '''
+          CREATE TABLE IF NOT EXISTS $laterCartTable (
+          "id" text PRIMARY KEY NOT NULL,
+          "image" text,
+          "name" text,
+          "price" double precision,
+          "userId" text NOT NULL
+        )
+          ''',
+    );
+    await db.execute(
+      '''
           CREATE TABLE IF NOT EXISTS $cartTable (
           "id" text PRIMARY KEY NOT NULL,
           "image" text,
@@ -97,7 +110,7 @@ class DatabaseHelper {
           ''',
     );
     await db.execute(
-       '''
+      '''
           CREATE TABLE IF NOT EXISTS $addressTable (
           "id" text PRIMARY KEY NOT NULL,
           "name" text,
@@ -111,6 +124,15 @@ class DatabaseHelper {
         )
           ''',
     );
+    await db.execute(
+      '''
+          CREATE TABLE IF NOT EXISTS $categoryTable (
+          "id" text PRIMARY KEY NOT NULL,
+          "name" text,
+          "image" text
+          )
+      '''
+);
   }
 
   Future insertLocalProduct({

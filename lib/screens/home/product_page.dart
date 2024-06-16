@@ -174,7 +174,10 @@ class ProductDetailsPage extends StatelessWidget {
                                 BlocConsumer<LocalCubit, LocalState>(
                                   listener: (context, state) {
                                     if (state.status == LocalStatus.success) {
-                                      context.read<ProductCubit>().getProduct(id: id);
+                                      context
+                                        ..read<ProductCubit>()
+                                            .getProduct(id: id)
+                                        ..read<LocalCubit>().getCartProducts();
                                     }
                                   },
                                   builder: (context, localState) {
@@ -197,8 +200,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                   letterSpacing: 0.1),
                                             ),
                                             function: () => state.product!.cart
-                                                ? context
-                                                    .pushNamed(Routes.cart)
+                                                ? context.pushNamed(Routes.cart)
                                                 : context
                                                     .read<LocalCubit>()
                                                     .addProductToCart(
@@ -910,42 +912,37 @@ class ProductAppBar extends StatelessWidget {
           function: () => context.read<NavigationCubit>().changePage(page: 1),
         ),
         Gap(1 * SizeConfig.widthMultiplier),
-         BlocConsumer<LocalCubit, LocalState>(
-          listener: (context, state) {
-                if (state.status == LocalStatus.success) {
-                  context.read<LocalCubit>().getCartProducts();
-                }
-              },
-                builder: (context, state) {
-                  return Stack(
-                    children: [
-                      IconContainer(
-                          icon: AppImages.cart,
-                          function: () => context.pushNamed(Routes.cart)),
-                      if (state.cartItems.isNotEmpty)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: Color(0xffF4521E),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              state.cartItems.length.toString(),
-                              style: GoogleFonts.inter(
-                                color: darkGrey,
-                                fontSize: 1.3 * SizeConfig.textMultiplier,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
+        BlocBuilder<LocalCubit, LocalState>(
+          builder: (context, state) {
+            return Stack(
+              children: [
+                IconContainer(
+                    icon: AppImages.cart,
+                    function: () => context.pushNamed(Routes.cart)),
+                if (state.cartItems.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: const BoxDecoration(
+                        color: Color(0xffF4521E),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        state.cartItems.length.toString(),
+                        style: GoogleFonts.inter(
+                          color: darkGrey,
+                          fontSize: 1.3 * SizeConfig.textMultiplier,
+                          fontWeight: FontWeight.w600,
                         ),
-                    ],
-                  );
-                },
-              ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
         Gap(1 * SizeConfig.widthMultiplier),
         BlocProvider(
           create: (context) => LocalCubit(),

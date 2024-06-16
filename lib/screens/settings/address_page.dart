@@ -44,7 +44,7 @@ class AddressPage extends StatelessWidget {
           padding: const EdgeInsets.all(15),
           child: BlocConsumer<AddressCubit, AddressState>(
             listener: (context, state) {
-              if (state.status == AddressStatus.success) {
+              if (state.status == AddressStatus.added) {
                 context.read<AddressCubit>().getAddresses();
               }
             },
@@ -64,6 +64,7 @@ class AddressPage extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.zero,
                         backgroundColor: Colors.transparent,
+                        foregroundColor: white,
                         side: BorderSide.none,
                       ),
                       child: Row(

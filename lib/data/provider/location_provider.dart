@@ -28,9 +28,11 @@ class LocationProvider extends LocationTemplate {
 
   @override
   Future<bool> isWithinRadiusFromCurrentLocation(
-      {required Position end, required double radius}) {
+      {required double latitude,
+      required double longitude,
+      required double radius}) {
     return _locationRepository.isWithinRadiusFromCurrentLocation(
-        end: end, radius: radius);
+        latitude: latitude, longitude: longitude, radius: radius);
   }
 
   @override
@@ -41,5 +43,12 @@ class LocationProvider extends LocationTemplate {
   @override
   Future<GeoData> getAddressFromCoordinates({required Position position}) {
     return _locationRepository.getAddressFromCoordinates(position: position);
+  }
+
+  @override
+  double calculateDistanceBetween(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
+    return _locationRepository.calculateDistanceBetween(
+        startLatitude, startLongitude, endLatitude, endLongitude);
   }
 }

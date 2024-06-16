@@ -29,7 +29,6 @@ class NetworkImageContainer extends StatelessWidget {
       width: width,
       imageUrl: imageUrl,
       fit: fit,
-      cacheKey: imageUrl,
       fadeInDuration: const Duration(milliseconds: 100),
       filterQuality: FilterQuality.low,
       errorWidget: (context, url, error) => Container(

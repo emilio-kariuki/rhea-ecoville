@@ -1,4 +1,5 @@
 import 'package:ecoville/blocs/app/auth_cubit.dart';
+import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/screens/authentication/widgets/terms_of_service.dart';
@@ -59,7 +60,12 @@ class WelcomePage extends StatelessWidget {
                   return BlocConsumer<AuthCubit, AuthenticationState>(
                     listener: (context, state) {
                       if (state.status == AuthStatus.success) {
-                        context.pushNamed(Routes.home);
+                        context
+                          ..read<ProductCubit>().getProducts()
+                          ..read<ProductCubit>().getNearbyProducts()
+                          ..read<ProductCubit>().getSimilarProducts(
+                              productId: "adfasdf-asdfasd-asdfasdf")
+                          ..pushNamed(Routes.home);
                       }
                     },
                     builder: (context, state) {

@@ -12,6 +12,7 @@ class CompleteButton extends StatelessWidget {
     this.isLoading = false,
     this.backgroundColor,
     this.isDisabled = false,
+    this.loaderColor = const Color(0xff53AB08),
   });
 
   final Widget text;
@@ -22,6 +23,7 @@ class CompleteButton extends StatelessWidget {
   final bool? isLoading;
   final Color? backgroundColor;
   final bool? isDisabled;
+  final Color loaderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,8 @@ class CompleteButton extends StatelessWidget {
             ),
           ),
           child: isLoading!
-              ? const LoadingCircle(
-                  color: Color(0xff53AB08),
+              ?  LoadingCircle(
+                  color: loaderColor,
                   size: 30,
                 )
               : text),

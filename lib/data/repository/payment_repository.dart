@@ -33,7 +33,7 @@ class PaymentRepository implements PaymentTemplate {
     required List<String> products,
   }) async {
     final request = {
-      'phone': '254$phone',
+      'phone': int.parse('254$phone'),
       'amount': 1,
     };
     final req = jsonEncode(request);
@@ -42,12 +42,14 @@ class PaymentRepository implements PaymentTemplate {
         'https://ecoville.site/api/mpesa',
         data: req,
       );
-      if (response.statusCode == 200) {
-        return InitiatedPaymentModel.fromJson(response.data);
-      } else {
+
+      if (response.statusCode != 200) {
         throw Exception('Failed to initiate payment');
       }
+      final data = jsonDecode(response.data);
+      return InitiatedPaymentModel.fromJson(data);
     } catch (e) {
+      debugPrint(e.toString());
       throw Exception(e);
     }
   }
@@ -57,6 +59,7 @@ class PaymentRepository implements PaymentTemplate {
     required String checkoutRequestID,
     required List<String> products,
   }) async {
+    
     final request = {
       'checkoutRequestID': checkoutRequestID,
     };
@@ -66,11 +69,13 @@ class PaymentRepository implements PaymentTemplate {
         'https://ecoville.site/api/mpesa/confirm',
         data: req,
       );
-      if (response.statusCode == 200) {
-        return ConfirmPaymentModel.fromJson(response.data);
-      } else {
+      debugPrint("Confirming payment: ${response.data}");
+      if (response.statusCode != 200) {
         throw Exception('Failed to confirm payment');
       }
+      final data = jsonDecode(response.data);
+      debugPrint(data.toString());
+      return ConfirmPaymentModel.fromJson(data);
     } catch (e) {
       throw Exception(e);
     }
@@ -81,8 +86,8 @@ class PaymentRepository implements PaymentTemplate {
       {required String checkoutRequestID,
       required List<String> products}) async {
     try {
-      final _dbHelper = service<DatabaseHelper>();
-      final db = await _dbHelper.init();
+      final dbHelper = service<DatabaseHelper>();
+      final db = await dbHelper.init();
       final response = await Dio().post(
         'https://fuvjfsjfehyistbfkmkg.supabase.co/functions/v1/product-purchase',
         options: Options(headers: {
@@ -92,6 +97,7 @@ class PaymentRepository implements PaymentTemplate {
         data: {
           'checkoutRequestID': checkoutRequestID,
           'products': products,
+          'user': supabase.auth.currentUser!.id,
         },
       );
       if (response.statusCode == 200) {

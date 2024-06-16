@@ -20,7 +20,7 @@ class PaymentCubit extends Cubit<PaymentState> {
       );
       debugPrint('checkoutRequestID: ${response.checkoutRequestId}');
       emit(state.copyWith(
-        status: PaymentStatus.success,
+        status: PaymentStatus.initialized,
         checkoutRequestID: response.checkoutRequestId,
         products: products,
       ));
@@ -31,7 +31,7 @@ class PaymentCubit extends Cubit<PaymentState> {
   }
 
   Future<void> confirmPayment() async {
-    emit(state.copyWith(status: PaymentStatus.loading));
+    emit(state.copyWith(status: PaymentStatus.confirming));
     try {
       await _paymentRepository.confirmPayment(
         checkoutRequestID: state.checkoutRequestID,
@@ -59,7 +59,7 @@ class PaymentCubit extends Cubit<PaymentState> {
   }
 }
 
-enum PaymentStatus { initial, loading, success, failure }
+enum PaymentStatus { initial, loading, initialized,confirming, success, failure }
 
 class PaymentState {
   final PaymentStatus status;

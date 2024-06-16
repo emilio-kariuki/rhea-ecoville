@@ -1,5 +1,6 @@
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/category_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -171,6 +172,18 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
     }
   }
+
+  Future<void> getCategories() async {
+    emit(state.copyWith(status: ProductStatus.loading));
+    try {
+      final categories = await _productProvider.getCategories();
+      debugPrint("categories are $categories");
+      emit(state.copyWith(
+          status: ProductStatus.success, categories: categories));
+    } catch (e) {
+      emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
+    }
+  }
 }
 
 enum ProductStatus { initial, created, updated, loading, success, error }
@@ -182,6 +195,7 @@ class ProductState {
   final List<LocalProductModel> savedProducts;
   final List<ProductModel> similarProducts;
   final List<LocalProductModel> watchedProducts;
+  final List<CategoryModel> categories;
   final ProductStatus status;
   final String message;
 
@@ -192,6 +206,7 @@ class ProductState {
     this.savedProducts = const <LocalProductModel>[],
     this.similarProducts = const <ProductModel>[],
     this.watchedProducts = const <LocalProductModel>[],
+    this.categories = const <CategoryModel>[],
     this.status = ProductStatus.initial,
     this.message = '',
   });
@@ -203,6 +218,7 @@ class ProductState {
     List<LocalProductModel>? savedProducts,
     List<ProductModel>? similarProducts,
     List<LocalProductModel>? watchedProducts,
+    List<CategoryModel>? categories,
     ProductStatus? status,
     String? message,
   }) {
@@ -213,6 +229,7 @@ class ProductState {
       savedProducts: savedProducts ?? this.savedProducts,
       similarProducts: similarProducts ?? this.similarProducts,
       watchedProducts: watchedProducts ?? this.watchedProducts,
+      categories: categories ?? this.categories,
       status: status ?? this.status,
       message: message ?? this.message,
     );

@@ -23,59 +23,66 @@ class ProductContainer extends StatelessWidget {
           BlocProvider(
             create: (context) => LocalCubit(),
             child: Builder(builder: (context) {
-              return OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    foregroundColor: Colors.grey,
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide.none,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
+              return BlocListener<LocalCubit, LocalState>(
+                listener: (context, state) {
+                  if (state.status == LocalStatus.success) {
+                    context.read<LocalCubit>().getWatchedProduct();
+                  }
+                },
+                child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      foregroundColor: Colors.grey,
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide.none,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    context
-                      ..push('/home/details/${product.id}', extra: {
-                        'title': product.name,
-                      })
-                      ..read<LocalCubit>().watchProduct(
-                          product: LocalProductModel(
-                              id: product.id,
-                              name: product.name,
-                              image: product.image[0],
-                              userId: product.userId,
-                              startingPrice: product.startingPrice));
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      NetworkImageContainer(
-                        imageUrl: product.image[0],
-                        height: width * 0.37,
-                        borderRadius: BorderRadius.circular(15),
-                        width: width,
-                      ),
-                      Gap(1.3 * SizeConfig.heightMultiplier),
-                      Text(
-                        product.name,
-                        maxLines: 2,
-                        style: GoogleFonts.inter(
-                            color: black,
-                            fontSize: 1.7 * SizeConfig.textMultiplier,
-                            fontWeight: FontWeight.w500,
-                            height: 1),
-                      ),
-                      Gap(0.8 * SizeConfig.heightMultiplier),
-                      Text(
-                        "Kes${product.startingPrice}",
-                        style: GoogleFonts.inter(
-                            color: black,
-                            fontSize: 2.2 * SizeConfig.textMultiplier,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.2),
-                      ),
-                    ],
-                  ));
+                    onPressed: () {
+                      context
+                        ..push('/home/details/${product.id}', extra: {
+                          'title': product.name,
+                        })
+                        ..read<LocalCubit>().watchProduct(
+                            product: LocalProductModel(
+                                id: product.id,
+                                name: product.name,
+                                image: product.image[0],
+                                userId: product.userId,
+                                startingPrice: product.startingPrice));
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        NetworkImageContainer(
+                          imageUrl: product.image[0],
+                          height: width * 0.37,
+                          borderRadius: BorderRadius.circular(15),
+                          width: width,
+                        ),
+                        Gap(1.3 * SizeConfig.heightMultiplier),
+                        Text(
+                          product.name,
+                          maxLines: 2,
+                          style: GoogleFonts.inter(
+                              color: black,
+                              fontSize: 1.7 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w500,
+                              height: 1),
+                        ),
+                        Gap(0.8 * SizeConfig.heightMultiplier),
+                        Text(
+                          "Kes${product.startingPrice}",
+                          style: GoogleFonts.inter(
+                              color: black,
+                              fontSize: 2.2 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2),
+                        ),
+                      ],
+                    )),
+              );
             }),
           ),
           Positioned.fill(

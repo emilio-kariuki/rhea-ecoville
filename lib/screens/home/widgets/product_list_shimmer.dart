@@ -8,7 +8,7 @@ class ProductListShimmer extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return SizedBox(
-      height: height * 0.32,
+      height: height * 0.28,
       child: ListView.separated(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -27,7 +27,7 @@ class ProductListShimmer extends StatelessWidget {
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
                     child: Container(
-                      height: width * 0.4,
+                      height: width * 0.37,
                       width: width,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],

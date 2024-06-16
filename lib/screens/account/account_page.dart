@@ -121,12 +121,8 @@ class _AccountPageState extends State<AccountPage> {
                 function: () =>
                     context.read<NavigationCubit>().changePage(page: 1)),
             Gap(1 * SizeConfig.widthMultiplier),
-              BlocConsumer<LocalCubit, LocalState>(
-          listener: (context, state) {
-                if (state.status == LocalStatus.success) {
-                  context.read<LocalCubit>().getCartProducts();
-                }
-              },
+              BlocBuilder<LocalCubit, LocalState>(
+         
                 builder: (context, state) {
                   return Stack(
                     children: [

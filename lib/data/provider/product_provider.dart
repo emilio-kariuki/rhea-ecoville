@@ -1,4 +1,5 @@
 import 'package:ecoville/data/repository/product_repository.dart';
+import 'package:ecoville/models/category_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 
@@ -113,5 +114,10 @@ class ProductProvider extends ProductTemplate {
   @override
   Future<bool> removeFromWishlist({required String id}) {
     return _productRepository.removeFromWishlist(id: id);
+  }
+
+  @override
+  Future<List<CategoryModel>> getCategories() {
+    return _productRepository.getCategories();
   }
 }

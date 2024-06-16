@@ -13,7 +13,7 @@ class AddressCubit extends Cubit<AddressState> {
     try {
       final result = await _addressProvider.addAddress(address: address);
       if (result) {
-        emit(state.copyWith(status: AddressStatus.success));
+        emit(state.copyWith(status: AddressStatus.added));
       } else {
         emit(state.copyWith(
             status: AddressStatus.error, message: 'Failed to add address'));
@@ -83,7 +83,7 @@ class AddressCubit extends Cubit<AddressState> {
   }
 }
 
-enum AddressStatus { initial, loading, success, error }
+enum AddressStatus { initial, loading,added, success, error }
 
 class AddressState {
   final AddressStatus status;

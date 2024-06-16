@@ -4,6 +4,7 @@ import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
+import 'package:ecoville/data/repository/location_repository.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
@@ -47,7 +48,7 @@ void main() async {
   ]);
   await NotificationRepository().initializeNotifications();
   await NotificationRepository().getNotificationToken();
-
+  await LocationRepository().requestPermission();
   runApp(const MainApp());
   FlutterNativeSplash.remove();
 }
@@ -71,7 +72,6 @@ class MainApp extends StatelessWidget {
           create: (context) => ProductCubit()
             ..getProducts()
             ..getNearbyProducts()
-            ..getSimilarProducts(productId: "adfasdf-asdfasd-asdfasdf"),
         ),
         BlocProvider(
           lazy: false,
@@ -79,7 +79,7 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           lazy: false,
-          create: (context) => LocalCubit()..getCartProducts(),
+          create: (context) => LocalCubit()..getCartProducts()..getWatchedProduct()..getLaterCartProducts(),
         ),
         BlocProvider(
           lazy: false,
@@ -109,7 +109,7 @@ class Checker extends StatelessWidget {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, state) {
         return state.status == AuthenticationStatus.authenticated
-            ? const HomePage()
+            ?  HomePage()
             : const WelcomePage();
       },
     );

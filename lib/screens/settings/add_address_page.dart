@@ -31,7 +31,7 @@ class AddAddressPage extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.all(13),
           child: GestureDetector(
-            onTap: () => context.pop(),
+            onTap: () =>context..pop()..read<AddressCubit>().getAddresses(),
             child: SvgPicture.asset(
               AppImages.back,
               height: 3 * SizeConfig.heightMultiplier,
@@ -85,146 +85,148 @@ class AddAddressPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InputField(
-                  onChanged: (value) {
-                    _formKey.currentState?.validate();
-                    return null;
-                  },
-                  controller: _nameController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Name is required";
-                    }
-                    return null;
-                  },
-                  hintText: "Name"),
-              Gap(1.5 * SizeConfig.heightMultiplier),
-              InputField(
-                  onChanged: (value) {
-                    _formKey.currentState?.validate();
-                    return null;
-                  },
-                  controller: _addressLine1Controller,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Address line 1 is required";
-                    }
-                    return null;
-                  },
-                  hintText: "Address Line 1"),
-              Gap(1.5 * SizeConfig.heightMultiplier),
-              InputField(
-                  onChanged: (value) {
-                    _formKey.currentState?.validate();
-                    return null;
-                  },
-                  controller: _addressLine2Controller,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Address line 2 is required";
-                    }
-                    return null;
-                  },
-                  hintText: "Address Line 2"),
-              Gap(1.5 * SizeConfig.heightMultiplier),
-              InputField(
-                  onChanged: (value) {
-                    _formKey.currentState?.validate();
-                    return null;
-                  },
-                  controller: _cityController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "City is required";
-                    }
-                    return null;
-                  },
-                  hintText: "City"),
-              Gap(1.5 * SizeConfig.heightMultiplier),
-              InputField(
-                  onChanged: (value) {
-                    _formKey.currentState?.validate();
-                    return null;
-                  },
-                  controller: _postalCodeController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Zip code is required";
-                    }
-                    return null;
-                  },
-                  hintText: "Zip Code"),
-              Gap(1.5 * SizeConfig.heightMultiplier),
-              InputField(
-                  onChanged: (value) {
-                    _formKey.currentState?.validate();
-                    return null;
-                  },
-                  controller: _phoneController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Phone is required";
-                    }
-                    return null;
-                  },
-                  hintText: "Phone"),
-              Gap(1.5 * SizeConfig.heightMultiplier),
-              BlocProvider(
-                create: (context) => BoolCubit(),
-                child: BlocConsumer<BoolCubit, BoolState>(
-                  listener: (context, state) {
-                    if (state.status == BoolStatus.changed) {
-                      _isDefault = state.value;
-                    }
-                  },
-                  builder: (context, state) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Checkbox(
-                            visualDensity: const VisualDensity(
-                                horizontal: -4, vertical: -4),
-                            side: BorderSide(width: 1, color: darkGrey),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            value: state.status == BoolStatus.changed
-                                ? state.value
-                                : false,
-                            activeColor: green,
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            onChanged: (value) {
-                              context
-                                  .read<BoolCubit>()
-                                  .changeValue(value: value!);
-                            }),
-                        Gap(
-                          0.3 * SizeConfig.heightMultiplier,
-                        ),
-                        GestureDetector(
-                          onTap: () => context.read<BoolCubit>().changeValue(
-                              value: !context.read<BoolCubit>().state.value),
-                          child: Text(
-                            "Set as default address",
-                            style: TextStyle(
-                              fontSize: 1.6 * SizeConfig.textMultiplier,
-                              fontWeight: FontWeight.w500,
-                              color: darkGrey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _nameController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Name is required";
+                      }
+                      return null;
+                    },
+                    hintText: "Name"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _addressLine1Controller,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Address line 1 is required";
+                      }
+                      return null;
+                    },
+                    hintText: "Address Line 1"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _addressLine2Controller,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Address line 2 is required";
+                      }
+                      return null;
+                    },
+                    hintText: "Address Line 2"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _cityController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "City is required";
+                      }
+                      return null;
+                    },
+                    hintText: "City"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _postalCodeController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Zip code is required";
+                      }
+                      return null;
+                    },
+                    hintText: "Zip Code"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _phoneController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Phone is required";
+                      }
+                      return null;
+                    },
+                    hintText: "Phone"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                BlocProvider(
+                  create: (context) => BoolCubit(),
+                  child: BlocConsumer<BoolCubit, BoolState>(
+                    listener: (context, state) {
+                      if (state.status == BoolStatus.changed) {
+                        _isDefault = state.value;
+                      }
+                    },
+                    builder: (context, state) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Checkbox(
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -4),
+                              side: BorderSide(width: 1, color: darkGrey),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              value: state.status == BoolStatus.changed
+                                  ? state.value
+                                  : false,
+                              activeColor: green,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              onChanged: (value) {
+                                context
+                                    .read<BoolCubit>()
+                                    .changeValue(value: value!);
+                              }),
+                          Gap(
+                            0.3 * SizeConfig.heightMultiplier,
+                          ),
+                          GestureDetector(
+                            onTap: () => context.read<BoolCubit>().changeValue(
+                                value: !context.read<BoolCubit>().state.value),
+                            child: Text(
+                              "Set as default address",
+                              style: TextStyle(
+                                fontSize: 1.6 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w500,
+                                color: darkGrey,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              )
-            ],
+                        ],
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

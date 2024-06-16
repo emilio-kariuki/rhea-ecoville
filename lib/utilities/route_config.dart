@@ -1,4 +1,5 @@
 import 'package:ecoville/main.dart';
+import 'package:ecoville/screens/account/categories_page.dart';
 import 'package:ecoville/screens/cart/checkout_page.dart';
 import 'package:ecoville/screens/settings/add_address_page.dart';
 import 'package:ecoville/screens/settings/address_page.dart';
@@ -181,6 +182,7 @@ final GoRouter appRouter = GoRouter(
                       name: (data)['name'],
                     );
                   }),
+              
             ],
             redirect: (context, state) {
               final user = supabase.auth.currentUser;
@@ -240,6 +242,12 @@ final GoRouter appRouter = GoRouter(
                     builder: (context, state) {
                       return const LikedProductsPage();
                     }),
+                    GoRoute(
+                  path: 'categories',
+                  name: Routes.categories,
+                  builder: (context, state) {
+                    return const CategoriesPage();
+                  }),
               ]),
           GoRoute(
             path: '/inbox',
@@ -278,14 +286,15 @@ class Routes {
   static const String search = '/home/search';
   static const String account = '/home/account';
   static const String inbox = '/home/inbox';
+  static const String categories = '/account/categories';
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String selling = '/selling';
   static const String ratings = '/ratings';
-  static const String saved = '/saved';
-  static const String wishlist = '/wishlist';
-  static const String watchlist = '/watchlist';
-  static const String liked = '/liked';
+  static const String saved = '/account/saved';
+  static const String wishlist = '/account/wishlist';
+  static const String watchlist = '/account/watchlist';
+  static const String liked = '/account/liked';
   static const String settings = '/settings';
   static const String address = '/address';
   static const String addAddress = '/addAddress';

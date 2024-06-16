@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'dart:math';
 
 abstract class LocationTemplate {
   Future<void> requestPermission();
@@ -8,8 +10,12 @@ abstract class LocationTemplate {
   Future<bool> isWithinRadius(
       {required Position start, required Position end, required double radius});
   Future<bool> isWithinRadiusFromCurrentLocation(
-      {required Position end, required double radius});
+      {required double latitude,
+      required double longitude,
+      required double radius});
   Future<GeoData> getAddressFromCoordinates({required Position position});
+  double calculateDistanceBetween(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude);
 }
 
 class LocationRepository extends LocationTemplate {
@@ -55,12 +61,14 @@ class LocationRepository extends LocationTemplate {
 
   @override
   Future<bool> isWithinRadiusFromCurrentLocation(
-      {required Position end, required double radius}) async {
+      {required double latitude,
+      required double longitude,
+      required double radius}) async {
     try {
-      // final currentLocation = await getCurrentLocation();
-      return Geolocator.distanceBetween(36.37922730152364, 0.16847997445628804,
-              end.latitude, end.longitude) <=
-          radius;
+      final currentLocation = await getCurrentLocation();
+      final distance =calculateDistanceBetween(currentLocation.latitude,
+          currentLocation.longitude, latitude, longitude);
+      return distance <= radius;
     } catch (e) {
       debugPrint(e.toString());
       throw Exception("Error calculating distance: $e");
@@ -108,6 +116,26 @@ class LocationRepository extends LocationTemplate {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception("Error getting address from coordinates: $e");
+    }
+  }
+
+  @override
+  double calculateDistanceBetween(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
+    try {
+      const double R = 6371e3;
+      double first = startLatitude * pi / 180;
+      double second = endLatitude * pi / 180;
+      double third = (endLatitude - startLatitude) * pi / 180;
+      double fourth = (endLongitude - startLongitude) * pi / 180;
+      double a = sin(third / 2) * sin(third / 2) +
+          cos(first) * cos(second) * sin(fourth / 2) * sin(fourth / 2);
+      double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+      double d = R * c;
+      return d;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error calculating distance: $e");
     }
   }
 }

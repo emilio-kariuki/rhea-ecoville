@@ -22,6 +22,7 @@ const String TABLE_NOTIFICATION = 'ecoville_notification';
 const String TABLE_RATING = 'ecoville_ratings';
 const String TABLE_BUCKET = 'ecoville';
 const String TABLE_IMAGES = 'ecoville_images';
+const String TABLE_CATEGORY = 'ecoville_product_category';
 const String LOCAL_DATABASE = "products.db";
 const int LOCAL_DATABASE_VERSION = 1;
 const String LOCAL_TABLE_PRODUCT_SAVED = "savedProducts";
@@ -29,10 +30,12 @@ const String LOCAL_TABLE_WATCHED = "watchedTable";
 const String LOCAL_TABLE_WISHLIST = "wishlistTable";
 const String LOCAL_TABLE_FAVOURITE = "favouriteTable";
 const String LOCAL_TABLE_CART = "cartTable";
+const String LOCAL_TABLE_LATER_CART = "laterCartTable";
 const String LOCAL_TABLE_PRODUCT = "productTable";
 const String LOCAL_TABLE_ADDRESS = "addressTable";
+const String LOCAL_TABLE_CATEGORY = "categoryTable";
 
 
 
 
-const double NEARBY_RADIUS = 100000; // in cm
+const double NEARBY_RADIUS = 1000; // in cm

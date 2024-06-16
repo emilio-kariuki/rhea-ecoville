@@ -72,11 +72,10 @@ class NotificationRepository extends NotificationTemplate {
       );
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         debugPrint(
-            "Foreground Message received: ${message.notification!.body}");
-        sendImageNotification(
-          body: message.data['message'] ?? message.contentAvailable.toString(),
+            "Foreground Message received: ${message.notification!.title}");
+        sendNotification(
+          body: message.data['message'] ?? message.notification!.body,
           title: message.data['title'] ?? message.notification!.title!,
-          imageUrl: message.notification!.android!.imageUrl!
         );
       });
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
