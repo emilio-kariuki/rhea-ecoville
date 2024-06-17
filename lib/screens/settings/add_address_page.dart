@@ -63,7 +63,7 @@ class AddAddressPage extends StatelessWidget {
                         country: _countryController.text,
                         postalCode: _postalCodeController.text,
                         phone: _phoneController.text,
-                        primary: _isDefault.toString(),
+                        primary: _isDefault.toString().toLowerCase(),
                       ),
                     );
                 context.pop();

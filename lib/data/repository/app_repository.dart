@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:dio/dio.dart';
+import 'package:ecoville/data/local/local_database.dart';
+import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/search_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:flutter/services.dart';
 
@@ -19,9 +22,13 @@ abstract class AppTemplate {
   Future<bool> copyToClipboard({required String text});
   Future<String> downloadAndSaveFile(
       {required String url, required String fileName});
+  Future<List<SearchModel>> getSearchList();
+  Future<bool> clearSearchList();
+  Future<bool> insertSearch({required String name});
 }
 
 class AppRepository extends AppTemplate {
+  final _dbHelper = service<DatabaseHelper>();
   @override
   Future<File> compressImage({required File image}) async {
     try {
@@ -191,5 +198,41 @@ class AppRepository extends AppTemplate {
     final File file = File(filePath);
     await file.writeAsBytes(response.data);
     return filePath;
+  }
+
+  @override
+  Future<List<SearchModel>> getSearchList() async {
+    try {
+      final db = await _dbHelper.init();
+      final searches = await db.query(LOCAL_TABLE_SEARCH);
+      return searches.map((e) => SearchModel.fromJson(e)).toList();
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Error getting search list');
+    }
+  }
+
+  @override
+  Future<bool> clearSearchList() async {
+    try {
+      final db = await _dbHelper.init();
+      await db.delete(LOCAL_TABLE_SEARCH);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Error getting search list');
+    }
+  }
+
+  @override
+  Future<bool> insertSearch({required String name}) async {
+    try {
+      final db = await _dbHelper.init();
+      db.insert(LOCAL_TABLE_SEARCH, {'id': const Uuid().v4(), 'name': name});
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Error inserting search');
+    }
   }
 }

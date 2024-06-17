@@ -80,14 +80,46 @@ class SavedProductsPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
-                return StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  children: state.savedProducts
-                      .map((product) => LocalProductContainer(product: product))
-                      .toList(),
-                );
+                return state.savedProducts.isEmpty
+                    ? SizedBox(
+                        height: 80 * SizeConfig.heightMultiplier,
+                      child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              AppImages.save,
+                              height: 20 * SizeConfig.heightMultiplier,
+                            ),
+                            Gap(2 * SizeConfig.heightMultiplier),
+                            Text(
+                              "No saved products",
+                              style: GoogleFonts.inter(
+                                fontSize: 2.5 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w600,
+                                color: black,
+                              ),
+                            ),
+                            Text(
+                              "Save products you like to view them here",
+                              style: GoogleFonts.inter(
+                                fontSize: 1.8 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w400,
+                                color: darkGrey,
+                              ),
+                            ),
+                          ],
+                        )),
+                    )
+                    : StaggeredGrid.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        children: state.savedProducts
+                            .map((product) =>
+                                LocalProductContainer(product: product))
+                            .toList(),
+                      );
               },
             ),
           ),

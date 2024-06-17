@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class EditAddressPage extends StatelessWidget {
   EditAddressPage({super.key, required this.id});
 
-  final String id;
+  String id;
 
   TextEditingController _nameController = TextEditingController();
 
@@ -35,6 +35,7 @@ class EditAddressPage extends StatelessWidget {
       bloc: context.read<AddressCubit>()..getAddressById(id: id),
       listener: (context, state) {
         if (state.status == AddressStatus.success) {
+          debugPrint("Selected address: ${state.selectedAddress!.toJson()}");
           _nameController.text = state.selectedAddress!.name;
           _phoneController.text = state.selectedAddress!.phone;
           _addressLine1Controller.text = state.selectedAddress!.addressLine1;
@@ -42,7 +43,7 @@ class EditAddressPage extends StatelessWidget {
           _cityController.text = state.selectedAddress!.city;
           _countryController.text = state.selectedAddress!.country;
           _postalCodeController.text = state.selectedAddress!.postalCode;
-          _isDefault = state.selectedAddress!.primary == "true";
+          _isDefault = bool.parse(state.selectedAddress!.primary);
         }
       },
       builder: (context, state) {
@@ -79,7 +80,7 @@ class EditAddressPage extends StatelessWidget {
                   if (_formKey.currentState?.validate() ?? false) {
                     context.read<AddressCubit>().updateAddress(
                           address: AddressModel(
-                            id: uuid.v4(),
+                            id: id,
                             name: _nameController.text,
                             addressLine1: _addressLine1Controller.text,
                             addressLine2: _addressLine2Controller.text,
@@ -87,7 +88,7 @@ class EditAddressPage extends StatelessWidget {
                             country: _countryController.text,
                             postalCode: _postalCodeController.text,
                             phone: _phoneController.text,
-                            primary: _isDefault.toString(),
+                            primary: _isDefault.toString().toLowerCase(),
                           ),
                         );
                     context.pop();
@@ -217,9 +218,7 @@ class EditAddressPage extends StatelessWidget {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5),
                                 ),
-                                value: state.status == BoolStatus.changed
-                                    ? state.value
-                                    : false,
+                                value: _isDefault,
                                 activeColor: green,
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.shrinkWrap,

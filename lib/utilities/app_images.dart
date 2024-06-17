@@ -54,6 +54,8 @@ class AppImages {
   static const String map = 'assets/icons/map.svg';
   static const String lock = 'assets/icons/lock.svg';
   static const String shield = 'assets/icons/shield.svg';
+  static const String watch = 'assets/icons/watch.svg';
+
 
 
 

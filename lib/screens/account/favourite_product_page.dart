@@ -30,7 +30,7 @@ class LikedProductsPage extends StatelessWidget {
                 )),
           ),
           title: Text(
-            "Watchlist",
+            "Likes",
             style: GoogleFonts.inter(
                 fontSize: 2.2 * SizeConfig.heightMultiplier,
                 fontWeight: FontWeight.w600,
@@ -110,7 +110,38 @@ class LikedProductsPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
-                return StaggeredGrid.count(
+                return state.likedProducts.isEmpty? SizedBox(
+                  height: 80 * SizeConfig.heightMultiplier,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AppImages.favourite,
+                          height: 20 * SizeConfig.heightMultiplier,
+                        ),
+                        Gap(1 * SizeConfig.heightMultiplier),
+                        Text(
+                          "No liked products",
+                          style: GoogleFonts.inter(
+                            fontSize: 2.5 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w600,
+                            color: black,
+                          ),
+                        ),
+                        Text(
+                                "You have not liked any products yet. \n",
+                                style: GoogleFonts.inter(
+                                  fontSize: 1.8 * SizeConfig.textMultiplier,
+                                  fontWeight: FontWeight.w400,
+                                  color: darkGrey,
+                                ),
+                              ),
+                      ],
+                    ),
+                  
+                  ),
+                ) :StaggeredGrid.count(
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,

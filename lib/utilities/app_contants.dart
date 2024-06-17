@@ -37,6 +37,7 @@ const String LOCAL_TABLE_PRODUCT = "productTable";
 const String LOCAL_TABLE_ADDRESS = "addressTable";
 const String LOCAL_TABLE_CATEGORY = "categoryTable";
 const String LOCAL_TABLE_CONVERSATIONS = "conversationsTable";
+const String LOCAL_TABLE_SEARCH = "searchTable";
 
 
 const double NEARBY_RADIUS = 1000; // in cm

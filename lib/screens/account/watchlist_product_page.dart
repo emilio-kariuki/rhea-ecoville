@@ -30,7 +30,7 @@ class WatchlistProductsPage extends StatelessWidget {
                 )),
           ),
           title: Text(
-            "Watchlist",
+            "Recently Viewed",
             style: GoogleFonts.inter(
                 fontSize: 2.2 * SizeConfig.heightMultiplier,
                 fontWeight: FontWeight.w600,
@@ -80,7 +80,38 @@ class WatchlistProductsPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
-                return StaggeredGrid.count(
+                return state.watchedProducts.isEmpty ? SizedBox(
+                  height: 80 * SizeConfig.heightMultiplier,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AppImages.watch,
+                          height: 20 * SizeConfig.heightMultiplier,
+                        ),
+                        Gap(1 * SizeConfig.heightMultiplier),
+                        Text(
+                          "Your watchlist is empty",
+                          style: GoogleFonts.inter(
+                            fontSize: 2.2 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w600,
+                            color: black,
+                          ),
+                        ),
+                        Text(
+                          "Add products to your watchlist to keep track of them",
+                          style: GoogleFonts.inter(
+                            fontSize: 1.6 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w400,
+                            color: darkGrey,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ) : StaggeredGrid.count(
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,

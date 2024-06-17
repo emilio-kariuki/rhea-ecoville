@@ -4,6 +4,7 @@ import 'package:ecoville/screens/cart/checkout_page.dart';
 import 'package:ecoville/screens/home/map_page.dart';
 import 'package:ecoville/screens/messages/chat_page.dart';
 import 'package:ecoville/screens/messages/messages_page.dart';
+import 'package:ecoville/screens/search/search_result_page.dart';
 import 'package:ecoville/screens/settings/add_address_page.dart';
 import 'package:ecoville/screens/settings/address_page.dart';
 import 'package:ecoville/screens/settings/edit_address_page.dart';
@@ -226,7 +227,7 @@ final GoRouter appRouter = GoRouter(
                   path: 'map',
                   name: Routes.map,
                   builder: (context, state) {
-                    return  MapPage();
+                    return MapPage();
                   }),
             ],
             redirect: (context, state) {
@@ -238,18 +239,35 @@ final GoRouter appRouter = GoRouter(
             },
           ),
           GoRoute(
-            path: '/search',
-            name: Routes.search,
-            redirect: (context, state) {
-              final user = supabase.auth.currentUser;
-              if (user == null) {
-                return '/welcome';
-              }
-              return null;
-            },
-            pageBuilder: (context, state) =>
-                const MaterialPage(child: SearchPage()),
-          ),
+              path: '/search',
+              name: Routes.search,
+              redirect: (context, state) {
+                final user = supabase.auth.currentUser;
+                if (user == null) {
+                  return '/welcome';
+                }
+                return null;
+              },
+              pageBuilder: (context, state) =>
+                  MaterialPage(child: SearchPage()),
+              routes: [
+                GoRoute(
+                    path: 'results',
+                    name: Routes.searchResults,
+                    redirect: (context, state) {
+                      final user = supabase.auth.currentUser;
+                      if (user == null) {
+                        return '/welcome';
+                      }
+                      return null;
+                    },
+                    builder: (context, state) {
+                      final extra = state.extra;
+                      return SearchResultPage(
+                        controller: (extra as Map)['controller']
+                      );
+                    })
+              ]),
           GoRoute(
               path: '/account',
               name: Routes.account,
@@ -327,7 +345,8 @@ class Routes {
   static const String checker = '/checker';
   static const String home = '/home';
   static const String details = '/home/details';
-  static const String search = '/home/search';
+  static const String search = '/search';
+  static const String searchResults = '/search/results';
   static const String account = '/home/account';
   static const String inbox = '/home/inbox';
   static const String map = '/home/map';

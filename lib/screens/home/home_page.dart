@@ -3,6 +3,7 @@ import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/screens/account/widgets/local_product_container.dart';
 import 'package:ecoville/shared/icon_container.dart';
+import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/screens/home/widgets/categories_section.dart';
 import 'package:ecoville/screens/home/widgets/product_container.dart';
@@ -124,6 +125,7 @@ class _HomePageState extends State<HomePage> {
                 const RecentItems(),
                 const NearbyItems(),
                 const WatchedItems(),
+                const EcovilleCategories(),
                 // const WatchedItems(),
                 // const YourDeals(),
                 // const RecommendedItems()
@@ -255,37 +257,51 @@ class RecommendedItems extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: SectionTitle(
-            title: 'Recommended Items',
-            onTap: () {},
-          ),
-        ),
-        Gap(2.5 * SizeConfig.heightMultiplier),
-        SizedBox(
-          height: height * 0.32,
-          child: ListView.separated(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(
-                left: index == 0 ? 10 : 0,
-                right: index == 4 ? 10 : 0,
-              ),
-              child: Container(),
-            ),
-            separatorBuilder: (context, index) =>
-                Gap(1.3 * SizeConfig.widthMultiplier),
-            itemCount: 5,
-          ),
-        ),
-      ],
+   return BlocBuilder<ProductCubit, ProductState>(
+      buildWhen: (previous, current) => previous.similarProducts != current.similarProducts,
+      builder: (context, state) {
+        return state.status == ProductStatus.loading
+            ? const ProductListShimmer()
+            : state.similarProducts.isEmpty
+                ? const SizedBox.shrink()
+                : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SectionTitle(
+                          title: 'Recommended Items',
+                          onTap: () {},
+                        ),
+                      ),
+                      Gap(2.5 * SizeConfig.heightMultiplier),
+                      SizedBox(
+                        height: height * 0.26,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) => Padding(
+                            padding: EdgeInsets.only(
+                              left: index == 0 ? 10 : 0,
+                              right:
+                                  index == (state.similarProducts.length - 1) ? 10 : 0,
+                            ),
+                            child: ProductContainer(
+                              key: UniqueKey(),
+                              product: state.similarProducts[index],
+                            ),
+                          ),
+                          separatorBuilder: (context, index) =>
+                              Gap(1.3 * SizeConfig.widthMultiplier),
+                          itemCount: state.similarProducts.length,
+                        ),
+                      ),
+                    ],
+                  );
+      },
     );
   }
 }
+
 
 class WatchedItems extends StatelessWidget {
   const WatchedItems({
@@ -342,42 +358,84 @@ class WatchedItems extends StatelessWidget {
   }
 }
 
-class YourDeals extends StatelessWidget {
-  const YourDeals({
+class EcovilleCategories extends StatelessWidget {
+  const EcovilleCategories({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: SectionTitle(
-            title: 'Your Deals',
-            onTap: () {},
-          ),
+          child: Row(
+      children: [
+        Text(
+          'Ecoville Categories',
+          style: GoogleFonts.inter(
+              color: black,
+              fontSize: 2 * SizeConfig.textMultiplier,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.1),
         ),
-        Gap(2.5 * SizeConfig.heightMultiplier),
-        SizedBox(
-          height: height * 0.32,
-          child: ListView.separated(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(
-                left: index == 0 ? 10 : 0,
-                right: index == 4 ? 10 : 0,
-              ),
-              child: Container(),
+        const Spacer(),
+        
+      ],
+    ),
+        ),
+         
+        Gap(0.5 * SizeConfig.heightMultiplier),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: BlocProvider(
+              create: (context) => ProductCubit()..getCategories(),
+              child: Builder(builder: (context) {
+                return BlocBuilder<ProductCubit, ProductState>(
+                  builder: (context, state) {
+                    return state.status == ProductStatus.loading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : GridView.builder(
+                            itemCount: state.categories.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio: 0.9),
+                            itemBuilder: (context, index) {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  NetworkImageContainer(
+                                      imageUrl: state.categories[index].image,
+                                      isCirlce: true,
+                                      height: size.width * 0.23,
+                                      width: size.width,
+                                      ),
+                                  Gap(0.3 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    state.categories[index].name,
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize: 1.5 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              );
+                            });
+                  },
+                );
+              }),
             ),
-            separatorBuilder: (context, index) =>
-                Gap(1.3 * SizeConfig.widthMultiplier),
-            itemCount: 5,
-          ),
         ),
       ],
     );
   }
 }
+

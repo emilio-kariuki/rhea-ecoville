@@ -30,7 +30,7 @@ class AddressModel {
         country: json['country'],
         postalCode: json['postalCode'],
         phone: json['phone'],
-        primary: json['primary'],
+        primary: json['primary']
       );
 
   Map<String, dynamic> toJson() => {

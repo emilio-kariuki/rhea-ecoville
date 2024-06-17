@@ -30,7 +30,7 @@ class WishlistProductsPage extends StatelessWidget {
                 )),
           ),
           title: Text(
-            "Wishlist",
+            "Wishlist Products",
             style: GoogleFonts.inter(
                 fontSize: 2.2 * SizeConfig.heightMultiplier,
                 fontWeight: FontWeight.w600,
@@ -79,7 +79,37 @@ class WishlistProductsPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
-                return StaggeredGrid.count(
+                return state.wishlistProducts.isEmpty ? SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AppImages.wishlist,
+                          height: 20 * SizeConfig.heightMultiplier,
+                        ),
+                        Gap(2 * SizeConfig.heightMultiplier),
+                        Text(
+                          "Your wishlist is empty",
+                          style: GoogleFonts.inter(
+                            fontSize: 2.5 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w600,
+                            color: black,
+                          ),
+                        ),
+                        Text(
+                          "Add items to your wishlist to view them here",
+                          style: GoogleFonts.inter(
+                            fontSize: 1.8 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w400,
+                            color: darkGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ) : StaggeredGrid.count(
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,

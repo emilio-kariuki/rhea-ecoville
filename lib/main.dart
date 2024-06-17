@@ -1,4 +1,5 @@
 import 'package:ecoville/blocs/app/address_cubit.dart';
+import 'package:ecoville/blocs/app/app_cubit.dart';
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/location_cubit.dart';
@@ -102,6 +103,10 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           lazy: false,
           create: (context) => LocationCubit()..getCurrentLocation(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => AppCubit()..getSearchList(),
         ),
       ],
       child: LayoutBuilder(builder: (context, constraints) {

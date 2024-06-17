@@ -9,8 +9,12 @@ class ProductCubit extends Cubit<ProductState> {
   final _productProvider = service<ProductProvider>();
   ProductCubit() : super(ProductState());
 
+  void setLoading() => emit(state.copyWith(status: ProductStatus.loading));
+  void setError(String message) =>
+      emit(state.copyWith(status: ProductStatus.success, message: message));
+
   Future<void> getProducts() async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final products = await _productProvider.getProducts();
       emit(state.copyWith(
@@ -23,7 +27,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getProduct({required String id}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final product = await _productProvider.getProduct(id: id);
       emit(state.copyWith(status: ProductStatus.success, product: product));
@@ -33,7 +37,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getProductsByCategory({required String categoryId}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final products =
           await _productProvider.getProductsByCategory(categoryId: categoryId);
@@ -44,7 +48,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getUserProductsPosted() async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final products = await _productProvider.getUserProductsPosted();
       emit(state.copyWith(status: ProductStatus.success, products: products));
@@ -55,7 +59,7 @@ class ProductCubit extends Cubit<ProductState> {
 
   Future<void> createProduct(
       {required ProductModel product, required bool allowBidding}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.createProduct(
           product: product, allowBidding: allowBidding);
@@ -66,7 +70,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> updateProduct({required ProductModel product}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.updateProduct(product: product);
       emit(state.copyWith(status: ProductStatus.success));
@@ -76,7 +80,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> deleteProduct({required String id}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.deleteProduct(id: id);
       emit(state.copyWith(status: ProductStatus.success));
@@ -86,7 +90,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> saveProduct({required LocalProductModel product}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.saveProduct(product: product);
       final savedProducts = await _productProvider.getSavedProducts();
@@ -98,7 +102,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getSavedProducts() async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final savedProducts = await _productProvider.getSavedProducts();
       emit(state.copyWith(
@@ -109,7 +113,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> unsaveProduct({required String id}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.unsaveProduct(id: id);
       emit(state.copyWith(status: ProductStatus.success));
@@ -119,7 +123,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> watchProduct({required LocalProductModel product}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.watchProduct(product: product);
       emit(state.copyWith(status: ProductStatus.success));
@@ -129,7 +133,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> unwatchProduct({required String id}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       await _productProvider.unwatchProduct(id: id);
       emit(state.copyWith(status: ProductStatus.success));
@@ -139,7 +143,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getWatchedProducts() async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final watchedProducts = await _productProvider.getWatchedProducts();
       emit(state.copyWith(
@@ -150,7 +154,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getNearbyProducts() async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final productsNearby = await _productProvider.getNearbyProducts();
       emit(state.copyWith(
@@ -161,7 +165,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getSimilarProducts({required String productId}) async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final similarProducts =
           await _productProvider.getSimilarProducts(productId: productId);
@@ -174,7 +178,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> getCategories() async {
-    emit(state.copyWith(status: ProductStatus.loading));
+    setLoading();
     try {
       final categories = await _productProvider.getCategories();
       debugPrint("categories are $categories");
@@ -182,6 +186,18 @@ class ProductCubit extends Cubit<ProductState> {
           status: ProductStatus.success, categories: categories));
     } catch (e) {
       emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
+    }
+  }
+
+  Future<void> getSearchResults({required String name}) async {
+    try {
+      setLoading();
+      final searchResults = await _productProvider.searchResults(name: name);
+      debugPrint("search results: $searchResults");
+      emit(state.copyWith(
+          status: ProductStatus.success, searchResults: searchResults));
+    } catch (error) {
+      setError(error.toString());
     }
   }
 }
@@ -194,6 +210,7 @@ class ProductState {
   final List<ProductModel> productsNearby;
   final List<LocalProductModel> savedProducts;
   final List<ProductModel> similarProducts;
+  final List<ProductModel> searchResults;
   final List<LocalProductModel> watchedProducts;
   final List<CategoryModel> categories;
   final ProductStatus status;
@@ -205,6 +222,7 @@ class ProductState {
     this.productsNearby = const <ProductModel>[],
     this.savedProducts = const <LocalProductModel>[],
     this.similarProducts = const <ProductModel>[],
+    this.searchResults = const <ProductModel>[],
     this.watchedProducts = const <LocalProductModel>[],
     this.categories = const <CategoryModel>[],
     this.status = ProductStatus.initial,
@@ -217,6 +235,7 @@ class ProductState {
     List<ProductModel>? productsNearby,
     List<LocalProductModel>? savedProducts,
     List<ProductModel>? similarProducts,
+    List<ProductModel>? searchResults,
     List<LocalProductModel>? watchedProducts,
     List<CategoryModel>? categories,
     ProductStatus? status,
@@ -228,6 +247,7 @@ class ProductState {
       productsNearby: productsNearby ?? this.productsNearby,
       savedProducts: savedProducts ?? this.savedProducts,
       similarProducts: similarProducts ?? this.similarProducts,
+      searchResults: searchResults ?? this.searchResults,
       watchedProducts: watchedProducts ?? this.watchedProducts,
       categories: categories ?? this.categories,
       status: status ?? this.status,

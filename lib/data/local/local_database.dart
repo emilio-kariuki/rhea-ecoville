@@ -15,6 +15,7 @@ class DatabaseHelper {
   static const productTable = LOCAL_TABLE_PRODUCT;
   static const addressTable = LOCAL_TABLE_ADDRESS;
   static const categoryTable = LOCAL_TABLE_CATEGORY;
+  static const searchTable = LOCAL_TABLE_SEARCH;
 
   Future<Database> init() async {
     try {
@@ -133,6 +134,14 @@ class DatabaseHelper {
           )
       '''
 );
+    await db.execute(
+      '''
+          CREATE TABLE IF NOT EXISTS $searchTable (
+          "id" text PRIMARY KEY NOT NULL,
+          "name" text
+        )
+          ''',
+    );
   }
 
   Future insertLocalProduct({

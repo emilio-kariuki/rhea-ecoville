@@ -120,4 +120,9 @@ class ProductProvider extends ProductTemplate {
   Future<List<CategoryModel>> getCategories() {
     return _productRepository.getCategories();
   }
+
+  @override
+  Future<List<ProductModel>> searchResults({required String name}) {
+    return _productRepository.searchResults(name: name);
+  }
 }

@@ -857,7 +857,7 @@ class ProductImagesSection extends StatelessWidget {
               },
             ),
             Gap(1 * SizeConfig.widthMultiplier),
-            BlocBuilder<PageCubit, PageState>(
+            state.product!.image.length==1 ? const SizedBox.shrink() : BlocBuilder<PageCubit, PageState>(
               builder: (context, pstate) {
                 return SizedBox(
                   height: height * 0.11,

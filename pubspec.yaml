@@ -48,6 +48,7 @@ dependencies:
   posthog_flutter: ^4.5.0
   permission_handler: ^11.3.1
   google_maps_flutter: ^2.7.0
+  flutter_easy_faq: ^1.0.1
   
 
 dev_dependencies:

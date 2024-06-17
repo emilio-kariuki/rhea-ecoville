@@ -13,12 +13,12 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   List<Map<String, dynamic>> shoppingList = [
-    {
-      "name": "Watchlist",
-      'description': "Keep tabs in watched items",
-      'icon': AppImages.favourite,
-      'page': Routes.watchlist
-    },
+    // {
+    //   "name": "Watchlist",
+    //   'description': "Keep tabs in watched items",
+    //   'icon': AppImages.watch,
+    //   'page': Routes.watchlist
+    // },
     {
       "name": "Wishlist",
       'description': "Your wishlist items",
@@ -31,12 +31,12 @@ class _AccountPageState extends State<AccountPage> {
       'icon': AppImages.offer,
       'page': Routes.cart
     },
-    {
-      "name": "Bids & offers",
-      'description': "Active auctions and seller offers",
-      'icon': AppImages.bids,
-      'page': Routes.cart
-    },
+    // {
+    //   "name": "Bids & offers",
+    //   'description': "Active auctions and seller offers",
+    //   'icon': AppImages.bids,
+    //   'page': Routes.cart
+    // },
     {
       "name": "Recently viewed",
       'description': "Listing your recently viewed",
@@ -47,7 +47,7 @@ class _AccountPageState extends State<AccountPage> {
       "name": "Categories",
       'description': "Shop by category",
       'icon': AppImages.category,
-      'page': Routes.cart
+      'page': Routes.categories
     },
     {
       "name": "Listings",
@@ -57,12 +57,12 @@ class _AccountPageState extends State<AccountPage> {
     }
   ];
   List<Map<String, dynamic>> shortcutList = [
-    {
-      "name": "Notifications",
-      'description': "Notifications in one place",
-      'icon': AppImages.notifications,
-      'page': Routes.cart
-    },
+    // {
+    //   "name": "Notifications",
+    //   'description': "Notifications in one place",
+    //   'icon': AppImages.notifications,
+    //   'page': Routes.cart
+    // },
     {
       "name": "Saved",
       'description': "Searches, sellers, feed",
@@ -77,12 +77,12 @@ class _AccountPageState extends State<AccountPage> {
     },
   ];
   List<Map<String, dynamic>> accountList = [
-    {
-      "name": "Payment",
-      'description': "Your payments in one place",
-      'icon': AppImages.payment,
-      'page': Routes.cart
-    },
+    // {
+    //   "name": "Payment",
+    //   'description': "Your payments in one place",
+    //   'icon': AppImages.payment,
+    //   'page': Routes.cart
+    // },
     {
       "name": "Help",
       'description': "Your problem our concern",

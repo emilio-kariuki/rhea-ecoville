@@ -34,7 +34,7 @@ class ProductModel {
   final DateTime updatedAt;
   final UserModel? user;
   final Category? category;
-  final String condition;
+  final String ?condition;
 
   ProductModel({
     required this.id,
@@ -57,7 +57,7 @@ class ProductModel {
     required this.updatedAt,
     this.user,
     this.category,
-    required this.condition,
+    this.condition,
     this.quantity = 1,
   });
 

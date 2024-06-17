@@ -72,13 +72,34 @@ class AddressPage extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                address.name,
-                                style: GoogleFonts.inter(
-                                    fontSize:
-                                        1.5 * SizeConfig.heightMultiplier,
-                                    fontWeight: FontWeight.w600,
-                                    color: black),
+                              Row(
+                                children: [
+                                  Text(
+                                    address.name,
+                                    style: GoogleFonts.inter(
+                                        fontSize:
+                                            1.5 * SizeConfig.heightMultiplier,
+                                        fontWeight: FontWeight.w600,
+                                        color: black),
+                                  ),
+                                  Gap(1 * SizeConfig.widthMultiplier),
+                                 bool.parse(address.primary) ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: green,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Text(
+                                     "Primary",
+                                      style: GoogleFonts.inter(
+                                          fontSize:
+                                              1.2 * SizeConfig.heightMultiplier,
+                                          fontWeight: FontWeight.w600,
+                                          color: white),
+                                    ),
+                                  ) : Container(),
+                                ],
                               ),
                               Text(
                                 address.addressLine1,

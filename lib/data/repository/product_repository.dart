@@ -31,6 +31,7 @@ abstract class ProductTemplate {
   Future<List<LocalProductModel>> getLikedProducts();
   Future<bool> unlikeProduct({required String id});
   Future<List<CategoryModel>> getCategories();
+  Future<List<ProductModel>> searchResults({required String name});
 }
 
 class ProductRepository extends ProductTemplate {
@@ -270,10 +271,9 @@ class ProductRepository extends ProductTemplate {
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
                 longitude: product.address.lon,
-                    latitude: product.address.lat,
+                latitude: product.address.lat,
                 radius: NEARBY_RADIUS);
         if (isWithinRange) {
-
           nearbyProducts.add(product);
         }
       }
@@ -296,16 +296,16 @@ class ProductRepository extends ProductTemplate {
     try {
       final response =
           await supabase.from(TABLE_PRODUCT).select().eq('id', productId);
-      debugPrint("getting similar products");
-      final product = ProductModel.fromJson(response.first);
-      final category = product.categoryId;
+
+      final category = response[0]['categoryId'];
       final similarResponse = await supabase
           .from(TABLE_PRODUCT)
           .select('ecoville_product_category(*), ecoville_user(*),*')
           .eq('categoryId', category)
           .neq('id', productId)
-          .ilike("name", '%${product.name}%')
+          // .ilike("name", '%${response[0]['name']}%')
           .limit(8);
+
       return similarResponse.map((e) => ProductModel.fromJson(e)).toList();
     } catch (error) {
       debugPrint(error.toString());
@@ -393,18 +393,19 @@ class ProductRepository extends ProductTemplate {
       throw Exception("Error liking the product, $e");
     }
   }
-  
+
   @override
-  Future<List<CategoryModel>> getCategories() async{
-    try{
+  Future<List<CategoryModel>> getCategories() async {
+    try {
       final _dbHelper = service<DatabaseHelper>();
       final db = await _dbHelper.init();
       final localCategory = await db.query(LOCAL_TABLE_CATEGORY);
-      if(localCategory.isNotEmpty){
+      if (localCategory.isNotEmpty) {
         return localCategory.map((e) => CategoryModel.fromJson(e)).toList();
-      }else{
+      } else {
         final response = await supabase.from(TABLE_CATEGORY).select();
-        final categories = response.map((e) => CategoryModel.fromJson(e)).toList();
+        final categories =
+            response.map((e) => CategoryModel.fromJson(e)).toList();
         categories.forEach((element) async {
           await db.insert(LOCAL_TABLE_CATEGORY, element.toJson());
         });
@@ -413,6 +414,22 @@ class ProductRepository extends ProductTemplate {
     } catch (error) {
       debugPrint(error.toString());
       throw Exception("Error getting the categories, $error");
+    }
+  }
+
+  @override
+  Future<List<ProductModel>> searchResults({required String name}) async {
+    try {
+      final searchResultPage = await supabase
+          .from(TABLE_PRODUCT)
+          .select("ecoville_user(*), *, ecoville_product_category(*)")
+          .eq('sold', false)
+          .ilike("name", '%$name%')
+          .limit(10);
+      return searchResultPage.map((e) => ProductModel.fromJson(e)).toList();
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception(error);
     }
   }
 }
