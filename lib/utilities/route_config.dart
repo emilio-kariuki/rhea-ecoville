@@ -1,6 +1,7 @@
 import 'package:ecoville/main.dart';
 import 'package:ecoville/screens/account/categories_page.dart';
 import 'package:ecoville/screens/cart/checkout_page.dart';
+import 'package:ecoville/screens/home/map_page.dart';
 import 'package:ecoville/screens/messages/chat_page.dart';
 import 'package:ecoville/screens/messages/messages_page.dart';
 import 'package:ecoville/screens/settings/add_address_page.dart';
@@ -221,6 +222,12 @@ final GoRouter appRouter = GoRouter(
                       name: (data)['name'],
                     );
                   }),
+              GoRoute(
+                  path: 'map',
+                  name: Routes.map,
+                  builder: (context, state) {
+                    return  MapPage();
+                  }),
             ],
             redirect: (context, state) {
               final user = supabase.auth.currentUser;
@@ -323,6 +330,7 @@ class Routes {
   static const String search = '/home/search';
   static const String account = '/home/account';
   static const String inbox = '/home/inbox';
+  static const String map = '/home/map';
   static const String categories = '/account/categories';
   static const String cart = '/cart';
   static const String checkout = '/checkout';

@@ -31,6 +31,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+        ),
+        onPressed: () => context.pushNamed(Routes.map),
+        backgroundColor: green,
+        child: SvgPicture.asset(
+          AppImages.map,
+          color: white,
+          height: 2.5 * SizeConfig.heightMultiplier,
+          width: 2.5 * SizeConfig.heightMultiplier,
+        ),
+      ),
       appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: primary,

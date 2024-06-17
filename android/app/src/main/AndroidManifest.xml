@@ -34,7 +34,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyBkOlEK3rAUxsL0xGiD5XaP22QjbP9vZq8"/>
+           android:value="AIzaSyCkcqv164afHCaj4c3VuwisD0EQiQ1zWv0"/>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ecoville"/>
@@ -118,4 +118,10 @@
         <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
         </provider>
     </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
 </manifest>

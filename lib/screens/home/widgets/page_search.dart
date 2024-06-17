@@ -14,7 +14,7 @@ class MainPageSearch extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
         decoration: BoxDecoration(
-          color: lightGrey,
+          color: Colors.grey[100],
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(

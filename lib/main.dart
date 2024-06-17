@@ -1,6 +1,7 @@
 import 'package:ecoville/blocs/app/address_cubit.dart';
 import 'package:ecoville/blocs/app/authentication_cubit.dart';
 import 'package:ecoville/blocs/app/local_cubit.dart';
+import 'package:ecoville/blocs/app/location_cubit.dart';
 import 'package:ecoville/blocs/app/message_cubit.dart';
 import 'package:ecoville/blocs/app/notification_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/screens/authentication/welcome_page.dart';
 import 'package:ecoville/screens/home/home_page.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -96,6 +98,10 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           lazy: false,
           create: (context) => AddressCubit()..getAddresses(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => LocationCubit()..getCurrentLocation(),
         ),
       ],
       child: LayoutBuilder(builder: (context, constraints) {

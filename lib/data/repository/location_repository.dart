@@ -22,7 +22,9 @@ class LocationRepository extends LocationTemplate {
   Future<Position> getCurrentLocation() async {
     try {
       await requestPermission();
-      return await Geolocator.getCurrentPosition();
+      final location = await Geolocator.getCurrentPosition();
+      debugPrint("Location: $location");
+      return location;
     } catch (error) {
       return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -65,7 +67,7 @@ class LocationRepository extends LocationTemplate {
       required double radius}) async {
     try {
       final currentLocation = await getCurrentLocation();
-      final distance =calculateDistanceBetween(currentLocation.latitude,
+      final distance = calculateDistanceBetween(currentLocation.latitude,
           currentLocation.longitude, latitude, longitude);
       return distance <= radius;
     } catch (e) {

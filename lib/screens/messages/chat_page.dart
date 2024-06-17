@@ -112,7 +112,7 @@ class _ChatPageState extends State<ChatPage> {
                 } else {
                   return Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
                       child: ListView.separated(
                         shrinkWrap: true,
                         controller: _scrollController,
@@ -126,7 +126,7 @@ class _ChatPageState extends State<ChatPage> {
                           );
                         },
                         separatorBuilder: (context, index) => const SizedBox(
-                          height: 6,
+                          height: 8,
                         ),
                       ),
                     ),
@@ -164,17 +164,12 @@ class _ChatPageState extends State<ChatPage> {
                                 sellerId: seller,
                                 conversationId: conversationId);
                             _messageController.clear();
-                            Future.delayed(
-                              const Duration(milliseconds: 300),
-                              () {
-                                _scrollController.animateTo(
-                                  _scrollController.position.maxScrollExtent +
-                                      400,
-                                  duration: const Duration(seconds: 4),
-                                  curve: Curves.easeIn,
-                                );
-                              },
-                            );
+                            _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent +
+                                    400,
+                                duration: const Duration(milliseconds: 100),
+                                curve: Curves.easeIn,
+                              );
                           },
                         ),
                       ),
@@ -192,17 +187,11 @@ class _ChatPageState extends State<ChatPage> {
                               sellerId: seller,
                               conversationId: conversationId);
                           _messageController.clear();
-                          Future.delayed(
-                            const Duration(milliseconds: 300),
-                            () {
-                              _scrollController.animateTo(
-                                _scrollController.position.maxScrollExtent +
-                                    400,
-                                duration: const Duration(seconds: 4),
+                          _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 100),
                                 curve: Curves.easeIn,
                               );
-                            },
-                          );
                         }, // function to call the API with user prompt
                         padding: const EdgeInsets.all(0),
                         icon: const Icon(Icons.send),
