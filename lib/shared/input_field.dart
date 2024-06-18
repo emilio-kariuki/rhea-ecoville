@@ -20,6 +20,7 @@ class InputField extends StatelessWidget {
       this.fillColor = Colors.transparent,
       this.borderRadius = 10,
       this.borderColor,
+      this.textInputAction,
       this.helperText});
   final TextEditingController controller;
   final Widget? suffixIcon;
@@ -37,6 +38,7 @@ class InputField extends StatelessWidget {
   final Color? fillColor;
   final double borderRadius;
   final Color? borderColor;
+  final TextInputAction? textInputAction;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class InputField extends StatelessWidget {
         obscureText: obScureText,
         enabled: isEnabled ?? true,
         keyboardType: textInputType ?? TextInputType.text,
-        textInputAction: TextInputAction.next,
+        textInputAction: textInputAction,
         minLines: minLines,
         maxLines: maxLines,
         onTap: onTap,

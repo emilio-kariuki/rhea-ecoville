@@ -55,8 +55,8 @@ class AppImages {
   static const String lock = 'assets/icons/lock.svg';
   static const String shield = 'assets/icons/shield.svg';
   static const String watch = 'assets/icons/watch.svg';
-
-
+  static const String upload = 'assets/icons/upload.svg';
+    static const String refresh = 'assets/icons/refresh.svg';
 
 
   static const String ecoville = 'assets/ecoville.svg';
@@ -66,6 +66,10 @@ class AppImages {
   //* Images
   static const String welcome = 'assets/images/welcome.jpg';
   static const String mpesa = 'assets/images/mpesa.png';
+  static const String products = 'assets/images/products.jpg';
+  static const String shop = 'assets/images/shop.png';
+  static const String messages_1 = 'assets/images/messages.jpg';
+  static const String delivery = 'assets/images/delivery.jpg';
 
   //* General
   static const String defaultImage = 'https://www.picsa.pro/profile.jpg';

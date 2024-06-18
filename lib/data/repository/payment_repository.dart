@@ -33,9 +33,10 @@ class PaymentRepository implements PaymentTemplate {
     required List<String> products,
   }) async {
     final request = {
-      'phone': int.parse('254$phone'),
-      'amount': 1,
+      'phone': phone,
+      'amount': amount,
     };
+    debugPrint(request.toString());
     final req = jsonEncode(request);
     try {
       final response = await Dio().post(
@@ -59,7 +60,6 @@ class PaymentRepository implements PaymentTemplate {
     required String checkoutRequestID,
     required List<String> products,
   }) async {
-    
     final request = {
       'checkoutRequestID': checkoutRequestID,
     };

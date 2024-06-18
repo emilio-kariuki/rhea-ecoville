@@ -1,9 +1,11 @@
 import 'package:ecoville/blocs/app/local_cubit.dart';
+import 'package:ecoville/blocs/app/product_cubit.dart';
+import 'package:ecoville/screens/home/widgets/product_container.dart';
+import 'package:ecoville/screens/home/widgets/product_list_shimmer.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/utilities/utilities.dart';
-import 'package:flutter_easy_faq/flutter_easy_faq.dart';
 
 import '../../shared/icon_container.dart';
 
@@ -132,14 +134,14 @@ class SellingPage extends StatelessWidget {
               height: 6 * SizeConfig.heightMultiplier,
               borderRadius: 30,
               text: Text(
-                "List an item",
+                "List item",
                 style: GoogleFonts.inter(
                     color: white,
                     fontSize: 1.8 * SizeConfig.textMultiplier,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.1),
               ),
-              function: () => context.pushNamed(Routes.checkout)),
+              function: () => context.pushNamed(Routes.post)),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -254,6 +256,74 @@ class SellingPage extends StatelessWidget {
                       separatorBuilder: (context, index) =>
                           Gap(0.2 * SizeConfig.heightMultiplier),
                       itemCount: howItWorks.length,
+                    ),
+                  ),
+                  Gap(3 * SizeConfig.heightMultiplier),
+                  
+                  BlocProvider(
+                    create: (context) => ProductCubit()..getUserProductsPosted(),
+                    child: Builder(
+                      builder: (context) {
+                        return BlocBuilder<ProductCubit, ProductState>(
+                          buildWhen: (previous, current) =>
+                              previous.products != current.products,
+                          builder: (context, state) {
+                            return state.status == ProductStatus.loading
+                                ? const ProductListShimmer()
+                                : state.products.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Column(
+                                        children: [
+                                          Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Your listings",
+                          style: GoogleFonts.inter(
+                              color: black,
+                              fontSize: 2 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w700,
+                              height: 1.2,
+                              letterSpacing: 0.1),
+                        ),
+                        const Spacer(),
+                        IconContainer(icon: AppImages.refresh, function: ()=> context.read<ProductCubit>().getUserProductsPosted())
+                      ],
+                    ),
+                  ),
+                  Gap(2 * SizeConfig.heightMultiplier),
+                                          SizedBox(
+                                            height: size.height * 0.26,
+                                            child: ListView.separated(
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.horizontal,
+                                              itemBuilder: (context, index) =>
+                                                  Padding(
+                                                padding: EdgeInsets.only(
+                                                  left: index == 0 ? 10 : 0,
+                                                  right: index ==
+                                                          (state.products.length -
+                                                              1)
+                                                      ? 10
+                                                      : 0,
+                                                ),
+                                                child: ProductContainer(
+                                                  key: UniqueKey(),
+                                                  product: state.products[index],
+                                                ),
+                                              ),
+                                              separatorBuilder: (context, index) =>
+                                                  Gap(1.3 *
+                                                      SizeConfig.widthMultiplier),
+                                              itemCount: state.products.length,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                          },
+                        );
+                      }
                     ),
                   ),
                   Gap(3 * SizeConfig.heightMultiplier),

@@ -2,6 +2,7 @@ import 'package:ecoville/data/repository/product_repository.dart';
 import 'package:ecoville/models/category_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
+import 'package:ecoville/models/product_request_model.dart';
 
 class ProductProvider extends ProductTemplate {
   final ProductRepository _productRepository;
@@ -10,7 +11,7 @@ class ProductProvider extends ProductTemplate {
 
   @override
   Future<bool> createProduct(
-      {required ProductModel product, required bool allowBidding}) {
+      {required ProductRequestModel product, required bool allowBidding}) {
     return _productRepository.createProduct(
         product: product, allowBidding: allowBidding);
   }

@@ -25,12 +25,12 @@ class _AccountPageState extends State<AccountPage> {
       'icon': AppImages.wishlist,
       'page': Routes.wishlist
     },
-    {
-      "name": "Purchases",
-      'description': "Your order history",
-      'icon': AppImages.offer,
-      'page': Routes.cart
-    },
+    // {
+    //   "name": "Purchases",
+    //   'description': "Your order history",
+    //   'icon': AppImages.offer,
+    //   'page': Routes.cart
+    // },
     // {
     //   "name": "Bids & offers",
     //   'description': "Active auctions and seller offers",
@@ -49,12 +49,12 @@ class _AccountPageState extends State<AccountPage> {
       'icon': AppImages.category,
       'page': Routes.categories
     },
-    {
-      "name": "Listings",
-      'description': "Your all time listings",
-      'icon': AppImages.listings,
-      'page': Routes.cart
-    }
+    // {
+    //   "name": "Listings",
+    //   'description': "Your all time listings",
+    //   'icon': AppImages.listings,
+    //   'page': Routes.cart
+    // }
   ];
   List<Map<String, dynamic>> shortcutList = [
     // {

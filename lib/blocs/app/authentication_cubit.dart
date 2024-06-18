@@ -8,8 +8,17 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future<void> appStarted() async {
     final response = await _authProvider.isSignedIn();
+    final isOnboarded = await SharedPreferences.getInstance().then((value) {
+      return value.getBool('onboarded') ?? false;
+    });
+    if (!isOnboarded) {
+      emit(
+        AuthenticationState(status: AuthenticationStatus.notOnboarded),
+      );
+      return;
+    }
     debugPrint('isSignedIn: $response');
-    if (response) {
+    if (response == true && isOnboarded == true) {
       emit(
         AuthenticationState(status: AuthenticationStatus.authenticated),
       );
@@ -21,7 +30,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 }
 
-enum AuthenticationStatus { unAuthenticated, authenticated }
+enum AuthenticationStatus { unAuthenticated, authenticated, notOnboarded }
 
 class AuthenticationState {
   final AuthenticationStatus status;

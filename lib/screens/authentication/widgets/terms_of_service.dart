@@ -17,7 +17,7 @@ class TermsOfService extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .displaySmall!
-                .copyWith(fontWeight: FontWeight.w600, fontSize: 12.5, color: white),
+                .copyWith(fontWeight: FontWeight.w600, fontSize: 12.5, color: black),
           ),
           TextSpan(
             text: "Terms of Service, Privacy Policy ",
@@ -29,7 +29,7 @@ class TermsOfService extends StatelessWidget {
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 12.5,
-                  color: white
+                  color: black
                 ),
           ),
           TextSpan(

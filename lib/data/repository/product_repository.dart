@@ -4,6 +4,7 @@ import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/category_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
+import 'package:ecoville/models/product_request_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 abstract class ProductTemplate {
@@ -13,7 +14,7 @@ abstract class ProductTemplate {
       {required String categoryId});
   Future<List<ProductModel>> getUserProductsPosted();
   Future<bool> createProduct(
-      {required ProductModel product, required bool allowBidding});
+      {required ProductRequestModel product, required bool allowBidding});
   Future<bool> updateProduct({required ProductModel product});
   Future<bool> deleteProduct({required String id});
   Future<bool> saveProduct({required LocalProductModel product});
@@ -40,7 +41,7 @@ class ProductRepository extends ProductTemplate {
 
   @override
   Future<bool> createProduct(
-      {required ProductModel product, required bool allowBidding}) async {
+      {required ProductRequestModel product, required bool allowBidding}) async {
     try {
       await supabase.from(TABLE_PRODUCT).insert(product.toJson());
       return true;
@@ -164,7 +165,7 @@ class ProductRepository extends ProductTemplate {
       final userId = supabase.auth.currentUser!.id;
       final response = await supabase
           .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_category(*)")
+          .select("ecoville_user(*), *, ecoville_product_category(*)")
           .eq('userId', userId);
       final products = response.map((e) => ProductModel.fromJson(e)).toList();
       return products;

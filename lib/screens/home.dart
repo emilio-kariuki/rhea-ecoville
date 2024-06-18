@@ -48,6 +48,7 @@ class _HomeState extends State<Home> {
             })
         .subscribe();
     return Scaffold(
+      backgroundColor: white,
       body: widget.child,
       bottomNavigationBar: getFooter(context),
     );

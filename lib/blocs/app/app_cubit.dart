@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ecoville/data/provider/app_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/search_model.dart';
@@ -86,29 +88,54 @@ class AppCubit extends Cubit<AppState> {
       setError(e.toString());
     }
   }
+
+  Future<void> uploadImage({required File file}) async {
+    try {
+      setLoading();
+      final imageUrl = await _appProvider.uploadFile(path: file.path);
+      emit(state.copyWith(status: AppStatus.uploaded, imageUrl: imageUrl));
+    } catch (error) {
+      setError(error.toString());
+    }
+  }
+
+  Future<void> pickImage({required ImageSource source}) async {
+    try {
+      setLoading();
+      final imageFile = await _appProvider.pickImage(source: source);
+      await uploadImage(file: imageFile);
+      emit(state.copyWith(status: AppStatus.success, message: "Image picked"));
+    } catch (error) {
+      setError(error.toString());
+    }
+  }
 }
 
-enum AppStatus { initial, loading, success }
+enum AppStatus { initial, loading, success, uploaded }
 
 class AppState {
   final AppStatus status;
   final List<SearchModel> searches;
+  final String imageUrl;
   final String message;
 
   AppState({
     this.status = AppStatus.initial,
     this.searches = const [],
+    this.imageUrl = '',
     this.message = '',
   });
 
   AppState copyWith({
     AppStatus? status,
     List<SearchModel>? searches,
+    String? imageUrl,
     String? message,
   }) {
     return AppState(
       status: status ?? this.status,
       searches: searches ?? this.searches,
+      imageUrl: imageUrl ?? this.imageUrl,
       message: message ?? this.message,
     );
   }

@@ -49,6 +49,8 @@ dependencies:
   permission_handler: ^11.3.1
   google_maps_flutter: ^2.7.0
   flutter_easy_faq: ^1.0.1
+  dots_indicator: ^3.0.0
+  dropdown_button2: ^2.3.9
   
 
 dev_dependencies:

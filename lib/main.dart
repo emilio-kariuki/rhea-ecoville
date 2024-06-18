@@ -41,7 +41,13 @@ void main() async {
       url: "https://fuvjfsjfehyistbfkmkg.supabase.co",
       anonKey:
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1dmpmc2pmZWh5aXN0YmZrbWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NDU0ODMsImV4cCI6MjAzMTUyMTQ4M30.EaKs4B9BheWafF7u2Cz0uQhw-m9C8LTVYuT_YVlXGR4",
-      debug: false);
+      debug: true,
+      storageOptions: const StorageClientOptions(
+        retryAttempts: 3,
+      ),
+      postgrestOptions: const PostgrestClientOptions(
+        schema: 'public',
+      ));
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -120,21 +126,6 @@ class MainApp extends StatelessWidget {
           title: "Ecoville",
         );
       }),
-    );
-  }
-}
-
-class Checker extends StatelessWidget {
-  const Checker({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
-      builder: (context, state) {
-        return state.status == AuthenticationStatus.authenticated
-            ?  HomePage()
-            : const WelcomePage();
-      },
     );
   }
 }

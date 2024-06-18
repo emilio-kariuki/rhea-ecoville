@@ -11,7 +11,9 @@ import 'package:flutter/services.dart';
 abstract class AppTemplate {
   Future<File> pickImage({required ImageSource source});
   Future<File> compressImage({required File image});
-  Future<String> uploadFile({required String path, required String productId});
+  Future<String> uploadFile({
+    required String path,
+  });
   Future<void> launchPhone({required String phone});
   Future<void> launchEmail({required String email});
   Future<void> launchBrowser({required String url});
@@ -153,29 +155,22 @@ class AppRepository extends AppTemplate {
   }
 
   @override
-  Future<String> uploadFile(
-      {required String path, required String productId}) async {
+  Future<String> uploadFile({required String path}) async {
     try {
       File image = File(path);
       final id = supabase.auth.currentUser!.id;
       final imageKey =
           'images/$id/${DateTime.now().millisecondsSinceEpoch}.jpg';
       final compressedImage = await compressImage(image: image);
-      await supabase.storage.from(TABLE_BUCKET).upload(
+      
+      await supabase.storage.from('ecoville').upload(
             imageKey,
             compressedImage,
             retryAttempts: 3,
+            
           );
-      final url = supabase.storage.from(TABLE_BUCKET).getPublicUrl(imageKey);
-      await supabase.from(TABLE_IMAGES).upsert(
-        {
-          'id': "$productId${DateTime.now().millisecondsSinceEpoch.toString()}",
-          'name': imageKey,
-          'url': url,
-          'userId': supabase.auth.currentUser!.id,
-          'productId': productId,
-        },
-      );
+          
+      final url = supabase.storage.from('ecoville').getPublicUrl(imageKey);
       debugPrint("The image has been inserted");
       return url;
     } catch (e) {

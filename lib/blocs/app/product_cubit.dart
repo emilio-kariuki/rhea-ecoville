@@ -3,6 +3,7 @@ import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/category_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
+import 'package:ecoville/models/product_request_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class ProductCubit extends Cubit<ProductState> {
@@ -58,12 +59,12 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> createProduct(
-      {required ProductModel product, required bool allowBidding}) async {
+      {required ProductRequestModel product, required bool allowBidding}) async {
     setLoading();
     try {
       await _productProvider.createProduct(
           product: product, allowBidding: allowBidding);
-      emit(state.copyWith(status: ProductStatus.success));
+      emit(state.copyWith(status: ProductStatus.success, message: "product created successfully"));
     } catch (e) {
       emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
     }

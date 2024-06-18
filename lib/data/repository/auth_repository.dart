@@ -1,4 +1,3 @@
-import 'package:ecoville/data/local/local_storage.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
@@ -7,6 +6,14 @@ import 'package:ecoville/utilities/packages.dart';
 
 abstract class AuthTemplate {
   Future<bool> isSignedIn();
+  Future<bool> createAccountWithEmailPassword(
+      {required String email,
+      required String password,
+      required String name,
+      required String phone});
+  Future<bool> signInWithEmailPassword(
+      {required String email, required String password});
+  Future<bool> resetPassword({required String email});
   Future<bool> signInWithGoogle();
   Future<bool> signOut();
 }
@@ -32,8 +39,7 @@ class AuthRepository extends AuthTemplate {
     }
     await Posthog().identify(userId: user.id, userPropertiesSetOnce: {
       'email': user.email!,
-      'name': user.userMetadata?['full_name'],
-      'avatar_url': user.userMetadata?['avatar_url'],
+      'avatar_url': user.userMetadata?['avatar_url'] ?? AppImages.defaultImage,
     });
     return true;
   }
@@ -60,7 +66,7 @@ class AuthRepository extends AuthTemplate {
       );
       debugPrint("the response is $response");
       final token = await _notificationService.getNotificationToken();
-      
+
       await _userService.createUser(
         user: UserModel(
           id: response.user!.id,
@@ -70,7 +76,7 @@ class AuthRepository extends AuthTemplate {
           token: token,
         ),
       );
-      
+
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -83,6 +89,60 @@ class AuthRepository extends AuthTemplate {
     try {
       await supabase.auth.signOut();
       await googleSignIn.signOut();
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> createAccountWithEmailPassword({
+    required String email,
+    required String password,
+    required String name,
+    required String phone,
+  }) async {
+    try {
+      AuthResponse response = await supabase.auth
+          .signUp(email: email, password: password, data: {
+        'phone': phone,
+        'full_name': name,
+      });
+      final token = await _notificationService.getNotificationToken();
+      await _userService.createUser(
+          user: UserModel(
+        id: response.user!.id,
+        name: name,
+        email: email,
+        image: AppImages.defaultImage,
+        token: token,
+      ));
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> resetPassword({required String email}) async {
+    try {
+      await supabase.auth.resetPasswordForEmail(email);
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> signInWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await supabase.auth.signInWithPassword(password: password, email: email);
       return true;
     } catch (e) {
       debugPrint(e.toString());

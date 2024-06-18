@@ -26,7 +26,7 @@ class UserModel {
         required this.image,
         required this.token,
         this.phone,
-        this.address,
+         this.address,
         this.createdAt,
         this.rating,
     });

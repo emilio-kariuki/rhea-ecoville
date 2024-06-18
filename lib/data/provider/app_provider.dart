@@ -60,8 +60,8 @@ class AppProvider extends AppTemplate {
   }
 
   @override
-  Future<String> uploadFile({required String path, required String productId}) {
-    return _appRepository.uploadFile(path: path, productId: productId);
+  Future<String> uploadFile({required String path,}) {
+    return _appRepository.uploadFile(path: path);
   }
 
   @override

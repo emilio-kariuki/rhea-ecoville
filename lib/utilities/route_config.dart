@@ -1,10 +1,12 @@
-import 'package:ecoville/main.dart';
 import 'package:ecoville/screens/account/categories_page.dart';
+import 'package:ecoville/screens/account/onboarding_page.dart';
+import 'package:ecoville/screens/authentication/register_page.dart';
 import 'package:ecoville/screens/cart/checkout_page.dart';
 import 'package:ecoville/screens/home/map_page.dart';
 import 'package:ecoville/screens/messages/chat_page.dart';
 import 'package:ecoville/screens/messages/messages_page.dart';
 import 'package:ecoville/screens/search/search_result_page.dart';
+import 'package:ecoville/screens/seller/posting_page.dart.dart';
 import 'package:ecoville/screens/settings/add_address_page.dart';
 import 'package:ecoville/screens/settings/address_page.dart';
 import 'package:ecoville/screens/settings/edit_address_page.dart';
@@ -35,10 +37,11 @@ final GoRouter appRouter = GoRouter(
     initialLocation: '/home',
     routes: [
       GoRoute(
-        path: '/checker',
+        path: '/onboarding',
+        name: Routes.onboarding,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: const Checker(),
+          child: OnboardingPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
@@ -47,7 +50,17 @@ final GoRouter appRouter = GoRouter(
         path: '/welcome',
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: const WelcomePage(),
+          child: WelcomePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
+      ),
+      GoRoute(
+        path: '/register',
+        name: Routes.register,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: RegisterPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
@@ -187,7 +200,7 @@ final GoRouter appRouter = GoRouter(
         name: Routes.welcome,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: const WelcomePage(),
+          child: WelcomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
@@ -230,9 +243,16 @@ final GoRouter appRouter = GoRouter(
                     return MapPage();
                   }),
             ],
-            redirect: (context, state) {
+            redirect: (context, state) async {
               final user = supabase.auth.currentUser;
-              if (user == null) {
+              final onboarded =
+                  await SharedPreferences.getInstance().then((value) {
+                return value.getBool('onboarded') ?? false;
+              });
+
+              if (user == null && onboarded == false) {
+                return '/onboarding';
+              } else if (user == null && onboarded == true) {
                 return '/welcome';
               }
               return null;
@@ -264,8 +284,7 @@ final GoRouter appRouter = GoRouter(
                     builder: (context, state) {
                       final extra = state.extra;
                       return SearchResultPage(
-                        controller: (extra as Map)['controller']
-                      );
+                          controller: (extra as Map)['controller']);
                     })
               ]),
           GoRoute(
@@ -325,24 +344,39 @@ final GoRouter appRouter = GoRouter(
             pageBuilder: (context, state) => MaterialPage(child: InboxPage()),
           ),
           GoRoute(
-            path: '/selling',
-            name: Routes.selling,
-            redirect: (context, state) {
-              final user = supabase.auth.currentUser;
-              if (user == null) {
-                return '/welcome';
-              }
-              return null;
-            },
-            pageBuilder: (context, state) => MaterialPage(child: SellingPage()),
-          ),
+              path: '/selling',
+              name: Routes.selling,
+              redirect: (context, state) {
+                final user = supabase.auth.currentUser;
+                if (user == null) {
+                  return '/welcome';
+                }
+                return null;
+              },
+              pageBuilder: (context, state) =>
+                  MaterialPage(child: SellingPage()),
+              routes: [
+                GoRoute(
+                  path: 'post',
+                  name: Routes.post,
+                  redirect: (context, state) {
+                    final user = supabase.auth.currentUser;
+                    if (user == null) {
+                      return '/welcome';
+                    }
+                    return null;
+                  },
+                  builder: (context, state) => PostingPage(),
+                )
+              ]),
         ],
       ),
     ]);
 
 class Routes {
   static const String welcome = '/welcome';
-  static const String checker = '/checker';
+  static const String register = '/register';
+  static const String onboarding = '/onboarding';
   static const String home = '/home';
   static const String details = '/home/details';
   static const String search = '/search';
@@ -354,6 +388,7 @@ class Routes {
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String selling = '/selling';
+  static const String post = '/selling/post';
   static const String ratings = '/ratings';
   static const String saved = '/account/saved';
   static const String wishlist = '/account/wishlist';

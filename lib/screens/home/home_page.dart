@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: white,
       floatingActionButton: FloatingActionButton(
+        tooltip: "View Map",
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
         ),
@@ -215,7 +216,7 @@ class RecentItems extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: SectionTitle(
-                          title: 'Your Recently Viewed Items',
+                          title: 'Recently Added Items',
                           onTap: () {},
                         ),
                       ),
