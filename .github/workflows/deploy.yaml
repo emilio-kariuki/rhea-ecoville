@@ -76,7 +76,7 @@ jobs:
         with:
           serviceAccountJson: service_account.json
           packageName: com.ecoville.eville
-          
+          changesNotSentForReview: true
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
           whatsNewDirectory: distribution/
