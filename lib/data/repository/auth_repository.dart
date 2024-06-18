@@ -60,6 +60,7 @@ class AuthRepository extends AuthTemplate {
       );
       debugPrint("the response is $response");
       final token = await _notificationService.getNotificationToken();
+      
       await _userService.createUser(
         user: UserModel(
           id: response.user!.id,
@@ -69,6 +70,7 @@ class AuthRepository extends AuthTemplate {
           token: token,
         ),
       );
+      
       return true;
     } catch (e) {
       debugPrint(e.toString());

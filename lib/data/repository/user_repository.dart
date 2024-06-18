@@ -1,4 +1,5 @@
 import 'package:ecoville/data/provider/location_provider.dart';
+import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -32,8 +33,13 @@ class UserRepository extends UserTemplate {
           'image': user.image,
           'token': user.token,
           'phone': '',
-          
         });
+      } else {
+        final userId = supabase.auth.currentUser!.id;
+        final token = await NotificationRepository().getNotificationToken();
+        await supabase.from(TABLE_USERS).update({
+          'token': token,
+        }).eq('id', userId);
       }
       return true;
     } catch (e) {
@@ -84,18 +90,17 @@ class UserRepository extends UserTemplate {
       {required String userId,
       required String interaction,
       required String productId}) {
-    // TODO: implement sendUserInteractions
     throw UnimplementedError();
   }
-  
+
   @override
-  Future<UserModel> getUserById({required String id}) async{
+  Future<UserModel> getUserById({required String id}) async {
     debugPrint('Getting user by id');
-    try{
+    try {
       final response = await supabase.from(TABLE_USERS).select().eq('id', id);
       final user = UserModel.fromJson(response.first);
       return user;
-    }catch(e){
+    } catch (e) {
       debugPrint(e.toString());
       throw Exception('Error getting user by id');
     }

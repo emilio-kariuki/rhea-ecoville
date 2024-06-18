@@ -159,7 +159,8 @@ class NotificationRepository extends NotificationTemplate {
   @override
   Future<List<NotificationModel>> getNotifications() async {
     try {
-      final response = await supabase.from(TABLE_NOTIFICATION).select();
+      final userId = supabase.auth.currentUser!.id;
+      final response = await supabase.from(TABLE_NOTIFICATION).select().eq("userId", userId);
       return response.map((e) => NotificationModel.fromJson(e)).toList();
     } catch (e) {
       debugPrint(e.toString());

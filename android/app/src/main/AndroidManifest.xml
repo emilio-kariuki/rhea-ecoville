@@ -118,10 +118,5 @@
         <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
         </provider>
     </application>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
-        </intent>
-    </queries>
+    
 </manifest>

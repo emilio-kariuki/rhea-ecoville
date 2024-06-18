@@ -79,19 +79,22 @@ class LocationRepository extends LocationTemplate {
   @override
   Future<void> requestPermission() async {
     try {
-      bool serviceEnabled;
       LocationPermission permission;
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('Location services are disabled.');
-      }
-
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
+                    await Geolocator.openAppSettings();
+
         }
+      }else if(permission == LocationPermission.deniedForever){
+        //open app settings
+        await Geolocator.openAppSettings();
+      }
+      bool serviceEnabled;
+       serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception('Location services are disabled.');
       }
 
       if (permission == LocationPermission.deniedForever) {
