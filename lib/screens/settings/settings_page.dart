@@ -37,100 +37,98 @@ class SettingsPage extends StatelessWidget {
           padding: const EdgeInsets.all(15),
           child: BlocProvider(
             create: (context) => AppCubit(),
-            child: Builder(
-              builder: (context) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Account",
-                      style: GoogleFonts.inter(
-                          fontSize: 1.5 * SizeConfig.heightMultiplier,
-                          fontWeight: FontWeight.w600,
-                          color: green),
-                    ),
-                    Gap(1 * SizeConfig.heightMultiplier),
-                    SettingsTile(
-                      title: "Shipping Address",
-                      function: () => context.pushNamed(Routes.address),
-                    ),
-                    // SettingsTile(
-                    //   title: "Change Password",
-                    //   function: () {},
-                    // ),
-                    BlocProvider(
-                      create: (context) => AuthCubit(),
-                      child: Builder(builder: (context) {
-                        return BlocListener<AuthCubit, AuthenticationState>(
-                          listener: (context, state) {
-                            if (state.status == AuthStatus.success) {
-                              context.goNamed(Routes.welcome);
-                            }
-                          },
-                          child: SettingsTile(
-                            title: "Sign Out",
-                            function: () => context.read<AuthCubit>().signOut(),
-                          ),
-                        );
-                      }),
-                    ),
-                    Divider(
-                      height: 40,
-                      color: Colors.grey[300],
-                      thickness: 0.5,
-                    ),
-                    // Text(
-                    //   "About",
-                    //   style: GoogleFonts.inter(
-                    //       fontSize: 1.5 * SizeConfig.heightMultiplier,
-                    //       fontWeight: FontWeight.w600,
-                    //       color: green),
-                    // ),
-                    // Gap(1 * SizeConfig.heightMultiplier),
-                    // SettingsTile(
-                    //   title: "Customer Service",
-                    //   function: () {},
-                    // ),
-                    // Divider(
-                    //   height: 40,
-                    //   color: Colors.grey[300],
-                    //   thickness: 0.5,
-                    // ),
-                    Text(
-                      "About",
-                      style: GoogleFonts.inter(
-                          fontSize: 1.5 * SizeConfig.heightMultiplier,
-                          fontWeight: FontWeight.w600,
-                          color: green),
-                    ),
-                    Gap(1 * SizeConfig.heightMultiplier),
-                    SettingsTile(
-                      title: "Money Back Guarantee",
-                      function: () => context
-                          .read<AppCubit>()
-                          .launchBrowser("https://ecoville.site/moneyback"),
-                    ),
-                    SettingsTile(
-                      title: "Privacy",
-                      function: () => context
-                          .read<AppCubit>()
-                          .launchBrowser("https://ecoville.site/privacy"),
-                    ),
-                    SettingsTile(
-                      title: "Rate Us",
-                      function: () => context.read<AppCubit>().launchBrowser(
-                          "https://play.google.com/store/apps/details?id=com.ecoville.eville"),
-                    ),
-                    SettingsTile(
-                      title: "Legal",
-                      function: () => context
-                          .read<AppCubit>()
-                          .launchBrowser("https://ecoville.site/legal"),
-                    ),
-                  ],
-                );
-              }
-            ),
+            child: Builder(builder: (context) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Account",
+                    style: GoogleFonts.inter(
+                        fontSize: 1.5 * SizeConfig.heightMultiplier,
+                        fontWeight: FontWeight.w600,
+                        color: green),
+                  ),
+                  Gap(1 * SizeConfig.heightMultiplier),
+                  SettingsTile(
+                    title: "Shipping Address",
+                    function: () => context.pushNamed(Routes.address),
+                  ),
+                  // SettingsTile(
+                  //   title: "Change Password",
+                  //   function: () {},
+                  // ),
+                  BlocProvider(
+                    create: (context) => AuthCubit(),
+                    child: Builder(builder: (context) {
+                      return BlocListener<AuthCubit, AuthenticationState>(
+                        listener: (context, state) {
+                          if (state.status == AuthStatus.success) {
+                            context.goNamed(Routes.welcome);
+                          }
+                        },
+                        child: SettingsTile(
+                          title: "Sign Out",
+                          function: () => context.read<AuthCubit>().signOut(),
+                        ),
+                      );
+                    }),
+                  ),
+                  Divider(
+                    height: 40,
+                    color: Colors.grey[300],
+                    thickness: 0.5,
+                  ),
+                  // Text(
+                  //   "About",
+                  //   style: GoogleFonts.inter(
+                  //       fontSize: 1.5 * SizeConfig.heightMultiplier,
+                  //       fontWeight: FontWeight.w600,
+                  //       color: green),
+                  // ),
+                  // Gap(1 * SizeConfig.heightMultiplier),
+                  // SettingsTile(
+                  //   title: "Customer Service",
+                  //   function: () {},
+                  // ),
+                  // Divider(
+                  //   height: 40,
+                  //   color: Colors.grey[300],
+                  //   thickness: 0.5,
+                  // ),
+                  Text(
+                    "About",
+                    style: GoogleFonts.inter(
+                        fontSize: 1.5 * SizeConfig.heightMultiplier,
+                        fontWeight: FontWeight.w600,
+                        color: green),
+                  ),
+                  Gap(1 * SizeConfig.heightMultiplier),
+                  SettingsTile(
+                    title: "Money Back Guarantee",
+                    function: () => context
+                        .read<AppCubit>()
+                        .launchBrowser("https://ecoville.site/moneyback"),
+                  ),
+                  SettingsTile(
+                    title: "Privacy",
+                    function: () => context
+                        .read<AppCubit>()
+                        .launchBrowser("https://ecoville.site/privacy"),
+                  ),
+                  SettingsTile(
+                    title: "Rate Us",
+                    function: () => context.read<AppCubit>().launchBrowser(
+                        "https://play.google.com/store/apps/details?id=com.ecoville.eville"),
+                  ),
+                  SettingsTile(
+                    title: "Legal",
+                    function: () => context
+                        .read<AppCubit>()
+                        .launchBrowser("https://ecoville.site/legal"),
+                  ),
+                ],
+              );
+            }),
           ),
         ));
   }
@@ -148,8 +146,14 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: function,
+    return OutlinedButton(
+      onPressed: function,
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        backgroundColor: Colors.transparent,
+        foregroundColor: white,
+        side: BorderSide.none,
+      ),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Text(

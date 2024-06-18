@@ -97,34 +97,8 @@ class CartPage extends StatelessWidget {
                     buildWhen: (previous, current) =>
                         current.cartItems != previous.cartItems,
                     builder: (context, state) {
-                      return state.cartItems.isEmpty
-                          ? Center(
-                              child: Column(
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        AppImages.cart,
-                                        height: 6 * SizeConfig.heightMultiplier,
-                                        color: Colors.grey[700],
-                                      ),
-                                      Text(
-                                        "You don't have any items in your cart. Let's go shopping!",
-                                        style: GoogleFonts.inter(
-                                          fontSize:
-                                              1.5 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                      Gap(2 * SizeConfig.heightMultiplier)
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Column(
+                      return 
+                          Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 BlocBuilder<LocalCubit, LocalState>(

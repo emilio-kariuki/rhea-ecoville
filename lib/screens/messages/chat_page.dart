@@ -33,34 +33,38 @@ class _ChatPageState extends State<ChatPage> {
         automaticallyImplyLeading: false,
         title: BlocProvider(
           create: (context) => UserCubit()..getUserById(id: seller),
-          child: BlocBuilder<UserCubit, UserState>(
-            builder: (context, state) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                      )),
-                  Gap(1 * SizeConfig.widthMultiplier),
-                  NetworkImageContainer(
-                    imageUrl: state.user?.image ?? AppImages.defaultImage,
-                    height: size.height * 0.05,
-                    width: size.height * 0.04,
-                    isCirlce: true,
-                  ),
-                  Gap(1 * SizeConfig.widthMultiplier),
-                  Text(state.user?.name ?? 'Seller',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      )),
-                ],
+          child: Builder(
+            builder: (context) {
+              return BlocBuilder<UserCubit, UserState>(
+                builder: (context, state) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Icon(
+                            Icons.arrow_back,
+                            size: 20,
+                          )),
+                      Gap(1 * SizeConfig.widthMultiplier),
+                      NetworkImageContainer(
+                        imageUrl: state.user?.image ?? AppImages.defaultImage,
+                        height: size.height * 0.05,
+                        width: size.height * 0.04,
+                        isCirlce: true,
+                      ),
+                      Gap(1 * SizeConfig.widthMultiplier),
+                      Text(state.user?.name ?? 'Seller',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ],
+                  );
+                },
               );
-            },
+            }
           ),
         ),
         actions: [
