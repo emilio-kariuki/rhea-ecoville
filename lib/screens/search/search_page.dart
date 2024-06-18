@@ -52,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
                     onFieldSubmitted: (value) {
                       _searchController.text = value;
                       context.push(Routes.searchResults,
-                          extra: {'controller': _searchController.text});
+                          extra: {'controller': _searchController});
                       context.read<AppCubit>().insertSearch(name: value);
                       _searchController.clear();
                       _focusNode.requestFocus();
