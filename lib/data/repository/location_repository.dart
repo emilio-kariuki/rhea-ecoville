@@ -23,7 +23,6 @@ class LocationRepository extends LocationTemplate {
     try {
       await requestPermission();
       final location = await Geolocator.getCurrentPosition();
-      debugPrint("Location: $location");
       return location;
     } catch (error) {
       return await Geolocator.getCurrentPosition(

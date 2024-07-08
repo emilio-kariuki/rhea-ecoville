@@ -10,21 +10,6 @@ class LocalCubit extends Cubit<LocalState> {
 
   LocalCubit() : super(LocalState());
 
-  Future<void> saveProduct({required LocalProductModel product}) async {
-    try {
-      emit(state.copyWith(status: LocalStatus.loading));
-      await _productProvider.saveProduct(product: product);
-      emit(state.copyWith(
-        status: LocalStatus.success,
-        message: "Product saved successfully",
-      ));
-    } catch (error) {
-      emit(state.copyWith(
-        status: LocalStatus.success,
-        message: error.toString(),
-      ));
-    }
-  }
 
   Future<void> getSavedProduct() async {
     try {

@@ -51,6 +51,7 @@ dependencies:
   flutter_easy_faq: ^1.0.1
   dots_indicator: ^3.0.0
   dropdown_button2: ^2.3.9
+  socket_io_client: ^2.0.3+1
   
 
 dev_dependencies:

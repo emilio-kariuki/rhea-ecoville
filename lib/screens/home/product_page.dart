@@ -14,26 +14,37 @@ import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/screens/home/widgets/product_container.dart';
 import 'package:ecoville/screens/home/widgets/product_shimmer.dart';
 
-class ProductDetailsPage extends StatelessWidget {
+class ProductDetailsPage extends StatefulWidget {
   ProductDetailsPage({super.key, required this.id, required this.title});
   final String id;
   final String title;
 
+  @override
+  State<ProductDetailsPage> createState() => _ProductDetailsPageState();
+}
+
+class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final _pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return BlocBuilder<ProductCubit, ProductState>(
       buildWhen: (previous, current) => previous.product != current.product,
-      bloc: context.read<ProductCubit>()..getProduct(id: id),
+      bloc: context.read<ProductCubit>()..getProduct(id: widget.id),
       builder: (context, state) {
         return Scaffold(
             backgroundColor: white,
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(8 * SizeConfig.heightMultiplier),
               child: ProductAppBar(
-                id: id,
+                id: widget.id,
               ),
             ),
             body: SingleChildScrollView(
@@ -41,13 +52,13 @@ class ProductDetailsPage extends StatelessWidget {
                 create: (context) => PageCubit(),
                 child: state.status == ProductStatus.loading
                     ? ProductPageShimmer(
-                        title: title,
+                        title: widget.title,
                       )
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ProductImagesSection(
-                            id: id,
+                            id: widget.id,
                             pageController: _pageController,
                           ),
                           Gap(2 * SizeConfig.widthMultiplier),
@@ -84,7 +95,7 @@ class ProductDetailsPage extends StatelessWidget {
                                               current.product,
                                           builder: (context, state) {
                                             return Text(
-                                              state.product!.user!.name,
+                                              state.product!.user!.name!,
                                               style: GoogleFonts.inter(
                                                   color: black,
                                                   fontSize: 2.2 *
@@ -133,7 +144,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                           .createConversation(
                                                               sellerId: state
                                                                   .product!
-                                                                  .userId)
+                                                                  .userId!)
                                                       : null,
                                                 ),
                                               );
@@ -144,7 +155,7 @@ class ProductDetailsPage extends StatelessWidget {
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
                                 Text(
-                                  'Ksh ${state.product?.startingPrice ?? "Ksh 0"}',
+                                  'Ksh ${state.product?.price ?? "Ksh 0"}',
                                   style: GoogleFonts.inter(
                                       color: black,
                                       fontSize: 2.8 * SizeConfig.textMultiplier,
@@ -152,7 +163,7 @@ class ProductDetailsPage extends StatelessWidget {
                                       height: 1.2),
                                 ),
                                 Text(
-                                  "${state.product!.address.city}, ${state.product!.address.country}",
+                                  "${state.product!.address!.city!}, ${state.product!.address!.country!}",
                                   style: GoogleFonts.inter(
                                       color: black,
                                       fontSize: 2 * SizeConfig.textMultiplier,
@@ -214,7 +225,7 @@ class ProductDetailsPage extends StatelessWidget {
                                     if (state.status == LocalStatus.success) {
                                       context
                                         ..read<ProductCubit>()
-                                            .getProduct(id: id)
+                                            .getProduct(id: widget.id)
                                         ..read<LocalCubit>().getCartProducts();
                                     }
                                   },
@@ -227,9 +238,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                 6 * SizeConfig.heightMultiplier,
                                             borderRadius: 30,
                                             text: Text(
-                                              state.product!.cart
-                                                  ? "View in Cart"
-                                                  : "Add to Cart",
+                                               "Add to Cart",
                                               style: GoogleFonts.inter(
                                                   color: green,
                                                   fontSize: 1.8 *
@@ -237,25 +246,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                   fontWeight: FontWeight.w600,
                                                   letterSpacing: 0.1),
                                             ),
-                                            function: () => state.product!.cart
-                                                ? context.pushNamed(Routes.cart)
-                                                : context
-                                                    .read<LocalCubit>()
-                                                    .addProductToCart(
-                                                        product: LocalProductModel(
-                                                            id: state
-                                                                .product!.id,
-                                                            name: state
-                                                                .product!.name,
-                                                            image: state
-                                                                .product!
-                                                                .image[0],
-                                                            userId: state
-                                                                .product!
-                                                                .userId,
-                                                            startingPrice: state
-                                                                .product!
-                                                                .startingPrice)));
+                                            function: (){});
                                       },
                                     );
                                   },
@@ -275,7 +266,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                 LocalStatus.success) {
                                               context
                                                   .read<ProductCubit>()
-                                                  .getProduct(id: id);
+                                                  .getProduct(id: widget.id);
                                             }
                                           },
                                           child: BorderButton(
@@ -290,7 +281,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   SvgPicture.asset(
-                                                    state.product!.wishlist
+                                                    state.product!.isWishlisted!
                                                         ? AppImages
                                                             .favouriteSolid
                                                         : AppImages.favourite,
@@ -306,7 +297,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                       SizeConfig
                                                           .widthMultiplier),
                                                   Text(
-                                                    state.product!.wishlist
+                                                    state.product!.isWishlisted!
                                                         ? "Added to Wishlist"
                                                         : "Add to Wishlist",
                                                     style: GoogleFonts.inter(
@@ -320,29 +311,12 @@ class ProductDetailsPage extends StatelessWidget {
                                                   ),
                                                 ],
                                               ),
-                                              function: () => state.product!.wishlist
+                                              function: () => state.product!.isWishlisted!
                                                   ? context
                                                       .read<LocalCubit>()
                                                       .removeProductFromWishlist(
-                                                          id: state.product!.id)
-                                                  : context
-                                                      .read<LocalCubit>()
-                                                      .addProductToWishlist(
-                                                          product: LocalProductModel(
-                                                              id: state
-                                                                  .product!.id,
-                                                              name: state
-                                                                  .product!
-                                                                  .name,
-                                                              image: state
-                                                                  .product!
-                                                                  .image[0],
-                                                              userId: state
-                                                                  .product!
-                                                                  .userId,
-                                                              startingPrice: state
-                                                                  .product!
-                                                                  .startingPrice))),
+                                                          id: state.product!.id!)
+                                                  :(){}),
                                         );
                                       }),
                                     );
@@ -442,7 +416,7 @@ class SellerSection extends StatelessWidget {
                       previous.product != current.product,
                   builder: (context, state) {
                     return Text(
-                      state.product!.user!.name,
+                      state.product!.user!.name!,
                       style: GoogleFonts.inter(
                           color: black,
                           fontSize: 2.2 * SizeConfig.textMultiplier,
@@ -590,7 +564,7 @@ class SellerSection extends StatelessWidget {
           builder: (context, state) {
             return BlocProvider(
               create: (context) => RatingCubit()
-                ..getSellerRatings(userId: state.product!.userId),
+                ..getSellerRatings(userId: state.product!.userId!),
               child: Builder(builder: (context) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -772,12 +746,12 @@ class ProductImagesSection extends StatelessWidget {
                         _pageController.jumpToPage(value);
                         context.read<PageCubit>().changePage(page: value);
                       },
-                      itemCount: state.product!.image.length,
+                      itemCount: state.product!.image!.length,
                       itemBuilder: (context, index) {
                         return Stack(
                           children: [
                             NetworkImageContainer(
-                              imageUrl: state.product!.image[index],
+                              imageUrl: state.product!.image![index],
                               borderRadius: BorderRadius.zero,
                               height: height,
                               width: width,
@@ -806,24 +780,13 @@ class ProductImagesSection extends StatelessWidget {
                                           builder: (context, state) {
                                             return GestureDetector(
                                               onTap: () => state
-                                                          .product?.favourite ??
+                                                          .product?.isLiked ??
                                                       false
                                                   ? context
                                                       .read<LocalCubit>()
                                                       .unLikeProduct(
-                                                          id: state.product!.id)
-                                                  : context.read<LocalCubit>().likeProduct(
-                                                      product: LocalProductModel(
-                                                          id: state.product!.id,
-                                                          name: state
-                                                              .product!.name,
-                                                          image: state.product!
-                                                              .image[0],
-                                                          userId: state
-                                                              .product!.userId,
-                                                          startingPrice: state
-                                                              .product!
-                                                              .startingPrice)),
+                                                          id: state.product!.id!)
+                                                  : (){},
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.all(8),
@@ -834,7 +797,7 @@ class ProductImagesSection extends StatelessWidget {
                                                   widthFactor: 1,
                                                   heightFactor: 1,
                                                   child: SvgPicture.asset(
-                                                    state.product?.favourite ??
+                                                    state.product?.isLiked ??
                                                             false
                                                         ? AppImages
                                                             .favouriteSolid
@@ -863,7 +826,7 @@ class ProductImagesSection extends StatelessWidget {
               },
             ),
             Gap(1 * SizeConfig.widthMultiplier),
-            state.product!.image.length == 1
+            state.product!.image!.length == 1
                 ? const SizedBox.shrink()
                 : BlocBuilder<PageCubit, PageState>(
                     builder: (context, pstate) {
@@ -889,7 +852,7 @@ class ProductImagesSection extends StatelessWidget {
                                             .changePage(page: index);
                                       },
                                       child: NetworkImageContainer(
-                                        imageUrl: state.product!.image[index],
+                                        imageUrl: state.product!.image![index],
                                         height: height * 0.1,
                                         width: height * 0.11,
                                         fit: BoxFit.cover,
@@ -903,7 +866,7 @@ class ProductImagesSection extends StatelessWidget {
                                 ),
                             separatorBuilder: (context, index) =>
                                 Gap(1 * SizeConfig.widthMultiplier),
-                            itemCount: state.product!.image.length),
+                            itemCount: state.product!.image!.length),
                       );
                     },
                   ),
@@ -996,21 +959,14 @@ class ProductAppBar extends StatelessWidget {
               child: BlocBuilder<ProductCubit, ProductState>(
                 builder: (context, state) {
                   return IconContainer(
-                      icon: state.product?.saved ?? false
+                      icon: state.product?.isSaved ?? false
                           ? AppImages.saveSolid
                           : AppImages.save,
-                      function: () => state.product!.saved
+                      function: () => state.product!.isSaved!
                           ? context
                               .read<LocalCubit>()
-                              .unSaveProduct(id: state.product!.id)
-                          : context.read<LocalCubit>().saveProduct(
-                              product: LocalProductModel(
-                                  id: state.product!.id,
-                                  name: state.product!.name,
-                                  image: state.product!.image[0],
-                                  userId: state.product!.userId,
-                                  startingPrice:
-                                      state.product!.startingPrice)));
+                              .unSaveProduct(id: state.product!.id!)
+                          : (){});
                 },
               ),
             );

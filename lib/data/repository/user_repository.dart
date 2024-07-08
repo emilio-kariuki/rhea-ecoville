@@ -1,6 +1,4 @@
-import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
-import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 

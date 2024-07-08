@@ -46,24 +46,24 @@ class ProductContainer extends StatelessWidget {
                         })
                         ..read<LocalCubit>().watchProduct(
                             product: LocalProductModel(
-                                id: product.id,
-                                name: product.name,
-                                image: product.image[0],
-                                userId: product.userId,
-                                startingPrice: product.startingPrice));
+                                id: product.id!,
+                                name: product.name!,
+                                image: product.image![0],
+                                userId: product.userId!,
+                                startingPrice: product.price!));
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         NetworkImageContainer(
-                          imageUrl: product.image[0],
+                          imageUrl: product.image![0],
                           height: width * 0.37,
                           borderRadius: BorderRadius.circular(15),
                           width: width,
                         ),
                         Gap(1.3 * SizeConfig.heightMultiplier),
                         Text(
-                          product.name,
+                          product.name!,
                           maxLines: 2,
                           style: GoogleFonts.inter(
                               color: black,
@@ -73,7 +73,7 @@ class ProductContainer extends StatelessWidget {
                         ),
                         Gap(0.8 * SizeConfig.heightMultiplier),
                         Text(
-                          "Kes${product.startingPrice}",
+                          "Ksh ${product.price}",
                           style: GoogleFonts.inter(
                               color: black,
                               fontSize: 2.2 * SizeConfig.textMultiplier,
@@ -102,17 +102,17 @@ class ProductContainer extends StatelessWidget {
                         }
                       },
                       child: GestureDetector(
-                        onTap: () => product.favourite
+                        onTap: () => product.isLiked!
                             ? context
                                 .read<LocalCubit>()
-                                .unLikeProduct(id: product.id)
+                                .unLikeProduct(id: product.id!)
                             : context.read<LocalCubit>().likeProduct(
                                 product: LocalProductModel(
-                                    id: product.id,
-                                    name: product.name,
-                                    image: product.image[0],
-                                    userId: product.userId,
-                                    startingPrice: product.startingPrice)),
+                                    id: product.id!,
+                                    name: product.name!,
+                                    image: product.image![0],
+                                    userId: product.userId!,
+                                    startingPrice: product.price!)),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -121,7 +121,7 @@ class ProductContainer extends StatelessWidget {
                             widthFactor: 1,
                             heightFactor: 1,
                             child: SvgPicture.asset(
-                              product.favourite
+                              product.isLiked!
                                   ? AppImages.favouriteSolid
                                   : AppImages.favourite,
                               height: 2.7 * SizeConfig.heightMultiplier,

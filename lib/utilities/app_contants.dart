@@ -11,6 +11,7 @@ const String APP_PHONE = '+254796250443';
 const String APP_ADDRESS = 'Nairobi, Kenya';
 const String APP_LICENSE = 'MIT';
 const String GOOGLE_MAPS_API_KEY = "AIzaSyBkOlEK3rAUxsL0xGiD5XaP22QjbP9vZq8";
+const String API_KEY="ECV_okbONyVVRXRKeD198duXZ483rzsYMI";
 
 //* tables
 const String TABLE_USERS = 'ecoville_user';
