@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
@@ -17,7 +20,7 @@ abstract class ProductTemplate {
       {required ProductRequestModel product, required bool allowBidding});
   Future<bool> updateProduct({required ProductModel product});
   Future<bool> deleteProduct({required String id});
-  Future<bool> saveProduct({required LocalProductModel product});
+  Future<bool> saveProduct({required String productId});
   Future<List<LocalProductModel>> getSavedProducts();
   Future<bool> unsaveProduct({required String id});
   Future<bool> watchProduct({required LocalProductModel product});
@@ -41,7 +44,8 @@ class ProductRepository extends ProductTemplate {
 
   @override
   Future<bool> createProduct(
-      {required ProductRequestModel product, required bool allowBidding}) async {
+      {required ProductRequestModel product,
+      required bool allowBidding}) async {
     try {
       await supabase.from(TABLE_PRODUCT).insert(product.toJson());
       return true;
@@ -57,7 +61,7 @@ class ProductRepository extends ProductTemplate {
       await supabase
           .from(TABLE_PRODUCT)
           .update(product.toJson())
-          .eq('id', product.id);
+          .eq('id', product.id!);
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -79,38 +83,17 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<ProductModel> getProduct({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-      final wishlist =
-          await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_WISHLIST);
-      final saved = await _dbHelper.getLocalProducts(
-          db: db, table: LOCAL_TABLE_PRODUCT_SAVED);
-      final favourite = await _dbHelper.getLocalProducts(
-          db: db, table: LOCAL_TABLE_FAVOURITE);
-      final cart =
-          await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_CART);
-      final response = await supabase
-          .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_product_category(*)")
-          .eq('id', id);
-      var product = ProductModel.fromJson(response.first);
-      final isWishlist = wishlist.isEmpty
-          ? false
-          : wishlist.any((element) => element.id == product.id);
-      final isSaved = saved.isEmpty
-          ? false
-          : saved.any((element) => element.id == product.id);
-      final isFavourite = favourite.isEmpty
-          ? false
-          : favourite.any((element) => element.id == product.id);
-
-      final isCart = cart.isEmpty
-          ? false
-          : cart.any((element) => element.id == product.id);
-      product = product.copyWith(
-          wishlist: isWishlist,
-          saved: isSaved,
-          favourite: isFavourite,
-          cart: isCart);
+      final response = await Dio().get(
+          "http://localhost:4003/api/product/get/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final product = ProductModel.fromJson(response.data);
+      debugPrint(product.image.toString());
       return product;
     } catch (e) {
       debugPrint(e.toString());
@@ -121,21 +104,16 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> getProducts() async {
     try {
-      final db = await _dbHelper.init();
-      final favourites = await _dbHelper.getLocalProducts(
-          db: db, table: LOCAL_TABLE_FAVOURITE);
-      final response = await supabase
-          .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_product_category(*)")
-          .eq('sold', false)
-          .limit(10);
-      var products = response.map((e) => ProductModel.fromJson(e)).toList();
-      if (favourites.isNotEmpty) {
-        products = products.map((e) {
-          final isFavourite = favourites.any((element) => element.id == e.id);
-          return e.copyWith(favourite: isFavourite);
-        }).toList();
+      final response = await Dio().get("http://localhost:4003/api/product/get",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
       }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
     } catch (error) {
       debugPrint(error.toString());
@@ -176,11 +154,20 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<bool> saveProduct({required LocalProductModel product}) async {
+  Future<bool> saveProduct({required String productId}) async {
     try {
-      final db = await _dbHelper.init();
-      await _dbHelper.insertLocalProduct(
-          db: db, product: product, table: LOCAL_TABLE_PRODUCT_SAVED);
+      final data = jsonEncode({
+        "productId": productId,
+      });
+      final response = await Dio().get("http://localhost:4003/api/likes/add",
+          data: data,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error saving the products, ${response.data}");
+      }
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -260,29 +247,25 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getNearbyProducts() async {
     try {
       var nearbyProducts = <ProductModel>[];
-      // final userId = supabase.auth.currentUser!.id;
-      final db = await _dbHelper.init();
-      final favourites = await _dbHelper.getLocalProducts(
-          db: db, table: LOCAL_TABLE_FAVOURITE);
-      final response = await supabase
-          .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), ecoville_product_category(*),*");
-      for (var e in response) {
-        final product = ProductModel.fromJson(e);
+      final response = await Dio().get("http://localhost:4003/api/product/get",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      for (var product in products) {
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
-                longitude: product.address.lon,
-                latitude: product.address.lat,
+                longitude: product.address!.lon!,
+                latitude: product.address!.lat!,
                 radius: NEARBY_RADIUS);
         if (isWithinRange) {
           nearbyProducts.add(product);
         }
-      }
-      if (favourites.isNotEmpty) {
-        nearbyProducts = nearbyProducts.map((e) {
-          final isFavourite = favourites.any((element) => element.id == e.id);
-          return e.copyWith(favourite: isFavourite);
-        }).toList();
       }
       return nearbyProducts;
     } catch (error) {

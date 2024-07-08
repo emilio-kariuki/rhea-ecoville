@@ -22,12 +22,9 @@ class MessageRepository implements MessageTemplate {
             conversationId,
           )
           .order('createdAt', ascending: true);
-        debugPrint("response: $response");
       final messages = response.map((e) {
-        debugPrint(e.toString());
         return MessageResponseModel.fromJson(e);
       }).toList();
-      debugPrint("all messages: $messages");
       return messages;
     } catch (e) {
       throw Exception(e);
@@ -58,7 +55,6 @@ class MessageRepository implements MessageTemplate {
   Future<bool> createConversation({required String sellerId}) async {
     try {
       final userId = supabase.auth.currentUser!.id;
-      debugPrint("userId: $userId");
       await supabase.from(TABLE_CONVERSATIONS).insert({
         'id': "${sellerId}_$userId",
         'userId': userId,
@@ -86,7 +82,6 @@ class MessageRepository implements MessageTemplate {
           .order('createdAt', ascending: true);
       final messages =
           response.map((e) => ConversationModel.fromJson(e)).toList();
-      debugPrint("response: $messages");
       return messages;
     } catch (e) {
       throw Exception(e);

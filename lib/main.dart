@@ -8,8 +8,10 @@ import 'package:ecoville/blocs/app/notification_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
+import 'package:ecoville/data/provider/socket_provider.dart';
 import 'package:ecoville/data/repository/location_repository.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
+import 'package:ecoville/data/repository/socket_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -33,6 +35,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("Handling a background message: ${message.messageId}");
 }
 
+final _socketService = service<SocketProvider>();
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -51,6 +55,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  _socketService.connect();  
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await SystemChrome.setPreferredOrientations([
@@ -79,28 +84,26 @@ class MainApp extends StatelessWidget {
           create: (context) => NavigationCubit(),
         ),
         BlocProvider(
-          lazy: false,
-          create: (context) => ProductCubit()
-            ..getProducts()
-            ..getNearbyProducts()
-        ),
-         BlocProvider(
-          lazy: false,
-          create: (context) => NotificationCubit()
-            ..getAllNotifications()
-        ),
+            lazy: false,
+            create: (context) => ProductCubit()
+              ..getProducts()
+              ..getNearbyProducts()),
         BlocProvider(
-          lazy: false,
-          create: (context) => MessageCubit()
-            ..getConversations()
-        ),
+            lazy: false,
+            create: (context) => NotificationCubit()..getAllNotifications()),
+        BlocProvider(
+            lazy: false,
+            create: (context) => MessageCubit()..getConversations()),
         BlocProvider(
           lazy: false,
           create: (context) => UserCubit()..getUser(),
         ),
         BlocProvider(
           lazy: false,
-          create: (context) => LocalCubit()..getCartProducts()..getWatchedProduct()..getLaterCartProducts(),
+          create: (context) => LocalCubit()
+            ..getCartProducts()
+            ..getWatchedProduct()
+            ..getLaterCartProducts(),
         ),
         BlocProvider(
           lazy: false,

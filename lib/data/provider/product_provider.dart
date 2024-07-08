@@ -43,8 +43,8 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<bool> saveProduct({required LocalProductModel product}) {
-    return _productRepository.saveProduct(product: product);
+  Future<bool> saveProduct({required String productId}) {
+    return _productRepository.saveProduct(productId: productId);
   }
 
   @override

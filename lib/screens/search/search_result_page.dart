@@ -153,12 +153,12 @@ class SearchResultPage extends StatelessWidget {
                             })
                         ..read<LocalCubit>().watchProduct(
                             product: LocalProductModel(
-                                id: state.searchResults[index].id,
-                                name: state.searchResults[index].name,
-                                image: state.searchResults[index].image[0],
-                                userId: state.searchResults[index].userId,
+                                id: state.searchResults[index].id!,
+                                name: state.searchResults[index].name!,
+                                image: state.searchResults[index].image![0],
+                                userId: state.searchResults[index].userId!,
                                 startingPrice:
-                                    state.searchResults[index].startingPrice)),
+                                    state.searchResults[index].price!)),
                       style: OutlinedButton.styleFrom(
                           padding: EdgeInsets.zero,
                           backgroundColor: white,
@@ -170,7 +170,7 @@ class SearchResultPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           NetworkImageContainer(
-                            imageUrl: state.searchResults[index].image[0],
+                            imageUrl: state.searchResults[index].image![0],
                             height: size.width * 0.3,
                             borderRadius: BorderRadius.circular(15),
                             width: size.width * 0.3,
@@ -183,7 +183,7 @@ class SearchResultPage extends StatelessWidget {
                               SizedBox(
                                 width: size.width * 0.4,
                                 child: Text(
-                                  state.searchResults[index].name,
+                                  state.searchResults[index].name!,
                                   style: GoogleFonts.inter(
                                       fontSize: 1.6 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.w600,
@@ -200,7 +200,7 @@ class SearchResultPage extends StatelessWidget {
                                     color: Colors.grey[500]),
                               ),
                               Text(
-                                "\$${(state.searchResults[index].startingPrice).toStringAsFixed(2)}",
+                                "\$${(state.searchResults[index].price!).toStringAsFixed(2)}",
                                 style: GoogleFonts.inter(
                                     fontSize: 1.8 * SizeConfig.heightMultiplier,
                                     fontWeight: FontWeight.w700,

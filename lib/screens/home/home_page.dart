@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
+import 'package:ecoville/data/repository/socket_repository.dart';
 import 'package:ecoville/screens/account/widgets/local_product_container.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/shared/network_image_container.dart';
@@ -29,7 +32,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    socket.onConnect((data) {
+      socket.on('update', (data) {
+        debugPrint('message received ' + data);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    socket.on('product', (data) {
+      debugPrint('message received ' + data);
+      context.read<ProductCubit>().getProducts();
+    });
     return Scaffold(
       backgroundColor: white,
       floatingActionButton: FloatingActionButton(
@@ -258,8 +275,9 @@ class RecommendedItems extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
-   return BlocBuilder<ProductCubit, ProductState>(
-      buildWhen: (previous, current) => previous.similarProducts != current.similarProducts,
+    return BlocBuilder<ProductCubit, ProductState>(
+      buildWhen: (previous, current) =>
+          previous.similarProducts != current.similarProducts,
       builder: (context, state) {
         return state.status == ProductStatus.loading
             ? const ProductListShimmer()
@@ -283,8 +301,9 @@ class RecommendedItems extends StatelessWidget {
                           itemBuilder: (context, index) => Padding(
                             padding: EdgeInsets.only(
                               left: index == 0 ? 10 : 0,
-                              right:
-                                  index == (state.similarProducts.length - 1) ? 10 : 0,
+                              right: index == (state.similarProducts.length - 1)
+                                  ? 10
+                                  : 0,
                             ),
                             child: ProductContainer(
                               key: UniqueKey(),
@@ -302,7 +321,6 @@ class RecommendedItems extends StatelessWidget {
     );
   }
 }
-
 
 class WatchedItems extends StatelessWidget {
   const WatchedItems({
@@ -372,71 +390,68 @@ class EcovilleCategories extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
-      children: [
-        Text(
-          'Ecoville Categories',
-          style: GoogleFonts.inter(
-              color: black,
-              fontSize: 2 * SizeConfig.textMultiplier,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.1),
+            children: [
+              Text(
+                'Ecoville Categories',
+                style: GoogleFonts.inter(
+                    color: black,
+                    fontSize: 2 * SizeConfig.textMultiplier,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.1),
+              ),
+              const Spacer(),
+            ],
+          ),
         ),
-        const Spacer(),
-        
-      ],
-    ),
-        ),
-         
         Gap(0.5 * SizeConfig.heightMultiplier),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: BlocProvider(
-              create: (context) => ProductCubit()..getCategories(),
-              child: Builder(builder: (context) {
-                return BlocBuilder<ProductCubit, ProductState>(
-                  builder: (context, state) {
-                    return state.status == ProductStatus.loading
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : GridView.builder(
-                            itemCount: state.categories.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                    childAspectRatio: 0.9),
-                            itemBuilder: (context, index) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  NetworkImageContainer(
-                                      imageUrl: state.categories[index].image,
-                                      isCirlce: true,
-                                      height: size.width * 0.23,
-                                      width: size.width,
-                                      ),
-                                  Gap(0.3 * SizeConfig.heightMultiplier),
-                                  Text(
-                                    state.categories[index].name,
-                                    style: GoogleFonts.inter(
-                                        color: black,
-                                        fontSize: 1.5 * SizeConfig.textMultiplier,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              );
-                            });
-                  },
-                );
-              }),
-            ),
+            create: (context) => ProductCubit()..getCategories(),
+            child: Builder(builder: (context) {
+              return BlocBuilder<ProductCubit, ProductState>(
+                builder: (context, state) {
+                  return state.status == ProductStatus.loading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : GridView.builder(
+                          itemCount: state.categories.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  childAspectRatio: 0.9),
+                          itemBuilder: (context, index) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                NetworkImageContainer(
+                                  imageUrl: state.categories[index].image,
+                                  isCirlce: true,
+                                  height: size.width * 0.23,
+                                  width: size.width,
+                                ),
+                                Gap(0.3 * SizeConfig.heightMultiplier),
+                                Text(
+                                  state.categories[index].name,
+                                  style: GoogleFonts.inter(
+                                      color: black,
+                                      fontSize: 1.5 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            );
+                          });
+                },
+              );
+            }),
+          ),
         ),
       ],
     );
   }
 }
-

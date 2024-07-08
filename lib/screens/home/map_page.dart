@@ -55,9 +55,9 @@ class MapPage extends StatelessWidget {
                   if (state.status == ProductStatus.success) {
                     for (var element in state.products) {
                       addMarker(
-                        LatLng(element.address.lat, element.address.lon),
-                        element.id,
-                        element.name,
+                        LatLng(element.address!.lat!, element.address!.lon!),
+                        element.id!,
+                        element.name!,
                         false,
                       );
                     }

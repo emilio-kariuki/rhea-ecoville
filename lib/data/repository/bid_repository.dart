@@ -17,8 +17,8 @@ class BidRepository extends BidTemplate {
   Future<bool> createBid({required BidModel bid}) async {
     try {
       final product = await _productProvider.getProduct(id: bid.productId);
-      if (product.allowBidding) {
-        if (product.currentPrice < bid.price) {
+      if (product.allowBidding!) {
+        if (product.price! < bid.price) {
           await supabase.from(TABLE_BIDDING).insert([
             {
               'id': bid.id,
@@ -50,8 +50,8 @@ class BidRepository extends BidTemplate {
   Future<bool> updateBid({required BidModel bid}) async {
     try {
       final product = await _productProvider.getProduct(id: bid.productId);
-      if (product.allowBidding) {
-        if (product.currentPrice < bid.price) {
+      if (product.allowBidding!) {
+        if (product.price! < bid.price) {
           await supabase.from(TABLE_BIDDING).update({
             'productId': bid.productId,
             'userId': bid.userId,

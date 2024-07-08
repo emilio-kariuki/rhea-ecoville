@@ -90,10 +90,10 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> saveProduct({required LocalProductModel product}) async {
+  Future<void> saveProduct({required String productId}) async {
     setLoading();
     try {
-      await _productProvider.saveProduct(product: product);
+      await _productProvider.saveProduct(productId: productId);
       final savedProducts = await _productProvider.getSavedProducts();
       emit(state.copyWith(
           status: ProductStatus.success, savedProducts: savedProducts));
@@ -182,7 +182,6 @@ class ProductCubit extends Cubit<ProductState> {
     setLoading();
     try {
       final categories = await _productProvider.getCategories();
-      debugPrint("categories are $categories");
       emit(state.copyWith(
           status: ProductStatus.success, categories: categories));
     } catch (e) {
