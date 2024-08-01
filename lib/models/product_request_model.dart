@@ -17,7 +17,7 @@ class ProductRequestModel {
     final List<String> image;
     final String userId;
     final String categoryid;
-    final double startingPrice;
+    final double price;
     final double currentPrice;
     final String condition;
     final Address ?address;
@@ -29,7 +29,7 @@ class ProductRequestModel {
         required this.image,
         required this.userId,
         required this.categoryid,
-        required this.startingPrice,
+        required this.price,
         required this.currentPrice,
         required this.condition,
          this.address,
@@ -42,7 +42,7 @@ class ProductRequestModel {
         List<String>? image,
         String? userId,
         String? categoryid,
-        double? startingPrice,
+        double? price,
         double? currentPrice,
         String? condition,
         Address? address,
@@ -54,7 +54,7 @@ class ProductRequestModel {
             image: image ?? this.image,
             userId: userId ?? this.userId,
             categoryid: categoryid ?? this.categoryid,
-            startingPrice: startingPrice ?? this.startingPrice,
+            price: price ?? this.price,
             currentPrice: currentPrice ?? this.currentPrice,
             condition: condition ?? this.condition,
             address: address ?? this.address,
@@ -67,7 +67,7 @@ class ProductRequestModel {
         image: List<String>.from(json["image"].map((x) => x)),
         userId: json["userId"],
         categoryid: json["categoryId"],
-        startingPrice: json["startingPrice"]?.toDouble(),
+        price: json["price"]?.toDouble(),
         currentPrice: json["currentPrice"]?.toDouble(),
         condition: json["condition"],
         address: Address.fromJson(json["address"]),
@@ -80,7 +80,7 @@ class ProductRequestModel {
         "image": List<dynamic>.from(image.map((x) => x)),
         "userId": userId,
         "categoryId": categoryid,
-        "startingPrice": startingPrice,
+        "price": price,
         "currentPrice": currentPrice,
         "condition": condition,
         "address": address!.toJson(),

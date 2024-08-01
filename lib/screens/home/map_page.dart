@@ -37,7 +37,8 @@ class MapPage extends StatelessWidget {
                 : context.push('/home/details/$id', extra: {
                     'title': name,
                   })),
-        onTap: () =>  context.read<ProductCubit>().getSimilarProducts(productId: id),
+        onTap: () =>
+            context.read<ProductCubit>().getSimilarProducts(productId: id),
       );
       markers[markerId] = marker;
     }
@@ -50,14 +51,20 @@ class MapPage extends StatelessWidget {
               BlocConsumer<ProductCubit, ProductState>(
                 buildWhen: (previous, current) =>
                     previous.products != current.products,
-                bloc: context.read<ProductCubit>()..getProducts()..getNearbyProducts()..getSimilarProducts(productId: 'adfasdf-asdfasd-asdfasdf'),
+                bloc: context.read<ProductCubit>()
+                  ..getProducts()
+                  ..getNearbyProducts()
+                  ..getSimilarProducts(productId: 'adfasdf-asdfasd-asdfasdf'),
                 listener: (context, state) {
                   if (state.status == ProductStatus.success) {
                     for (var element in state.products) {
                       addMarker(
-                        LatLng(element.address!.lat!, element.address!.lon!),
-                        element.id!,
-                        element.name!,
+                        LatLng(
+                          double.tryParse(element.address?.lat ?? "0.0") ?? 0.0,
+                          double.tryParse(element.address?.lon ?? "0.0") ?? 0.0,
+                        ),
+                        element.id,
+                        element.name,
                         false,
                       );
                     }
@@ -116,7 +123,7 @@ class MapPage extends StatelessWidget {
                                         LatLng(state.position!.latitude,
                                             state.position!.longitude),
                                         15));
-              
+
                                 _controller.complete(controller);
                               },
                             ),
@@ -135,7 +142,7 @@ class MapPage extends StatelessWidget {
                 },
               ),
               Gap(1 * SizeConfig.heightMultiplier),
-              const RecommendedItems(),
+              // const RecommendedItems(),
               const RecentItems(),
             ],
           ),

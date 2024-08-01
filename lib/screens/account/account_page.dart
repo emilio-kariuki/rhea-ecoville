@@ -25,12 +25,12 @@ class _AccountPageState extends State<AccountPage> {
       'icon': AppImages.wishlist,
       'page': Routes.wishlist
     },
-    // {
-    //   "name": "Purchases",
-    //   'description': "Your order history",
-    //   'icon': AppImages.offer,
-    //   'page': Routes.cart
-    // },
+    {
+      "name": "Orders",
+      'description': "Your orders and tracking",
+      'icon': AppImages.offer,
+      'page': Routes.orders
+    },
     // {
     //   "name": "Bids & offers",
     //   'description': "Active auctions and seller offers",

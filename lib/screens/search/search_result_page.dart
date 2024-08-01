@@ -50,6 +50,8 @@ class SearchResultPage extends StatelessWidget {
               children: [
                 Text(
                   controller.text,
+                  overflow: TextOverflow.ellipsis ,
+                  maxLines: 1,
                   style: GoogleFonts.inter(
                       fontSize: 2.2 * SizeConfig.heightMultiplier,
                       fontWeight: FontWeight.w600,
@@ -100,7 +102,7 @@ class SearchResultPage extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: BlocBuilder<ProductCubit, ProductState>(
           bloc: context.read<ProductCubit>()
-            ..getSearchResults(name: controller.text),
+            ..getSearchResults(query: controller.text),
           buildWhen: (previous, current) =>
               previous.searchResults != current.searchResults,
           builder: (context, state) {
@@ -153,9 +155,9 @@ class SearchResultPage extends StatelessWidget {
                             })
                         ..read<LocalCubit>().watchProduct(
                             product: LocalProductModel(
-                                id: state.searchResults[index].id!,
-                                name: state.searchResults[index].name!,
-                                image: state.searchResults[index].image![0],
+                                id: state.searchResults[index].id,
+                                name: state.searchResults[index].name,
+                                image: state.searchResults[index].image[0],
                                 userId: state.searchResults[index].userId!,
                                 startingPrice:
                                     state.searchResults[index].price!)),
@@ -170,7 +172,7 @@ class SearchResultPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           NetworkImageContainer(
-                            imageUrl: state.searchResults[index].image![0],
+                            imageUrl: state.searchResults[index].image[0],
                             height: size.width * 0.3,
                             borderRadius: BorderRadius.circular(15),
                             width: size.width * 0.3,
@@ -183,7 +185,7 @@ class SearchResultPage extends StatelessWidget {
                               SizedBox(
                                 width: size.width * 0.4,
                                 child: Text(
-                                  state.searchResults[index].name!,
+                                  state.searchResults[index].name,
                                   style: GoogleFonts.inter(
                                       fontSize: 1.6 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.w600,

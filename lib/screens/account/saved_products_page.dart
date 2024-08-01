@@ -117,7 +117,12 @@ class SavedProductsPage extends StatelessWidget {
                         crossAxisSpacing: 12,
                         children: state.savedProducts
                             .map((product) =>
-                                LocalProductContainer(product: product))
+                                LocalProductContainer(
+                                  productId: product.id,
+                                image: product.product.image[0],
+                                name: product.product.name,
+                                price: product.product.price.toInt(),
+                                ))
                             .toList(),
                       );
               },

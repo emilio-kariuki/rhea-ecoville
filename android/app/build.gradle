@@ -50,7 +50,7 @@ android {
         applicationId "com.ecoville.eville"
         minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
-        versionCode 13
+        versionCode 14
         versionName "0.2.10"
     }
 

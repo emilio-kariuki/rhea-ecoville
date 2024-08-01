@@ -80,8 +80,8 @@ class UserModel {
 }
 
 class Address {
-    final double lat;
-    final double lon;
+    final dynamic lat;
+    final dynamic lon;
     final String city;
     final String country;
 
@@ -93,8 +93,8 @@ class Address {
     });
 
     Address copyWith({
-        double? lat,
-        double? lon,
+        dynamic lat,
+        dynamic lon,
         String? city,
         String? country,
     }) => 

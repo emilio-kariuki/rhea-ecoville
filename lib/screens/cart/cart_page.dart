@@ -279,7 +279,7 @@ class CartPage extends StatelessWidget {
                                                         builder:
                                                             (context, state) {
                                                           return Text(
-                                                            "\$${(product.startingPrice).toStringAsFixed(2)}",
+                                                            "Kes${(product.startingPrice).toStringAsFixed(2)}",
                                                             style: GoogleFonts.inter(
                                                                 fontSize: 1.7 *
                                                                     SizeConfig
@@ -433,7 +433,7 @@ class CartPage extends StatelessWidget {
                                           BlocBuilder<PageCubit, PageState>(
                                             builder: (context, state) {
                                               return Text(
-                                                "\$${totalAmount.toStringAsFixed(2)}",
+                                                "\Kes ${totalAmount.toStringAsFixed(2)}",
                                                 style: GoogleFonts.inter(
                                                     fontSize: 1.6 *
                                                         SizeConfig
@@ -474,7 +474,7 @@ class CartPage extends StatelessWidget {
                                           BlocBuilder<PageCubit, PageState>(
                                             builder: (context, state) {
                                               return Text(
-                                                "\$${totalAmount.toStringAsFixed(2)}",
+                                                "\Kes ${totalAmount.toStringAsFixed(2)}",
                                                 style: GoogleFonts.inter(
                                                     fontSize: 1.6 *
                                                         SizeConfig

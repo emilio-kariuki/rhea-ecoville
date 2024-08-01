@@ -43,10 +43,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    socket.on('product', (data) {
-      debugPrint('message received ' + data);
-      context.read<ProductCubit>().getProducts();
-    });
+    // socket.on('product', (data) {
+    //   debugPrint('message received ' + data);
+    //   context.read<ProductCubit>().getProducts();
+    // });
     return Scaffold(
       backgroundColor: white,
       floatingActionButton: FloatingActionButton(
@@ -75,10 +75,10 @@ class _HomePageState extends State<HomePage> {
                 width: 4 * SizeConfig.heightMultiplier,
               ),
               const Spacer(),
-              IconContainer(
-                icon: AppImages.messages,
-                function: () => context.pushNamed(Routes.messages),
-              ),
+              // IconContainer(
+              //   icon: AppImages.messages,
+              //   function: () => context.pushNamed(Routes.messages),
+              // ),
               Gap(1 * SizeConfig.widthMultiplier),
               IconContainer(
                 icon: AppImages.notifications,
@@ -362,7 +362,10 @@ class WatchedItems extends StatelessWidget {
                                   : 0,
                             ),
                             child: LocalProductContainer(
-                              product: state.watchedProducts[index],
+                              productId: state.watchedProducts[index].id,
+                                image: state.watchedProducts[index].image[0],
+                                name: state.watchedProducts[index].name,
+                                price: state.watchedProducts[index].startingPrice,
                             ),
                           ),
                           separatorBuilder: (context, index) =>

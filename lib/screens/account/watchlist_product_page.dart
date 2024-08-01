@@ -116,7 +116,12 @@ class WatchlistProductsPage extends StatelessWidget {
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                   children: state.watchedProducts
-                      .map((product) => LocalProductContainer(product: product))
+                      .map((product) => LocalProductContainer(
+                        productId: product.id,
+                                image: product.image[0],
+                                name: product.name,
+                                price: product.startingPrice,
+                      ))
                       .toList(),
                 );
               },

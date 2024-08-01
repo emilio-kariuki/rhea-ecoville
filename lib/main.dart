@@ -19,6 +19,9 @@ import 'package:ecoville/screens/authentication/welcome_page.dart';
 import 'package:ecoville/screens/home/home_page.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
+
+var logger = Logger();
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

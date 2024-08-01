@@ -118,7 +118,12 @@ class LikedProductsPage extends StatelessWidget {
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       children: state.likedProducts
-                          .map((product) => LocalProductContainer(product: product))
+                          .map((product) => LocalProductContainer(
+                                productId: product.id,
+                                image: product.product.image[0],
+                                name: product.product.name,
+                                price: product.product.price.toInt(),
+                          ))
                           .toList(),
                     );
                   },

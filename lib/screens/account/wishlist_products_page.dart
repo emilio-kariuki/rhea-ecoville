@@ -10,7 +10,9 @@ class WishlistProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LocalCubit()..getWishlistProducts()..getCartProducts(),
+      create: (context) => LocalCubit()
+        ..getWishlistProducts()
+        ..getCartProducts(),
       child: Scaffold(
         backgroundColor: white,
         appBar: AppBar(
@@ -39,8 +41,7 @@ class WishlistProductsPage extends StatelessWidget {
           actions: [
             IconContainer(icon: AppImages.search, function: () {}),
             Gap(1 * SizeConfig.widthMultiplier),
-            
-             BlocBuilder<LocalCubit, LocalState>(
+            BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
                 return Stack(
                   children: [
@@ -79,44 +80,51 @@ class WishlistProductsPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: BlocBuilder<LocalCubit, LocalState>(
               builder: (context, state) {
-                return state.wishlistProducts.isEmpty ? SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          AppImages.wishlist,
-                          height: 20 * SizeConfig.heightMultiplier,
-                        ),
-                        Gap(2 * SizeConfig.heightMultiplier),
-                        Text(
-                          "Your wishlist is empty",
-                          style: GoogleFonts.inter(
-                            fontSize: 2.5 * SizeConfig.textMultiplier,
-                            fontWeight: FontWeight.w600,
-                            color: black,
+                return state.wishlistProducts.isEmpty
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                AppImages.wishlist,
+                                height: 20 * SizeConfig.heightMultiplier,
+                              ),
+                              Gap(2 * SizeConfig.heightMultiplier),
+                              Text(
+                                "Your wishlist is empty",
+                                style: GoogleFonts.inter(
+                                  fontSize: 2.5 * SizeConfig.textMultiplier,
+                                  fontWeight: FontWeight.w600,
+                                  color: black,
+                                ),
+                              ),
+                              Text(
+                                "Add items to your wishlist to view them here",
+                                style: GoogleFonts.inter(
+                                  fontSize: 1.8 * SizeConfig.textMultiplier,
+                                  fontWeight: FontWeight.w400,
+                                  color: darkGrey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          "Add items to your wishlist to view them here",
-                          style: GoogleFonts.inter(
-                            fontSize: 1.8 * SizeConfig.textMultiplier,
-                            fontWeight: FontWeight.w400,
-                            color: darkGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ) : StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  children: state.wishlistProducts
-                      .map((product) => LocalProductContainer(product: product))
-                      .toList(),
-                );
+                      )
+                    : StaggeredGrid.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        children: state.wishlistProducts
+                            .map((product) => LocalProductContainer(
+                                  productId: product.id,
+                                  image: product.product.image[0],
+                                  name: product.product.name,
+                                  price: product.product.price.toInt(),
+                                ))
+                            .toList(),
+                      );
               },
             ),
           ),

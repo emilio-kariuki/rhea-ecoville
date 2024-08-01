@@ -1,5 +1,6 @@
 import 'package:ecoville/blocs/app/app_cubit.dart';
 import 'package:ecoville/blocs/app/local_cubit.dart';
+import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -14,12 +15,19 @@ class _SearchPageState extends State<SearchPage> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
 
+  String search = '';
+
   @override
   void initState() {
     super.initState();
     _focusNode.requestFocus();
     _searchController.addListener(() {});
   }
+
+ String removeCategory(String text) {
+  final categoryRegex = RegExp(r'&&category=[^&]*');
+  return text.replaceAll(categoryRegex, '');
+}
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
                       size: 20,
                       color: Colors.grey[600],
                     )),
-                    Gap(1 * SizeConfig.widthMultiplier),
+                Gap(1 * SizeConfig.widthMultiplier),
                 Expanded(
                   child: TextFormField(
                     controller: _searchController,
@@ -109,6 +117,81 @@ class _SearchPageState extends State<SearchPage> {
                   },
                 ),
               ],
+            ),
+            Gap(2 * SizeConfig.heightMultiplier),
+            // get by categories
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: BlocProvider(
+                create: (context) => ProductCubit()..getCategories(),
+                child: Builder(builder: (context) {
+                  return BlocBuilder<ProductCubit, ProductState>(
+                    builder: (context, state) {
+                      return state.status == ProductStatus.loading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : SizedBox(
+                              height: 4 * SizeConfig.heightMultiplier,
+                              child: ListView.separated(
+                                  itemCount: state.categories.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  separatorBuilder: (context, index) =>
+                                      Gap(1 * SizeConfig.widthMultiplier),
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        _searchController.text = removeCategory(
+                                            _searchController.text);
+                                            debugPrint('searchController: ${_searchController.text}');
+                                        _searchController.text +=
+                                            '&&category=${state.categories[index].id}';
+
+                                        context.push(
+                                          Routes.searchResults,
+                                          extra: {
+                                            'controller': _searchController
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: lightGrey,
+                                          borderRadius:
+                                              BorderRadius.circular(35),
+                                          border: Border.all(
+                                              color: black, width: 0.8),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 1),
+                                          child: Center(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  state.categories[index].name,
+                                                  style: GoogleFonts.quicksand(
+                                                    color: black,
+                                                    fontSize: 1.6 *
+                                                        SizeConfig
+                                                            .textMultiplier,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            );
+                    },
+                  );
+                }),
+              ),
             ),
             Gap(2 * SizeConfig.heightMultiplier),
             Text(
