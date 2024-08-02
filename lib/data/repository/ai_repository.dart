@@ -17,7 +17,7 @@ class AiRepository extends AiTemplate {
     try {
       final request = jsonEncode({"query": query});
       final response = await Dio().get(
-          "http://localhost:4003/api/ai/generate/title_and_description",
+          "$API_URL/ai/generate/title_and_description",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,

@@ -32,7 +32,9 @@ class ProductModel {
     final DateTime? endBidding;
     final String? biddingStatus;
     final User? user;
+    final String? highestBidder;
     final Category? category;
+    final List<Bid>? bids;
 
     ProductModel({
         required this.id,
@@ -59,6 +61,8 @@ class ProductModel {
         this.startBidding,
         this.endBidding,
         this.biddingStatus,
+        this.bids,
+        this.highestBidder,
     });
 
     ProductModel copyWith({
@@ -86,6 +90,8 @@ class ProductModel {
         DateTime? startBidding,
         DateTime? endBidding,
         String? biddingStatus,
+        List<Bid>? bids,
+        String? highestBidder,
     }) => 
         ProductModel(
             id: id ?? this.id,
@@ -112,6 +118,8 @@ class ProductModel {
             startBidding: startBidding ?? this.startBidding,
             endBidding: endBidding ?? this.endBidding,
             biddingStatus: biddingStatus ?? this.biddingStatus,
+            bids: bids ?? this.bids,
+            highestBidder: highestBidder ?? this.highestBidder,
         );
 
     factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -139,6 +147,8 @@ class ProductModel {
         startBidding: json["startBidding"] == null ? null : DateTime.parse(json["startBidding"]),
         endBidding: json["endBidding"] == null ? null : DateTime.parse(json["endBidding"]),
         biddingStatus: json["biddingStatus"],
+        bids: json["bids"] == null ? null : List<Bid>.from(json["bids"].map((x) => Bid.fromJson(x))),
+        highestBidder: json["highestBidder"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -166,8 +176,69 @@ class ProductModel {
         "startBidding": startBidding?.toIso8601String(),
         "endBidding": endBidding?.toIso8601String(),
         "biddingStatus": biddingStatus,
+        "bids": bids == null ? null : List<dynamic>.from(bids!.map((x) => x.toJson())),
     };
 }
+
+
+
+List<Bid> bidFromJson(String str) => List<Bid>.from(json.decode(str).map((x) => Bid.fromJson(x)));
+
+String bidToJson(List<Bid> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class Bid {
+    final String id;
+    final String productId;
+    final String userId;
+    final int price;
+    final DateTime createdAt;
+    final DateTime updatedAt;
+
+    Bid({
+        required this.id,
+        required this.productId,
+        required this.userId,
+        required this.price,
+        required this.createdAt,
+        required this.updatedAt,
+    });
+
+    Bid copyWith({
+        String? id,
+        String? productId,
+        String? userId,
+        int? price,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+    }) => 
+        Bid(
+            id: id ?? this.id,
+            productId: productId ?? this.productId,
+            userId: userId ?? this.userId,
+            price: price ?? this.price,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+        );
+
+    factory Bid.fromJson(Map<String, dynamic> json) => Bid(
+        id: json["id"],
+        productId: json["productId"],
+        userId: json["userId"],
+        price: json["price"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "productId": productId,
+        "userId": userId,
+        "price": price,
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+    };
+}
+
 
 class Address {
     final dynamic lon;

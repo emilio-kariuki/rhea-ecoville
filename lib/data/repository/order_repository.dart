@@ -18,7 +18,7 @@ class OrderRepository implements OrderTemplate {
   Future<List<OrderModel>> getUserOrders() async {
     try {
       final response = await Dio().get(
-          "http://localhost:4003/api/admin/userOrders",
+          "$API_URL/admin/userOrders",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -40,7 +40,7 @@ class OrderRepository implements OrderTemplate {
   Future<bool> cancelOrder({required OrderModel order}) async {
     try {
       final response = await Dio()
-          .put("http://localhost:4003/api/admin/updateOrderStatus/${order.id}",
+          .put("$API_URL/admin/updateOrderStatus/${order.id}",
               options: Options(headers: {
                 "APIKEY": API_KEY,
                 "user": supabase.auth.currentUser!.id,
@@ -61,7 +61,7 @@ class OrderRepository implements OrderTemplate {
   Future<bool> confirmOrder({required OrderModel order}) async {
     try {
       final response = await Dio()
-          .put("http://localhost:4003/api/admin/updateOrderStatus/${order.id}",
+          .put("$API_URL/admin/updateOrderStatus/${order.id}",
               options: Options(headers: {
                 "APIKEY": API_KEY,
                 "user": supabase.auth.currentUser!.id,
@@ -86,7 +86,7 @@ class OrderRepository implements OrderTemplate {
       );
       logger.d(request);
       final response = await Dio().post(
-        "http://localhost:4003/api/admin/order",
+        "$API_URL/admin/order",
         options: Options(headers: {
           "APIKEY": API_KEY,
           "user": supabase.auth.currentUser!.id,

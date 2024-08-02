@@ -73,13 +73,15 @@ class ProductContainer extends StatelessWidget {
                         ),
                         Gap(0.8 * SizeConfig.heightMultiplier),
                         Text(
-                          "Ksh ${product.price}",
-                          style: GoogleFonts.inter(
-                              color: black,
-                              fontSize: 2.2 * SizeConfig.textMultiplier,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2),
-                        ),
+                                  product.allowBidding!
+                                      ? "Kes ${product.biddingPrice}"
+                                      : "Kes ${product.price}",
+                                  style: GoogleFonts.inter(
+                                      color: black,
+                                      fontSize: 2.2 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.2),
+                                ),
                       ],
                     )),
               );

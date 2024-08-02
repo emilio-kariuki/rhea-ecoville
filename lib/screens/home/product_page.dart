@@ -6,6 +6,7 @@ import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/blocs/minimal/page_cubit.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/rating_model.dart';
+import 'package:ecoville/screens/home/bidding_page.dart';
 import 'package:ecoville/screens/home/widgets/product_list_shimmer.dart';
 import 'package:ecoville/screens/home/widgets/section_title.dart';
 import 'package:ecoville/shared/border_button.dart';
@@ -22,9 +23,10 @@ class ProductDetailsPage extends StatelessWidget {
   final String title;
 
   final _pageController = PageController();
-
+final _now = DateTime.now();
   @override
   Widget build(BuildContext context) {
+final nowTimeStamp = "${_now.hour}:${_now.minute}:${_now.second}.${_now.millisecond}}";
     final height = MediaQuery.of(context).size.height;
     return BlocBuilder<ProductCubit, ProductState>(
       buildWhen: (previous, current) => previous.product != current.product,
@@ -148,13 +150,44 @@ class ProductDetailsPage extends StatelessWidget {
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
                                 Text(
-                                  'Ksh ${state.product?.price ?? "Ksh 0"}',
+                                  state.product!.allowBidding!
+                                      ? "Kes ${state.product!.biddingPrice}"
+                                      : "Kes ${state.product!.price}",
                                   style: GoogleFonts.inter(
                                       color: black,
                                       fontSize: 2.8 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.bold,
                                       height: 1.2),
                                 ),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                if (state.product!.allowBidding!)
+                                  Row(
+                                    children: [
+                                      Text(
+                                        state.product!.bids!.isEmpty
+                                            ? "No Bids"
+                                            : "${state.product!.bids!.length} Bids",
+                                        style: GoogleFonts.inter(
+                                            color: black,
+                                            fontSize:
+                                                1.6 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.2),
+                                      ),
+                                      const Spacer(),
+                                      // time left endBidding - startBidding
+                                      Text(
+                                        "Ends in ${state.product!.endBidding!.difference(DateTime.timestamp()).inMinutes} minutes",
+                                        style: GoogleFonts.inter(
+                                            color: black,
+                                            fontSize:
+                                                1.6 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.2),
+                                      ),
+                                    ],
+                                  ),
+                                Gap(1 * SizeConfig.heightMultiplier),
                                 Text(
                                   "${state.product!.address!.city!}, ${state.product!.address!.country!}",
                                   style: GoogleFonts.inter(
@@ -199,82 +232,107 @@ class ProductDetailsPage extends StatelessWidget {
                                   ],
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
-                                // CompleteButton(
-                                //     height: 6.5 * SizeConfig.heightMultiplier,
-                                //     borderRadius: 30,
-                                //     text: Text(
-                                //       "Buy it Now",
-                                //       style: GoogleFonts.inter(
-                                //           color: white,
-                                //           fontSize:
-                                //               1.8 * SizeConfig.textMultiplier,
-                                //           fontWeight: FontWeight.w600,
-                                //           letterSpacing: 0.1),
-                                //     ),
-                                //     function: () {}),
-                                // Gap(1 * SizeConfig.heightMultiplier),
-                                BlocConsumer<LocalCubit, LocalState>(
-                                  listenWhen: (previous, current) =>
-                                      previous.status != current.status,
-                                  buildWhen: (previous, current) =>
-                                      previous.status != current.status,
-                                  listener: (context, state) {
-                                    if (state.status == LocalStatus.updated) {
-                                      context
-                                        ..read<ProductCubit>()
-                                            .getProduct(id: id)
-                                        ..read<LocalCubit>().getCartProducts();
+                                BlocBuilder<ProductCubit, ProductState>(
+                                  builder: (context, state) {
+                                    if (state.product!.allowBidding!) {
+                                      return CompleteButton(
+                                        height:
+                                            6.5 * SizeConfig.heightMultiplier,
+                                        borderRadius: 30,
+                                        text: Text(
+                                          "Place Bid",
+                                          style: GoogleFonts.inter(
+                                              color: white,
+                                              fontSize: 1.8 *
+                                                  SizeConfig.textMultiplier,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.1),
+                                        ),
+                                        function: () => Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    BiddingPage(
+                                                      productId:
+                                                          state.product!.id,
+                                                    ))),
+                                      );
                                     }
-                                  },
-                                  builder: (context, localState) {
-                                    return BlocBuilder<ProductCubit,
-                                        ProductState>(
-                                      builder: (context, pstate) {
-                                        return BorderButton(
-                                            height:
-                                                6 * SizeConfig.heightMultiplier,
-                                            borderRadius: 30,
-                                            text: BlocBuilder<LocalCubit,
-                                                LocalState>(
-                                              builder: (context, state) {
-                                                return Text(
-                                                  state.cartItems
-                                                          .any((element) =>
-                                                              element.id ==
-                                                              pstate.product!.id)
-                                                      ? "Added to Cart"
-                                                      : "Add to Cart",
-                                                  style: GoogleFonts.inter(
-                                                      color: green,
-                                                      fontSize: 1.8 *
-                                                          SizeConfig
-                                                              .textMultiplier,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      letterSpacing: 0.1),
-                                                );
-                                              },
-                                            ),
-                                            function: () {
-                                              context
-                                                  .read<LocalCubit>()
-                                                  .addProductToCart(
-                                                      product:
-                                                          LocalProductModel(
-                                                    id: state.product!.id,
-                                                    name: state.product!.name,
-                                                    image:
-                                                        state.product!.image[0],
-                                                    userId:
-                                                        state.product!.userId!,
-                                                    startingPrice:
-                                                        state.product!.price,
-                                                  ));
-                                            });
-                                      },
-                                    );
+                                    return const SizedBox.shrink();
                                   },
                                 ),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                if (!state.product!.allowBidding! ||
+                                    (state.product!.endBidding!
+                                                .difference(state
+                                                    .product!.startBidding!)
+                                                .inMinutes <
+                                            1 &&
+                                        state.product!.highestBidder ==
+                                            supabase.auth.currentUser!.id))
+                                  BlocConsumer<LocalCubit, LocalState>(
+                                    listenWhen: (previous, current) =>
+                                        previous.status != current.status,
+                                    buildWhen: (previous, current) =>
+                                        previous.status != current.status,
+                                    listener: (context, state) {
+                                      if (state.status == LocalStatus.updated) {
+                                        context
+                                          ..read<ProductCubit>()
+                                              .getProduct(id: id)
+                                          ..read<LocalCubit>()
+                                              .getCartProducts();
+                                      }
+                                    },
+                                    builder: (context, localState) {
+                                      return BlocBuilder<ProductCubit,
+                                          ProductState>(
+                                        builder: (context, pstate) {
+                                          return BorderButton(
+                                              height: 6 *
+                                                  SizeConfig.heightMultiplier,
+                                              borderRadius: 30,
+                                              text: BlocBuilder<LocalCubit,
+                                                  LocalState>(
+                                                builder: (context, state) {
+                                                  return Text(
+                                                    state.cartItems.any(
+                                                            (element) =>
+                                                                element.id ==
+                                                                pstate.product!
+                                                                    .id)
+                                                        ? "Added to Cart"
+                                                        : "Add to Cart",
+                                                    style: GoogleFonts.inter(
+                                                        color: green,
+                                                        fontSize: 1.8 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        letterSpacing: 0.1),
+                                                  );
+                                                },
+                                              ),
+                                              function: () {
+                                                context
+                                                    .read<LocalCubit>()
+                                                    .addProductToCart(
+                                                        product:
+                                                            LocalProductModel(
+                                                      id: state.product!.id,
+                                                      name: state.product!.name,
+                                                      image: state
+                                                          .product!.image[0],
+                                                      userId: state
+                                                          .product!.userId!,
+                                                      startingPrice:
+                                                          state.product!.price,
+                                                    ));
+                                              });
+                                        },
+                                      );
+                                    },
+                                  ),
                                 Gap(1 * SizeConfig.heightMultiplier),
                                 BlocBuilder<ProductCubit, ProductState>(
                                   buildWhen: (previous, current) =>
@@ -342,8 +400,7 @@ class ProductDetailsPage extends StatelessWidget {
                                                   ? context
                                                       .read<LocalCubit>()
                                                       .removeProductFromWishlist(
-                                                          id: state
-                                                              .product!.id)
+                                                          id: state.product!.id)
                                                   : context
                                                       .read<LocalCubit>()
                                                       .addProductToWishlist(
@@ -373,7 +430,6 @@ class ProductDetailsPage extends StatelessWidget {
                                       height: 1.2),
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
-
                                 SellerSection(),
                                 Gap(4 * SizeConfig.heightMultiplier),
                                 RecommendedItems()
@@ -990,7 +1046,7 @@ class ProductAppBar extends StatelessWidget {
               child: BlocBuilder<ProductCubit, ProductState>(
                 builder: (context, state) {
                   return IconContainer(
-                      icon: state.product?.isSaved ?? false 
+                      icon: state.product?.isSaved ?? false
                           ? AppImages.saveSolid
                           : AppImages.save,
                       function: () => state.product!.isSaved
@@ -1333,3 +1389,5 @@ class RecommendedItems extends StatelessWidget {
     );
   }
 }
+
+

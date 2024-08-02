@@ -162,7 +162,7 @@ class NotificationRepository extends NotificationTemplate {
   Future<List<NotificationModel>> getNotifications() async {
     try {
       final response = await Dio().get(
-          "http://localhost:4003/api/notification",
+          "$API_URL/notification",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id

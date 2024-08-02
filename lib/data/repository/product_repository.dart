@@ -68,7 +68,7 @@ class ProductRepository extends ProductTemplate {
       logger.d(product.toJson());
       final request = jsonEncode(product.toJson());
       final response = await Dio().post(
-          "http://localhost:4003/api/product/create",
+          "$API_URL/product/create",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -113,7 +113,7 @@ class ProductRepository extends ProductTemplate {
   Future<ProductModel> getProduct({required String id}) async {
     try {
       final response = await Dio().get(
-          "http://localhost:4003/api/product/get/$id",
+          "$API_URL/product/get/$id",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -133,7 +133,7 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> getProducts() async {
     try {
-      final response = await Dio().get("http://localhost:4003/api/product/get",
+      final response = await Dio().get("$API_URL/product/get",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -170,7 +170,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getUserProductsPosted() async {
     try {
       final response = await Dio().get(
-          "http://localhost:4003/api/product/sellerProducts",
+          "$API_URL/product/sellerProducts",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -194,7 +194,7 @@ class ProductRepository extends ProductTemplate {
       final data = jsonEncode({
         "productId": productId,
       });
-      final response = await Dio().post("http://localhost:4003/api/saved/add",
+      final response = await Dio().post("$API_URL/saved/add",
           data: data,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -217,7 +217,7 @@ class ProductRepository extends ProductTemplate {
         "productId": id,
       });
       final response = await Dio().post(
-          "http://localhost:4003/api/saved/remove",
+          "$API_URL/saved/remove",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -238,7 +238,7 @@ class ProductRepository extends ProductTemplate {
     try {
       final userId = supabase.auth.currentUser!.id;
       final response = await Dio().get(
-          "http://localhost:4003/api/saved/user/$userId",
+          "$API_URL/saved/user/$userId",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -302,7 +302,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getNearbyProducts() async {
     try {
       var nearbyProducts = <ProductModel>[];
-      final response = await Dio().get("http://localhost:4003/api/product/get",
+      final response = await Dio().get("$API_URL/product/get",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -360,7 +360,7 @@ class ProductRepository extends ProductTemplate {
         "productId": id,
       });
       final response = await Dio().post(
-          "http://localhost:4003/api/wishlist/add",
+          "$API_URL/wishlist/add",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -381,7 +381,7 @@ class ProductRepository extends ProductTemplate {
     try {
       final userId = supabase.auth.currentUser!.id;
       final response = await Dio().get(
-          "http://localhost:4003/api/wishlist/user/$userId",
+          "$API_URL/wishlist/user/$userId",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -404,7 +404,7 @@ class ProductRepository extends ProductTemplate {
     try {
       final userId = supabase.auth.currentUser!.id;
       final response = await Dio().get(
-          "http://localhost:4003/api/likes/user/$userId",
+          "$API_URL/likes/user/$userId",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -429,7 +429,7 @@ class ProductRepository extends ProductTemplate {
       final request = jsonEncode({
         "productId": id,
       });
-      final response = await Dio().post("http://localhost:4003/api/likes/add",
+      final response = await Dio().post("$API_URL/likes/add",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -452,7 +452,7 @@ class ProductRepository extends ProductTemplate {
         "productId": id,
       });
       final response = await Dio().post(
-          "http://localhost:4003/api/likes/remove",
+          "$API_URL/likes/remove",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -475,7 +475,7 @@ class ProductRepository extends ProductTemplate {
         "productId": id,
       });
       final response = await Dio().post(
-          "http://localhost:4003/api/wishlist/remove",
+          "$API_URL/wishlist/remove",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -500,7 +500,7 @@ class ProductRepository extends ProductTemplate {
       if (localCategory.isNotEmpty) {
         return localCategory.map((e) => CategoryModel.fromJson(e)).toList();
       } else {
-        final response = await Dio().get("http://localhost:4003/api/categories",
+        final response = await Dio().get("$API_URL/categories",
             options: Options(headers: {
               "APIKEY": API_KEY,
               "user": supabase.auth.currentUser!.id
@@ -541,7 +541,7 @@ class ProductRepository extends ProductTemplate {
       }
 
       final response = await Dio().get(
-          "http://localhost:4003/api/product/get?${Uri(queryParameters: queries).query}",
+          "$API_URL/product/get?${Uri(queryParameters: queries).query}",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -565,7 +565,7 @@ class ProductRepository extends ProductTemplate {
     try {
       final request = jsonEncode({"query": query});
       final response = await Dio()
-          .get("http://localhost:4003/api/ai/product/recommendations",
+          .get("$API_URL/ai/product/recommendations",
               data: request,
               options: Options(headers: {
                 "APIKEY": API_KEY,
@@ -588,7 +588,7 @@ class ProductRepository extends ProductTemplate {
       {required String sellerId}) async {
     try {
       final response = await Dio().get(
-          "http://localhost:4003/api/product/sellerProducts",
+          "$API_URL/product/sellerProducts",
           options: Options(headers: {"APIKEY": API_KEY, "user": sellerId}));
       debugPrint(response.data.toString());
       if (response.statusCode != 200) {
