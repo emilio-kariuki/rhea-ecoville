@@ -608,6 +608,7 @@ class AddressSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: BlocBuilder<AddressCubit, AddressState>(
+            bloc: context.read<AddressCubit>()..getAddresses(),
             builder: (context, state) {
               if (state.status == AddressStatus.loading) {
                 return const Center(child: CircularProgressIndicator());
@@ -669,13 +670,13 @@ class AddressSection extends StatelessWidget {
                                           fontWeight: FontWeight.w400,
                                           color: black),
                                     ),
-                                    // Text(
-                                    //   address.country,
-                                    //   style: GoogleFonts.inter(
-                                    //       fontSize: 1.6 * SizeConfig.heightMultiplier,
-                                    //       fontWeight: FontWeight.w400,
-                                    //       color: black),
-                                    // ),
+                                    Text(
+                                      address.country,
+                                      style: GoogleFonts.inter(
+                                          fontSize: 1.6 * SizeConfig.heightMultiplier,
+                                          fontWeight: FontWeight.w400,
+                                          color: black),
+                                    ),
                                     Text(
                                       address.phone,
                                       style: GoogleFonts.inter(
