@@ -1,9 +1,12 @@
 import 'package:ecoville/blocs/app/orders_cubit.dart';
+import 'package:ecoville/blocs/app/rating_cubit.dart';
 import 'package:ecoville/models/order_model.dart';
+import 'package:ecoville/shared/complete_button.dart';
+import 'package:ecoville/shared/input_field.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class OrdersPage extends StatelessWidget {
-  const OrdersPage({super.key});
+  OrdersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +80,15 @@ class OrdersPage extends StatelessWidget {
                             ),
                           );
                         }
-          
+
                         if (state.status == OrderStatus.updated) {
                           context.read<OrderCubit>().getUserOrders();
                         }
                       },
                       builder: (context, state) {
                         if (state.status == OrderStatus.loading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         } else if (state.status == OrderStatus.loaded) {
                           return Column(
                             children: [
@@ -186,8 +190,8 @@ class OrderTile extends StatelessWidget {
                   context.read<OrderCubit>().cancelOrder(order: order);
                 },
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 1),
-
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 1),
                 ),
                 child: Text(
                   "Cancel Order",
@@ -199,7 +203,7 @@ class OrderTile extends StatelessWidget {
                 ),
               ),
             ),
-          
+
           // confirm button
           if (order.status == "delivered")
             Padding(
@@ -210,6 +214,118 @@ class OrderTile extends StatelessWidget {
                 },
                 child: Text(
                   "Confirm Order",
+                  style: GoogleFonts.inter(
+                    fontSize: 1.8 * SizeConfig.textMultiplier,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+            ),
+
+          if (order.status == "confirmed")
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: OutlinedButton(
+                onPressed: () => showModalBottomSheet(
+                    clipBehavior: Clip.antiAlias,
+                    backgroundColor: white,
+                    isScrollControlled: true,
+                    barrierColor: Colors.black.withOpacity(0.6),
+                    elevation: 5,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(27.25),
+                            topRight: Radius.circular(27.25))),
+                    context: context,
+                    builder: (context) {
+                      final _reviewController = TextEditingController();
+                      final _ratingController = TextEditingController();
+                      return Container(
+                        padding: const EdgeInsets.all(15),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Product Review",
+                                style: GoogleFonts.inter(
+                                    fontSize: 2.2 * SizeConfig.heightMultiplier,
+                                    fontWeight: FontWeight.w600,
+                                    color: black),
+                              ),
+                              Gap(2 * SizeConfig.heightMultiplier),
+                              InputField(
+                                controller: _reviewController,
+                                maxLines: 5,
+                                minLines: 3,
+                                hintText: "Type your review here",
+                                validator: (p0) {
+                                  return null;
+                                },
+                              ),
+                              Gap(1 * SizeConfig.heightMultiplier),
+                              
+                              InputField(
+                                controller: _ratingController,
+                                textInputType: TextInputType.number,
+                                hintText: "Type your rating here",
+                                validator: (p0) {
+                                  return null;
+                                },
+                              ),
+                              Gap(2 * SizeConfig.heightMultiplier),
+                              BlocProvider(
+                                create: (context) => RatingCubit(),
+                                child: BlocConsumer<RatingCubit, RatingState>(
+                                  listener: (context, state) {
+                                    if (state.status == RatingStatus.success) {
+                                      context.pop();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(state.message),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  builder: (context, state) {
+                                    return CompleteButton(
+                                      function: () {
+                                        if (_reviewController.text.isNotEmpty) {
+                                          context.read<RatingCubit>().addRating(
+                                              productId: order.productId,
+                                              review: _reviewController.text,
+                                              rating: double.parse(
+                                                  _ratingController.text),
+                                              sellerId: order.product.userId);
+                                        }
+                                      },
+                                      isLoading:
+                                          state.status == RatingStatus.loading,
+                                      text: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        child: Text(
+                                          "Add Rating",
+                                          style: GoogleFonts.inter(
+                                              fontSize: 1.8 *
+                                                  SizeConfig.heightMultiplier,
+                                              fontWeight: FontWeight.w600,
+                                              color: white),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                child: Text(
+                  "Add Review",
                   style: GoogleFonts.inter(
                     fontSize: 1.8 * SizeConfig.textMultiplier,
                     fontWeight: FontWeight.w600,

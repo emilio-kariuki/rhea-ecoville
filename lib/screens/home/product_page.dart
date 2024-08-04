@@ -8,7 +8,6 @@ import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/rating_model.dart';
 import 'package:ecoville/screens/home/bidding_page.dart';
 import 'package:ecoville/screens/home/widgets/product_list_shimmer.dart';
-import 'package:ecoville/screens/home/widgets/section_title.dart';
 import 'package:ecoville/shared/border_button.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/icon_container.dart';
@@ -23,10 +22,24 @@ class ProductDetailsPage extends StatelessWidget {
   final String title;
 
   final _pageController = PageController();
-final _now = DateTime.now();
+
+  String formatMinutes(int totalMinutes) {
+    if (totalMinutes < 0) {
+      throw ArgumentError('Minutes cannot be negative');
+    }
+
+    int hours = totalMinutes ~/ 60;
+    int minutes = totalMinutes % 60;
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    } else {
+      return '${minutes}m';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-final nowTimeStamp = "${_now.hour}:${_now.minute}:${_now.second}.${_now.millisecond}}";
     final height = MediaQuery.of(context).size.height;
     return BlocBuilder<ProductCubit, ProductState>(
       buildWhen: (previous, current) => previous.product != current.product,
@@ -176,15 +189,17 @@ final nowTimeStamp = "${_now.hour}:${_now.minute}:${_now.second}.${_now.millisec
                                       ),
                                       const Spacer(),
                                       // time left endBidding - startBidding
-                                      Text(
-                                        "Ends in ${state.product!.endBidding!.difference(DateTime.timestamp()).inMinutes} minutes",
-                                        style: GoogleFonts.inter(
-                                            color: black,
-                                            fontSize:
-                                                1.6 * SizeConfig.textMultiplier,
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.2),
-                                      ),
+                                      if (state.product!.biddingStatus ==
+                                          "open")
+                                        Text(
+                                          "Ends in ${formatMinutes(state.product!.endBidding!.difference(DateTime.timestamp()).inMinutes)}",
+                                          style: GoogleFonts.inter(
+                                              color: black,
+                                              fontSize: 1.6 *
+                                                  SizeConfig.textMultiplier,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.2),
+                                        ),
                                     ],
                                   ),
                                 Gap(1 * SizeConfig.heightMultiplier),
@@ -232,43 +247,39 @@ final nowTimeStamp = "${_now.hour}:${_now.minute}:${_now.second}.${_now.millisec
                                   ],
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
-                                BlocBuilder<ProductCubit, ProductState>(
-                                  builder: (context, state) {
-                                    if (state.product!.allowBidding!) {
-                                      return CompleteButton(
-                                        height:
-                                            6.5 * SizeConfig.heightMultiplier,
-                                        borderRadius: 30,
-                                        text: Text(
-                                          "Place Bid",
-                                          style: GoogleFonts.inter(
-                                              color: white,
-                                              fontSize: 1.8 *
-                                                  SizeConfig.textMultiplier,
-                                              fontWeight: FontWeight.w600,
-                                              letterSpacing: 0.1),
-                                        ),
-                                        function: () => Navigator.of(context)
-                                            .push(MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BiddingPage(
-                                                      productId:
-                                                          state.product!.id,
-                                                    ))),
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
+                                if (state.product!.biddingStatus == "open")
+                                  BlocBuilder<ProductCubit, ProductState>(
+                                    builder: (context, state) {
+                                      if (state.product!.allowBidding!) {
+                                        return CompleteButton(
+                                          height:
+                                              6.5 * SizeConfig.heightMultiplier,
+                                          borderRadius: 30,
+                                          text: Text(
+                                            "Place Bid",
+                                            style: GoogleFonts.inter(
+                                                color: white,
+                                                fontSize: 1.8 *
+                                                    SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 0.1),
+                                          ),
+                                          function: () => Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BiddingPage(
+                                                        productId:
+                                                            state.product!.id,
+                                                      ))),
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
                                 Gap(1 * SizeConfig.heightMultiplier),
-                                if (!state.product!.allowBidding! ||
-                                    (state.product!.endBidding!
-                                                .difference(state
-                                                    .product!.startBidding!)
-                                                .inMinutes <
-                                            1 &&
-                                        state.product!.highestBidder ==
-                                            supabase.auth.currentUser!.id))
+                                if (state.product!.biddingStatus! == "closed" &&
+                                    state.product!.highestBidder ==
+                                        supabase.auth.currentUser!.id)
                                   BlocConsumer<LocalCubit, LocalState>(
                                     listenWhen: (previous, current) =>
                                         previous.status != current.status,
@@ -636,7 +647,7 @@ class SellerSection extends StatelessWidget {
           builder: (context, state) {
             return BlocProvider(
               create: (context) => RatingCubit()
-                ..getSellerRatings(userId: state.product!.userId!),
+                ..getProductRatings(productId: state.product!.id),
               child: Builder(builder: (context) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -644,7 +655,7 @@ class SellerSection extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "Seller Ratings ",
+                          "Product Ratings ",
                           style: GoogleFonts.inter(
                               color: black,
                               fontSize: 2.5 * SizeConfig.textMultiplier,
@@ -655,7 +666,7 @@ class SellerSection extends StatelessWidget {
                         BlocBuilder<RatingCubit, RatingState>(
                           builder: (context, state) {
                             return Text(
-                              "(${state.sellerRatings.length})",
+                              "(${state.productRatings.length})",
                               style: GoogleFonts.inter(
                                   color: Colors.grey[600],
                                   fontSize: 2.2 * SizeConfig.textMultiplier,
@@ -675,16 +686,16 @@ class SellerSection extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               return RatingContainer(
-                                rating: state.sellerRatings[index],
+                                rating: state.productRatings[index],
                               );
                             },
                             separatorBuilder: (context, index) => const Divider(
                                   color: Colors.grey,
                                   height: 30,
                                 ),
-                            itemCount: state.sellerRatings.length > 3
+                            itemCount: state.productRatings.length > 3
                                 ? 3
-                                : state.sellerRatings.length);
+                                : state.productRatings.length);
                       },
                     )
                   ],
@@ -1062,10 +1073,10 @@ class ProductAppBar extends StatelessWidget {
           }),
         ),
         Gap(1 * SizeConfig.widthMultiplier),
-        IconContainer(
-            icon: AppImages.more,
-            function: () => context.pushNamed(Routes.cart)),
-        Gap(1 * SizeConfig.widthMultiplier),
+        // IconContainer(
+        //     icon: AppImages.more,
+        //     function: () => context.pushNamed(Routes.cart)),
+        // Gap(1 * SizeConfig.widthMultiplier),
       ],
     );
   }
@@ -1238,7 +1249,7 @@ class RecommendedItems extends StatelessWidget {
         return state.status == ProductStatus.loading
             ? const ProductListShimmer()
             : state.products.isEmpty
-                ? const SizedBox.shrink()
+                ? const ProductListShimmer()
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1389,5 +1400,3 @@ class RecommendedItems extends StatelessWidget {
     );
   }
 }
-
-

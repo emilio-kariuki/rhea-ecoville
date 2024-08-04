@@ -4,64 +4,72 @@
 
 import 'dart:convert';
 
-import 'package:ecoville/models/user_model.dart';
+import 'package:ecoville/models/product_model.dart';
 
-ProductRequestModel productRequestModelFromJson(String str) => ProductRequestModel.fromJson(json.decode(str));
 
-String productRequestModelToJson(ProductRequestModel data) => json.encode(data.toJson());
+ProductRequestModel productRequestModelFromJson(String str) =>
+    ProductRequestModel.fromJson(json.decode(str));
+
+String productRequestModelToJson(ProductRequestModel data) =>
+    json.encode(data.toJson());
 
 class ProductRequestModel {
-    final String id;
-    final String name;
-    final String description;
-    final List<String> image;
-    final String userId;
-    final String categoryid;
-    final double price;
-    final double currentPrice;
-    final String condition;
-    final Address ?address;
+  final String name;
+  final String description;
+  final List<String> image;
+  final String userId;
+  final String categoryid;
+  final double price;
+  final double currentPrice;
+  final String condition;
+  final Address address;
+  final bool allowBidding;
+  final DateTime endBidding;
 
-    ProductRequestModel({
-        required this.id,
-        required this.name,
-        required this.description,
-        required this.image,
-        required this.userId,
-        required this.categoryid,
-        required this.price,
-        required this.currentPrice,
-        required this.condition,
-         this.address,
-    });
+  ProductRequestModel({
+    required this.name,
+    required this.description,
+    required this.image,
+    required this.userId,
+    required this.categoryid,
+    required this.price,
+    required this.currentPrice,
+    required this.condition,
+    required this.address,
+    this.allowBidding = false,
+   required  this.endBidding,
+  });
 
-    ProductRequestModel copyWith({
-        String? id,
-        String? name,
-        String? description,
-        List<String>? image,
-        String? userId,
-        String? categoryid,
-        double? price,
-        double? currentPrice,
-        String? condition,
-        Address? address,
-    }) => 
-        ProductRequestModel(
-            id: id ?? this.id,
-            name: name ?? this.name,
-            description: description ?? this.description,
-            image: image ?? this.image,
-            userId: userId ?? this.userId,
-            categoryid: categoryid ?? this.categoryid,
-            price: price ?? this.price,
-            currentPrice: currentPrice ?? this.currentPrice,
-            condition: condition ?? this.condition,
-            address: address ?? this.address,
-        );
+  ProductRequestModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    List<String>? image,
+    String? userId,
+    String? categoryid,
+    double? price,
+    double? currentPrice,
+    String? condition,
+    Address? address,
+    bool? allowBidding,
+    DateTime? endBidding,
+  }) =>
+      ProductRequestModel(
+        name: name ?? this.name,
+        description: description ?? this.description,
+        image: image ?? this.image,
+        userId: userId ?? this.userId,
+        categoryid: categoryid ?? this.categoryid,
+        price: price ?? this.price,
+        currentPrice: currentPrice ?? this.currentPrice,
+        condition: condition ?? this.condition,
+        address: address ?? this.address,
+        allowBidding: allowBidding ?? this.allowBidding,
+        endBidding: endBidding ?? this.endBidding,
+      );
 
-    factory ProductRequestModel.fromJson(Map<String, dynamic> json) => ProductRequestModel(
-        id: json["id"],
+  factory ProductRequestModel.fromJson(Map<String, dynamic> json) =>
+      ProductRequestModel(
         name: json["name"],
         description: json["description"],
         image: List<String>.from(json["image"].map((x) => x)),
@@ -71,10 +79,11 @@ class ProductRequestModel {
         currentPrice: json["currentPrice"]?.toDouble(),
         condition: json["condition"],
         address: Address.fromJson(json["address"]),
-    );
+        allowBidding: json["allowBidding"] ?? false,
+        endBidding: DateTime.parse(json["endBidding"]),
+      );
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
+  Map<String, dynamic> toJson() => {
         "name": name,
         "description": description,
         "image": List<dynamic>.from(image.map((x) => x)),
@@ -83,6 +92,8 @@ class ProductRequestModel {
         "price": price,
         "currentPrice": currentPrice,
         "condition": condition,
-        "address": address!.toJson(),
-    };
+        "address": address.toJson(),
+        "allowBidding": allowBidding,
+        "endBidding": endBidding.toIso8601String(),
+      };
 }

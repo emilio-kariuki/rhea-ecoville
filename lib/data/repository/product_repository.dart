@@ -15,6 +15,7 @@ import 'package:ecoville/utilities/packages.dart';
 
 abstract class ProductTemplate {
   Future<List<ProductModel>> getProducts();
+  Future<List<ProductModel>> getBiddingProducts();
   Future<ProductModel> getProduct({required String id});
   Future<List<ProductModel>> getProductsByCategory(
       {required String categoryId});
@@ -67,8 +68,7 @@ class ProductRepository extends ProductTemplate {
     try {
       logger.d(product.toJson());
       final request = jsonEncode(product.toJson());
-      final response = await Dio().post(
-          "$API_URL/product/create",
+      final response = await Dio().post("$API_URL/product/create",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -112,8 +112,7 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<ProductModel> getProduct({required String id}) async {
     try {
-      final response = await Dio().get(
-          "$API_URL/product/get/$id",
+      final response = await Dio().get("$API_URL/product/get/$id",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -169,8 +168,7 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> getUserProductsPosted() async {
     try {
-      final response = await Dio().get(
-          "$API_URL/product/sellerProducts",
+      final response = await Dio().get("$API_URL/product/sellerProducts",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -216,8 +214,7 @@ class ProductRepository extends ProductTemplate {
       final request = jsonEncode({
         "productId": id,
       });
-      final response = await Dio().post(
-          "$API_URL/saved/remove",
+      final response = await Dio().post("$API_URL/saved/remove",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -237,8 +234,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<InteractionsModel>> getSavedProducts() async {
     try {
       final userId = supabase.auth.currentUser!.id;
-      final response = await Dio().get(
-          "$API_URL/saved/user/$userId",
+      final response = await Dio().get("$API_URL/saved/user/$userId",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -359,8 +355,7 @@ class ProductRepository extends ProductTemplate {
       final request = jsonEncode({
         "productId": id,
       });
-      final response = await Dio().post(
-          "$API_URL/wishlist/add",
+      final response = await Dio().post("$API_URL/wishlist/add",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -380,8 +375,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<InteractionsModel>> getWishlistProducts() async {
     try {
       final userId = supabase.auth.currentUser!.id;
-      final response = await Dio().get(
-          "$API_URL/wishlist/user/$userId",
+      final response = await Dio().get("$API_URL/wishlist/user/$userId",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -403,8 +397,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<InteractionsModel>> getLikedProducts() async {
     try {
       final userId = supabase.auth.currentUser!.id;
-      final response = await Dio().get(
-          "$API_URL/likes/user/$userId",
+      final response = await Dio().get("$API_URL/likes/user/$userId",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -451,8 +444,7 @@ class ProductRepository extends ProductTemplate {
       final request = jsonEncode({
         "productId": id,
       });
-      final response = await Dio().post(
-          "$API_URL/likes/remove",
+      final response = await Dio().post("$API_URL/likes/remove",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -474,8 +466,7 @@ class ProductRepository extends ProductTemplate {
       final request = jsonEncode({
         "productId": id,
       });
-      final response = await Dio().post(
-          "$API_URL/wishlist/remove",
+      final response = await Dio().post("$API_URL/wishlist/remove",
           data: request,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -525,10 +516,8 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> searchResults({required String query}) async {
     try {
-      // get the name , category and condition and only search for the ones that are not null from query
       final queries = <String, String>{};
       final parts = query.split('&&');
-
       for (var part in parts) {
         if (part.contains('=')) {
           final keyValue = part.split('=');
@@ -539,7 +528,6 @@ class ProductRepository extends ProductTemplate {
           queries['name'] = part;
         }
       }
-
       final response = await Dio().get(
           "$API_URL/product/get?${Uri(queryParameters: queries).query}",
           options: Options(headers: {
@@ -549,7 +537,6 @@ class ProductRepository extends ProductTemplate {
       if (response.statusCode != 200) {
         throw Exception("Error getting the products, ${response.data}");
       }
-      debugPrint(response.data.toString());
       final List<ProductModel> products =
           (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
@@ -564,12 +551,11 @@ class ProductRepository extends ProductTemplate {
       {required String query}) async {
     try {
       final request = jsonEncode({"query": query});
-      final response = await Dio()
-          .get("$API_URL/ai/product/recommendations",
-              data: request,
-              options: Options(headers: {
-                "APIKEY": API_KEY,
-              }));
+      final response = await Dio().get("$API_URL/ai/product/recommendations",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+          }));
       if (response.statusCode != 200) {
         throw Exception("Error getting the products, ${response.data}");
       }
@@ -587,8 +573,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getProductsBySeller(
       {required String sellerId}) async {
     try {
-      final response = await Dio().get(
-          "$API_URL/product/sellerProducts",
+      final response = await Dio().get("$API_URL/product/sellerProducts",
           options: Options(headers: {"APIKEY": API_KEY, "user": sellerId}));
       debugPrint(response.data.toString());
       if (response.statusCode != 200) {
@@ -599,6 +584,26 @@ class ProductRepository extends ProductTemplate {
       final sellerProducts =
           products.where((element) => element.userId == sellerId).toList();
       return sellerProducts;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the products, $error");
+    }
+  }
+  
+  @override
+  Future<List<ProductModel>> getBiddingProducts() async{
+    try {
+      final response = await Dio().get("$API_URL/product/get?allowBidding=true",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      return products;
     } catch (error) {
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");

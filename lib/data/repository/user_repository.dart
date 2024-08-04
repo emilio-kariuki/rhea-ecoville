@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -17,27 +21,22 @@ class UserRepository extends UserTemplate {
   @override
   Future<bool> createUser({required UserModel user}) async {
     try {
-      final response =
-          await supabase.from(TABLE_USERS).select().eq('id', user.id);
-      // final location = await service<LocationProvider>().getCurrentLocation();
-      // final address = await service<LocationProvider>()
-      //     .getAddressFromCoordinates(position: location);
-      //     debugPrint('Address: ${address.city}');
-      if (response.isEmpty) {
-        await supabase.from(TABLE_USERS).insert({
-          'id': user.id,
-          'name': user.name,
-          'email': user.email,
-          'image': user.image,
-          'token': user.token,
-          'phone': '',
-        });
-      } else {
-        final userId = supabase.auth.currentUser!.id;
-        final token = await NotificationRepository().getNotificationToken();
-        await supabase.from(TABLE_USERS).update({
-          'token': token,
-        }).eq('id', userId);
+      final request = jsonEncode({
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "image": user.image,
+        "token": user.token,
+      });
+      final response = await Dio().post(
+          "$API_URL/user/create/",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
       }
       return true;
     } catch (e) {
@@ -50,8 +49,17 @@ class UserRepository extends UserTemplate {
   Future<UserModel> getUser() async {
     try {
       final id = supabase.auth.currentUser!.id;
-      final response = await supabase.from(TABLE_USERS).select().eq('id', id);
-      final user = UserModel.fromJson(response.first);
+      final response = await Dio().get(
+          "$API_URL/user/get/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+         
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final user = UserModel.fromJson(response.data);
       return user;
     } catch (e) {
       debugPrint(e.toString());
@@ -62,21 +70,20 @@ class UserRepository extends UserTemplate {
   @override
   Future<UserModel> updateUser({required UserModel user}) async {
     try {
-      await supabase.from(TABLE_USERS).update({
-        'name': user.name,
-        'email': user.email,
-        'phone': user.phone,
-        'image': user.image,
-        'token': user.token,
-        'address': {
-          'city': user.address!.city,
-          'lat': user.address!.lat,
-          'lon': user.address!.lon,
-          'country': user.address!.country,
-        }
-      }).eq('id', user.id);
-      final result = await getUser();
-      return result;
+      final request = jsonEncode(user.toJson());
+      final id = supabase.auth.currentUser!.id;
+      final response = await Dio().put(
+          "$API_URL/user/update/$id",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final updatedUser = UserModel.fromJson(response.data);
+      return updatedUser;
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Error updating user');

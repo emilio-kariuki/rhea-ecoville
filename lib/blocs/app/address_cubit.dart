@@ -7,7 +7,7 @@ class AddressCubit extends Cubit<AddressState> {
   final _addressProvider = service<AddressProvider>();
   AddressCubit() : super(AddressState());
 
-  Future<void> addAddress({required AddressModel address}) async {
+  Future<void> addAddress({required AddressRequestModel address}) async {
     emit(state.copyWith(status: AddressStatus.loading));
     try {
       final result = await _addressProvider.addAddress(address: address);
@@ -51,10 +51,10 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  Future<void> updateAddress({required AddressModel address}) async {
+  Future<void> updateAddress({required AddressRequestModel address, required String id}) async {
     emit(state.copyWith(status: AddressStatus.loading));
     try {
-      final result = await _addressProvider.updateAddress(address: address);
+      final result = await _addressProvider.updateAddress(address: address, id: id);
       if (result) {
         final addresses = await _addressProvider.getAddresses();
         emit(state.copyWith(

@@ -48,14 +48,17 @@ class SearchResultPage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  controller.text,
-                  overflow: TextOverflow.ellipsis ,
-                  maxLines: 1,
-                  style: GoogleFonts.inter(
-                      fontSize: 2.2 * SizeConfig.heightMultiplier,
-                      fontWeight: FontWeight.w600,
-                      color: black),
+                SizedBox(
+                  width: size.width * 0.5,
+                  child: Text(
+                    controller.text,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: GoogleFonts.inter(
+                        fontSize: 2.2 * SizeConfig.heightMultiplier,
+                        fontWeight: FontWeight.w600,
+                        color: black),
+                  ),
                 ),
               ],
             ),
@@ -146,6 +149,7 @@ class SearchResultPage extends StatelessWidget {
                     ),
                   ),
                 ) : ListView.separated(
+                  shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return OutlinedButton(
                       onPressed: () => context
@@ -219,7 +223,8 @@ class SearchResultPage extends StatelessWidget {
                         thickness: 0.4,
                         height: 30,
                       ),
-                  itemCount: state.searchResults.length);
+                  itemCount: state.searchResults.length,
+                  );
             }
           },
         ),

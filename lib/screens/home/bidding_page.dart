@@ -105,8 +105,8 @@ class _BiddingPageState extends State<BiddingPage> {
                             }
                             if (state.status == BidStatus.error) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(state.message),
+                                const SnackBar(
+                                  content: Text("An error occurred while placing bid"),
                                 ),
                               );
                             }

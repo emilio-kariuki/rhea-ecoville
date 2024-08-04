@@ -10,11 +10,12 @@ class AddAddressPage extends StatelessWidget {
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _addressLine1Controller = TextEditingController();
-  final _addressLine2Controller = TextEditingController();
+  final _altPhoneController = TextEditingController();
   final _cityController = TextEditingController();
+  final _regionController = TextEditingController();
   final _countryController = TextEditingController();
-  final _postalCodeController = TextEditingController();
+  final _additionalInformationController = TextEditingController();
+  final _addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -31,7 +32,9 @@ class AddAddressPage extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.all(13),
           child: GestureDetector(
-            onTap: () =>context..pop()..read<AddressCubit>().getAddresses(),
+            onTap: () => context
+              ..pop()
+              ..read<AddressCubit>().getAddresses(),
             child: SvgPicture.asset(
               AppImages.back,
               height: 3 * SizeConfig.heightMultiplier,
@@ -51,19 +54,18 @@ class AddAddressPage extends StatelessWidget {
         actions: [
           GestureDetector(
             onTap: () async {
-              var uuid = Uuid();
               if (_formKey.currentState?.validate() ?? false) {
                 context.read<AddressCubit>().addAddress(
-                      address: AddressModel(
-                        id: uuid.v4(),
+                      address: AddressRequestModel(
                         name: _nameController.text,
-                        addressLine1: _addressLine1Controller.text,
-                        addressLine2: _addressLine2Controller.text,
+                        email: supabase.auth.currentUser!.email!,
                         city: _cityController.text,
-                        country: _countryController.text,
-                        postalCode: _postalCodeController.text,
                         phone: _phoneController.text,
-                        primary: _isDefault.toString().toLowerCase(),
+                        altPhone: _altPhoneController.text,
+                        region: _regionController.text,
+                        country: _countryController.text,
+                        additionalInformation: _additionalInformationController.text,
+                        address: _addressController.text,
                       ),
                     );
                 context.pop();
@@ -108,29 +110,16 @@ class AddAddressPage extends StatelessWidget {
                       _formKey.currentState?.validate();
                       return null;
                     },
-                    controller: _addressLine1Controller,
+                    controller: _regionController,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "Address line 1 is required";
+                        return "Region required";
                       }
                       return null;
                     },
-                    hintText: "Address Line 1"),
+                    hintText: "Region"),
                 Gap(1.5 * SizeConfig.heightMultiplier),
-                InputField(
-                    onChanged: (value) {
-                      _formKey.currentState?.validate();
-                      return null;
-                    },
-                    controller: _addressLine2Controller,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Address line 2 is required";
-                      }
-                      return null;
-                    },
-                    hintText: "Address Line 2"),
-                Gap(1.5 * SizeConfig.heightMultiplier),
+                
                 InputField(
                     onChanged: (value) {
                       _formKey.currentState?.validate();
@@ -144,21 +133,23 @@ class AddAddressPage extends StatelessWidget {
                       return null;
                     },
                     hintText: "City"),
-                Gap(1.5 * SizeConfig.heightMultiplier),
-                InputField(
+                    Gap(1.5 * SizeConfig.heightMultiplier),
+                    InputField(
                     onChanged: (value) {
                       _formKey.currentState?.validate();
                       return null;
                     },
-                    controller: _postalCodeController,
+                    controller: _countryController,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "Zip code is required";
+                        return "Country is required";
                       }
                       return null;
                     },
-                    hintText: "Zip Code"),
+                    hintText: "Country"),
+                
                 Gap(1.5 * SizeConfig.heightMultiplier),
+               
                 InputField(
                     onChanged: (value) {
                       _formKey.currentState?.validate();
@@ -173,58 +164,49 @@ class AddAddressPage extends StatelessWidget {
                     },
                     hintText: "Phone"),
                 Gap(1.5 * SizeConfig.heightMultiplier),
-                BlocProvider(
-                  create: (context) => BoolCubit(),
-                  child: BlocConsumer<BoolCubit, BoolState>(
-                    listener: (context, state) {
-                      if (state.status == BoolStatus.changed) {
-                        _isDefault = state.value;
+                 InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _altPhoneController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Alt Phone required";
                       }
+                      return null;
                     },
-                    builder: (context, state) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Checkbox(
-                              visualDensity: const VisualDensity(
-                                  horizontal: -4, vertical: -4),
-                              side: BorderSide(width: 1, color: darkGrey),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              value: state.status == BoolStatus.changed
-                                  ? state.value
-                                  : false,
-                              activeColor: green,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              onChanged: (value) {
-                                context
-                                    .read<BoolCubit>()
-                                    .changeValue(value: value!);
-                              }),
-                          Gap(
-                            0.3 * SizeConfig.heightMultiplier,
-                          ),
-                          GestureDetector(
-                            onTap: () => context.read<BoolCubit>().changeValue(
-                                value: !context.read<BoolCubit>().state.value),
-                            child: Text(
-                              "Set as default address",
-                              style: TextStyle(
-                                fontSize: 1.6 * SizeConfig.textMultiplier,
-                                fontWeight: FontWeight.w500,
-                                color: darkGrey,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
+                    hintText: "Alt Phone"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
                     },
-                  ),
-                )
+                    controller: _addressController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Address is required";
+                      }
+                      return null;
+                    },
+                    hintText: "Your Address"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                InputField(
+                    onChanged: (value) {
+                      _formKey.currentState?.validate();
+                      return null;
+                    },
+                    controller: _additionalInformationController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Additional information required";
+                      }
+                      return null;
+                    },
+                    hintText: "Additional Information"),
+                Gap(1.5 * SizeConfig.heightMultiplier),
+                
               ],
             ),
           ),

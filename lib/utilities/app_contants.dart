@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+
 const String APP_NAME = 'Ecoville';
 const String APP_VERSION = '1.0.0';
 const String APP_DESCRIPTION = 'Your Waste is Someone\'s Treasure.';

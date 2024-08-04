@@ -30,6 +30,19 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+  Future<void> getBiddingProducts() async {
+    setLoading();
+    try {
+      final biddingProducts = await _productProvider.getBiddingProducts();
+      emit(state.copyWith(
+        status: ProductStatus.success,
+        biddingProducts: biddingProducts,
+      ));
+    } catch (e) {
+      emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
+    }
+  }
+
   Future<void> getProduct({required String id}) async {
     setLoading();
     try {
@@ -233,6 +246,7 @@ enum ProductStatus { initial, created, updated, loading, success, error }
 class ProductState {
   final ProductModel? product;
   final List<ProductModel> products;
+  final List<ProductModel> biddingProducts;
   final List<ProductModel> productsNearby;
   final List<InteractionsModel> savedProducts;
   final List<ProductModel> similarProducts;
@@ -247,6 +261,7 @@ class ProductState {
   ProductState({
     this.product,
     this.products = const <ProductModel>[],
+    this.biddingProducts = const <ProductModel>[],
     this.productsNearby = const <ProductModel>[],
     this.savedProducts = const <InteractionsModel>[],
     this.similarProducts = const <ProductModel>[],
@@ -262,6 +277,7 @@ class ProductState {
   ProductState copyWith({
     ProductModel? product,
     List<ProductModel>? products,
+    List<ProductModel>? biddingProducts,
     List<ProductModel>? productsNearby,
     List<InteractionsModel>? savedProducts,
     List<ProductModel>? similarProducts,
@@ -276,6 +292,7 @@ class ProductState {
     return ProductState(
       product: product ?? this.product,
       products: products ?? this.products,
+      biddingProducts: biddingProducts ?? this.biddingProducts,
       productsNearby: productsNearby ?? this.productsNearby,
       savedProducts: savedProducts ?? this.savedProducts,
       similarProducts: similarProducts ?? this.similarProducts,

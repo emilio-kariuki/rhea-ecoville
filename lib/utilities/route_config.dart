@@ -338,7 +338,7 @@ final GoRouter appRouter = GoRouter(
                     path: 'orders',
                     name: Routes.orders,
                     builder: (context, state) {
-                      return const OrdersPage();
+                      return  OrdersPage();
                     }),
               ]),
           GoRoute(

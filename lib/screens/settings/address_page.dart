@@ -83,26 +83,11 @@ class AddressPage extends StatelessWidget {
                                         color: black),
                                   ),
                                   Gap(1 * SizeConfig.widthMultiplier),
-                                 bool.parse(address.primary) ? Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: green,
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Text(
-                                     "Primary",
-                                      style: GoogleFonts.inter(
-                                          fontSize:
-                                              1.2 * SizeConfig.heightMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          color: white),
-                                    ),
-                                  ) : Container(),
+                                 
                                 ],
                               ),
                               Text(
-                                address.addressLine1,
+                                address.city,
                                 style: GoogleFonts.inter(
                                     fontSize:
                                         1.6 * SizeConfig.heightMultiplier,
@@ -110,7 +95,7 @@ class AddressPage extends StatelessWidget {
                                     color: black),
                               ),
                               Text(
-                                address.addressLine2,
+                                address.region,
                                 style: GoogleFonts.inter(
                                     fontSize:
                                         1.6 * SizeConfig.heightMultiplier,

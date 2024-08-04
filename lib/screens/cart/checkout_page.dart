@@ -646,7 +646,7 @@ class AddressSection extends StatelessWidget {
                                           color: black),
                                     ),
                                     Text(
-                                      address.addressLine1,
+                                      address.city,
                                       style: GoogleFonts.inter(
                                           fontSize:
                                               1.6 * SizeConfig.heightMultiplier,
@@ -654,7 +654,7 @@ class AddressSection extends StatelessWidget {
                                           color: black),
                                     ),
                                     Text(
-                                      address.addressLine2,
+                                      address.region,
                                       style: GoogleFonts.inter(
                                           fontSize:
                                               1.6 * SizeConfig.heightMultiplier,

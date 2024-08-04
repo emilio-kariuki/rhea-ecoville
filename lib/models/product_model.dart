@@ -433,3 +433,4 @@ class Rating {
         "shipping": shipping,
     };
 }
+

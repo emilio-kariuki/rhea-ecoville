@@ -2,7 +2,6 @@
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:ecoville/blocs/minimal/page_cubit.dart';
-import 'package:ecoville/data/local/local_storage.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class OnboardingPage extends StatelessWidget {

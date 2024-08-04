@@ -11,14 +11,10 @@ import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/data/provider/socket_provider.dart';
 import 'package:ecoville/data/repository/location_repository.dart';
 import 'package:ecoville/data/repository/notification_repository.dart';
-import 'package:ecoville/data/repository/socket_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
-import 'package:ecoville/screens/authentication/welcome_page.dart';
-import 'package:ecoville/screens/home/home_page.dart';
 import 'package:flutter/services.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 
 var logger = Logger();
@@ -48,7 +44,7 @@ void main() async {
       url: "https://fuvjfsjfehyistbfkmkg.supabase.co",
       anonKey:
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1dmpmc2pmZWh5aXN0YmZrbWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NDU0ODMsImV4cCI6MjAzMTUyMTQ4M30.EaKs4B9BheWafF7u2Cz0uQhw-m9C8LTVYuT_YVlXGR4",
-      debug: true,
+      debug: false,
       storageOptions: const StorageClientOptions(
         retryAttempts: 3,
       ),
@@ -90,6 +86,7 @@ class MainApp extends StatelessWidget {
             lazy: false,
             create: (context) => ProductCubit()
               ..getProducts()
+              ..getBiddingProducts()
               ..getNearbyProducts()),
         BlocProvider(
             lazy: false,

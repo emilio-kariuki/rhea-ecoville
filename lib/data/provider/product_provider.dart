@@ -140,4 +140,9 @@ class ProductProvider extends ProductTemplate {
   Future<List<ProductModel>> getProductsBySeller({required String sellerId}) {
     return _productRepository.getProductsBySeller(sellerId: sellerId);
   }
+  
+  @override
+  Future<List<ProductModel>> getBiddingProducts() {
+    return _productRepository.getBiddingProducts();
+  }
 }

@@ -83,12 +83,7 @@ class _AccountPageState extends State<AccountPage> {
     //   'icon': AppImages.payment,
     //   'page': Routes.cart
     // },
-    {
-      "name": "Help",
-      'description': "Your problem our concern",
-      'icon': AppImages.help,
-      'page': Routes.cart
-    },
+    
     {
       "name": "Settings",
       'description': "Modify anything in the app",

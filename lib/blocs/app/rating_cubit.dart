@@ -9,14 +9,14 @@ class RatingCubit extends Cubit<RatingState> {
 
   Future<void> addRating(
       {required String productId,
-      required String description,
+      required String review,
       required String sellerId,
       required double rating}) async {
     try {
       emit(state.copyWith(status: RatingStatus.loading));
       await _ratingProvider.addRating(
           productId: productId,
-          description: description,
+          review: review,
           rating: rating,
           sellerId: sellerId);
       emit(state.copyWith(

@@ -167,7 +167,6 @@ class NotificationRepository extends NotificationTemplate {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
           }));
-        logger.d(response.data);
       final notifications = response.data
           .map((e) => NotificationModel.fromJson(e))
           .toList()

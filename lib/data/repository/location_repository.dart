@@ -83,15 +83,15 @@ class LocationRepository extends LocationTemplate {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-                    await Geolocator.openAppSettings();
-
+          await Geolocator.openAppSettings();
         }
-      }else if(permission == LocationPermission.deniedForever){
-        //open app settings
+      } else if (permission == LocationPermission.deniedForever) {
+        // open app settings
+        await Geolocator.openAppSettings();
         await Geolocator.openAppSettings();
       }
       bool serviceEnabled;
-       serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         throw Exception('Location services are disabled.');
       }
@@ -100,9 +100,11 @@ class LocationRepository extends LocationTemplate {
         throw Exception(
             'Location permissions are permanently denied, we cannot request permissions.');
       }
+      return;
     } catch (e) {
       debugPrint(e.toString());
-      throw Exception("Error requesting permission: $e");
+      // throw Exception("Error requesting permission: $e");
+      return;
     }
   }
 

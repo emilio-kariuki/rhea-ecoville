@@ -1,18 +1,24 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:ecoville/blocs/app/ai_cubit.dart';
 import 'package:ecoville/blocs/app/app_cubit.dart';
-import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/location_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
+import 'package:ecoville/blocs/minimal/bool_cubit.dart';
 import 'package:ecoville/blocs/minimal/value_cubit.dart';
+import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/product_request_model.dart';
-import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/shared/input_field.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
+
+final _priceController = TextEditingController();
+
+final _endDateController = TextEditingController(text: DateTime.now().toString());
+
+bool allowBidding = false;
 
 class PostingPage extends StatefulWidget {
   PostingPage({super.key});
@@ -26,13 +32,11 @@ class _PostingPageState extends State<PostingPage> {
 
   final _descriptionController = TextEditingController();
 
-  final _conditionController = TextEditingController();
+  final _quantityController = TextEditingController();
 
   final _categoryController = TextEditingController();
 
-  final _priceController = TextEditingController();
-
-  final _quantityController = TextEditingController();
+  final _conditionController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -116,23 +120,30 @@ class _PostingPageState extends State<PostingPage> {
                               ),
                               function: () {
                                 final product = ProductRequestModel(
-                                    id: const Uuid().v4(),
                                     name: _titleController.text.trim(),
                                     description:
                                         _descriptionController.text.trim(),
-                                    image: images,
+                                    image: images.isEmpty ? [
+                                      "https:picsa.pro/profile.jpg"
+                                    ] : images,
                                     userId: supabase.auth.currentUser!.id,
                                     categoryid: _categoryController.text.trim(),
-                                    price:
-                                        double.parse(_priceController.text),
+                                    price: double.parse(_priceController.text),
+                                    allowBidding: allowBidding,
+                                    endBidding: _endDateController.text.isEmpty
+                                        ? DateTime.now()
+                                        : DateTime.parse(_endDateController.text),
                                     currentPrice:
                                         double.parse(_priceController.text),
                                     condition: _conditionController.text.trim(),
                                     address: Address(
-                                        lat: localState.position!.latitude.toString(),
-                                        lon: localState.position!.longitude.toString(),
+                                        lat: localState.position!.latitude
+                                            .toString(),
+                                        lon: localState.position!.longitude
+                                            .toString(),
                                         city: "city",
-                                        country: "Kenya"));
+                                        country: "Kenya")
+                                    );
                                 context.read<ProductCubit>().createProduct(
                                     product: product, allowBidding: false);
                               });
@@ -170,81 +181,9 @@ class _PostingPageState extends State<PostingPage> {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                        // backgroundColor: lightGrey,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        side: BorderSide(
-                                            color:
-                                                Colors.black.withOpacity(0.4),
-                                            width: 0.6)),
-                                    onPressed: () => context
-                                        .read<AppCubit>()
-                                        .pickImage(source: ImageSource.camera),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Take Photo',
-                                            style: GoogleFonts.inter(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black),
-                                          ),
-                                          const Spacer(),
-                                          IconContainer(
-                                              icon: AppImages.camera,
-                                              function: () => context
-                                                  .read<AppCubit>()
-                                                  .pickImage(
-                                                      source:
-                                                          ImageSource.camera))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                  _outlinePickButton(),
                                   Gap(1 * SizeConfig.heightMultiplier),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                        // backgroundColor: lightGrey,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        side: BorderSide(
-                                            color:
-                                                Colors.black.withOpacity(0.4),
-                                            width: 0.6)),
-                                    onPressed: () => context
-                                        .read<AppCubit>()
-                                        .pickImage(source: ImageSource.gallery),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 10),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Upload Photo',
-                                            style: GoogleFonts.inter(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black),
-                                          ),
-                                          const Spacer(),
-                                          IconContainer(
-                                              icon: AppImages.upload,
-                                              function: () => context
-                                                  .read<AppCubit>()
-                                                  .pickImage(
-                                                      source:
-                                                          ImageSource.gallery))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                  _outlineUploadButton(),
                                   Gap(1 * SizeConfig.heightMultiplier),
                                   if (state.status == AppStatus.loading)
                                     LinearProgressIndicator(
@@ -370,7 +309,6 @@ class _PostingPageState extends State<PostingPage> {
                           },
                         ),
                       ),
-                   
                       Gap(2 * SizeConfig.heightMultiplier),
                       Text(
                         'Price',
@@ -619,6 +557,7 @@ class _PostingPageState extends State<PostingPage> {
                         ),
                       ),
                       Gap(2 * SizeConfig.heightMultiplier),
+                      _biddingSection()
                     ],
                   ),
                 ),
@@ -626,5 +565,225 @@ class _PostingPageState extends State<PostingPage> {
             ),
           ),
         ));
+  }
+}
+
+class _biddingSection extends StatelessWidget {
+  _biddingSection({
+    super.key,
+  });
+
+  final _priceController = TextEditingController();
+
+  Future<DateTime?> showDateTimePicker({
+    required BuildContext context,
+    DateTime? initialDate,
+    DateTime? firstDate,
+    DateTime? lastDate,
+  }) async {
+    initialDate ??= DateTime.now();
+    firstDate ??= initialDate.subtract(const Duration(days: 365 * 100));
+    lastDate ??= firstDate.add(const Duration(days: 365 * 200));
+
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+
+    if (selectedDate == null) return null;
+
+    if (!context.mounted) return selectedDate;
+
+    final TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initialDate),
+    );
+
+    _endDateController.text = selectedDate.toString();
+
+    return selectedTime == null
+        ? selectedDate
+        : DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => BoolCubit(),
+      child: Builder(builder: (context) {
+        return BlocBuilder<BoolCubit, BoolState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "Allow Bidding",
+                      style: GoogleFonts.notoSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const Spacer(),
+                    Switch(
+                      value: state.value,
+                      activeColor: green,
+                      inactiveTrackColor: lightGrey,
+                      onChanged: (value) {
+                        allowBidding = value;
+                        context.read<BoolCubit>().changeValue(value: value);
+                      },
+                    ),
+                  ],
+                ),
+                if (state.value)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Gap(2 * SizeConfig.heightMultiplier),
+                      Text(
+                        "Minimum Price",
+                        style: GoogleFonts.notoSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Gap(1 * SizeConfig.heightMultiplier),
+                      InputField(
+                        controller: _priceController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Price is required";
+                          }
+                          return null;
+                        },
+                        textInputAction: TextInputAction.next,
+                        hintText: "Minimum price for bidding",
+                      ),
+                      Gap(2 * SizeConfig.heightMultiplier),
+                      Text(
+                        "End Date",
+                        style: GoogleFonts.notoSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Gap(1 * SizeConfig.heightMultiplier),
+                      InputField(
+                        controller: _endDateController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "End date is required";
+                          }
+                          return null;
+                        },
+                        textInputAction: TextInputAction.next,
+                        hintText: "End date for bidding",
+                        onTap: () async {
+                          final DateTime? date = await showDateTimePicker(
+                            context: context,
+                          );
+                          if (date != null) {
+                            _endDateController.text = date.toString();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+              ],
+            );
+          },
+        );
+      }),
+    );
+  }
+}
+
+class _outlinePickButton extends StatelessWidget {
+  const _outlinePickButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+          // backgroundColor: lightGrey,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          side: BorderSide(color: Colors.black.withOpacity(0.4), width: 0.6)),
+      onPressed: () =>
+          context.read<AppCubit>().pickImage(source: ImageSource.camera),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Row(
+          children: [
+            Text(
+              'Take Photo',
+              style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
+            ),
+            const Spacer(),
+            IconContainer(
+                icon: AppImages.camera,
+                function: () => context
+                    .read<AppCubit>()
+                    .pickImage(source: ImageSource.camera))
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _outlineUploadButton extends StatelessWidget {
+  const _outlineUploadButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+          // backgroundColor: lightGrey,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          side: BorderSide(color: Colors.black.withOpacity(0.4), width: 0.6)),
+      onPressed: () =>
+          context.read<AppCubit>().pickImage(source: ImageSource.gallery),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Row(
+          children: [
+            Text(
+              'Upload Photo',
+              style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
+            ),
+            const Spacer(),
+            IconContainer(
+                icon: AppImages.upload,
+                function: () => context
+                    .read<AppCubit>()
+                    .pickImage(source: ImageSource.gallery))
+          ],
+        ),
+      ),
+    );
   }
 }

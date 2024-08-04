@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/provider/bid_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/bid_model.dart';
@@ -20,8 +21,8 @@ class BidCubit extends Cubit<BidState> {
         emit(state.copyWith(
             status: BidStatus.error, message: 'Failed to create bid'));
       }
-    } catch (error) {
-      emit(state.copyWith(status: BidStatus.error, message: error.toString().toException()));
+    } on DioException catch (error) {
+      emit(state.copyWith(status: BidStatus.error, message: error.message));
     }
   }
 

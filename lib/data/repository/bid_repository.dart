@@ -40,7 +40,13 @@ class BidRepository extends BidTemplate {
       return true;
     } catch (error) {
       debugPrint(error.toString());
-      throw Exception(error);
+      throw DioException(
+          requestOptions: RequestOptions(path: "$API_URL/bid/create"),
+          response: Response(
+              requestOptions: RequestOptions(path: "$API_URL/bid/create"),
+              statusCode: 500,
+              data: error.toString())
+      );
     }
   }
 
@@ -48,7 +54,6 @@ class BidRepository extends BidTemplate {
   @override
   Future<bool> updateBid({required String bidId, required int price}) async {
     try {
-
       final request = jsonEncode({
         "price": price,
       });
