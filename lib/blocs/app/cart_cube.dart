@@ -1,4 +1,3 @@
-import 'package:ecoville/data/provider/cart_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/utilities/packages.dart';

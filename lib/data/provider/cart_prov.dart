@@ -1,5 +1,4 @@
 import 'package:ecoville/data/repository/cart_repo.dart';
-import 'package:ecoville/data/repository/cart_repository.dart';
 import 'package:ecoville/models/local_product_model.dart';
 
 class CartProv extends cartTemp{

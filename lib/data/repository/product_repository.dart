@@ -61,7 +61,7 @@ class ProductRepository extends ProductTemplate {
       await supabase
           .from(TABLE_PRODUCT)
           .update(product.toJson())
-          .eq('id', product.id!);
+          .eq('id', product.id);
       return true;
     } catch (e) {
       debugPrint(e.toString());
