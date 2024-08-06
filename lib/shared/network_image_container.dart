@@ -86,10 +86,7 @@ class NetworkImageContainer extends StatelessWidget {
                 image: DecorationImage(
                   image: imageProvider,
                   fit: fit,
-                  colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.5),
-                BlendMode.darken
-               ),
+                 
                   
                 ),
               ),

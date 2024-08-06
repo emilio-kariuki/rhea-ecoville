@@ -130,88 +130,106 @@ class SettingsPage extends StatelessWidget {
                   ),
                   SettingsTile(
                       title: "Help",
-                      function: () => showModalBottomSheet(
-                          clipBehavior: Clip.antiAlias,
-                          backgroundColor: white,
-                          isScrollControlled: true,
+                      function: () => showDialog(
                           barrierColor: Colors.black.withOpacity(0.6),
-                          elevation: 5,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(27.25),
-                                  topRight: Radius.circular(27.25))),
+                          // elevation: 5,
+                          // shape: const RoundedRectangleBorder(
+                          //     borderRadius: BorderRadius.only(
+                          //         topLeft: Radius.circular(27.25),
+                          //         topRight: Radius.circular(27.25))),
                           context: context,
                           builder: (context) {
                             final _messageController = TextEditingController();
-                            return Container(
-                              padding: const EdgeInsets.all(15),
-                              child: IntrinsicHeight(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Feedback",
-                                      style: GoogleFonts.inter(
-                                          fontSize:
-                                              2.2 * SizeConfig.heightMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          color: black),
-                                    ),
-                                    Gap(2 * SizeConfig.heightMultiplier),
-                                    InputField(
-                                      controller: _messageController,
-                                      maxLines: 5,
-                                      minLines: 3,
-                                       hintText: "Type your message here",
-                                       validator: (p0) {
-                                         return null;
-                                       },
-                                    ),
-                                    Gap(2 * SizeConfig.heightMultiplier),
-                                    BlocProvider(
-                                      create: (context) => AppCubit(),
-                                      child:
-                                          BlocConsumer<AppCubit, AppState>(
-                                        listener: (context, state) {
-                                          if (state.status == AppStatus.success) {
-                                            context.pop();
-                                          }
-                                
-                                        },
-                                        builder: (context, state) {
-                                          return CompleteButton(
-                                            function: () {
-                                              if (_messageController
-                                                  .text.isNotEmpty) {
-                                                context
-                                                    .read<AppCubit>()
-                                                    .addFeedback(
-                                                        message:
-                                                            _messageController
-                                                                .text);
-                                                _messageController.clear();
-                                              }
-                                            },
-                                            isLoading: state.status == AppStatus.loading,
-                                            text: Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 10, horizontal: 20),
-                                              child: Text(
-                                                "Send",
-                                                style: GoogleFonts.inter(
-                                                    fontSize: 1.8 *
-                                                        SizeConfig
-                                                            .heightMultiplier,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: white),
+                            return Scaffold(
+                              backgroundColor: white,
+                              body: SafeArea(
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  height: MediaQuery.of(context).size.height * 0.5,
+                                  child: IntrinsicHeight(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Feedback",
+                                              style: GoogleFonts.inter(
+                                                  fontSize:
+                                                      2.2 * SizeConfig.heightMultiplier,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: black),
+                                            ),
+                                            const Spacer(),
+                                            GestureDetector(
+                                              onTap: () => context.pop(),
+                                              child: SvgPicture.asset(
+                                                AppImages.close,
+                                                color: black,
+                                                height: 2.5 * SizeConfig.heightMultiplier,
                                               ),
                                             ),
-                                          );
-                                        },
-                                      ),
+                                          ],
+                                        ),
+                                        Gap(2 * SizeConfig.heightMultiplier),
+                                        InputField(
+                                          controller: _messageController,
+                                          maxLines: 5,
+                                          minLines: 3,
+                                          hintText: "Type your message here",
+                                          validator: (p0) {
+                                            return null;
+                                          },
+                                        ),
+                                        Gap(2 * SizeConfig.heightMultiplier),
+                                        BlocProvider(
+                                          create: (context) => AppCubit(),
+                                          child: BlocConsumer<AppCubit, AppState>(
+                                            listener: (context, state) {
+                                              if (state.status ==
+                                                  AppStatus.success) {
+                                                context.pop();
+                                              }
+                                            },
+                                            builder: (context, state) {
+                                              return CompleteButton(
+                                                function: () {
+                                                  if (_messageController
+                                                      .text.isNotEmpty) {
+                                                    context
+                                                        .read<AppCubit>()
+                                                        .addFeedback(
+                                                            message:
+                                                                _messageController
+                                                                    .text);
+                                                    _messageController.clear();
+                                                  }
+                                                },
+                                                isLoading: state.status ==
+                                                    AppStatus.loading,
+                                                text: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                          vertical: 10,
+                                                          horizontal: 20),
+                                                  child: Text(
+                                                    "Send",
+                                                    style: GoogleFonts.inter(
+                                                        fontSize: 1.8 *
+                                                            SizeConfig
+                                                                .heightMultiplier,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: white),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             );

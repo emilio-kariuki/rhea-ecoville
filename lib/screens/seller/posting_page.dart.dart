@@ -32,7 +32,7 @@ class _PostingPageState extends State<PostingPage> {
 
   final _descriptionController = TextEditingController();
 
-  final _quantityController = TextEditingController();
+  final _quantityController = TextEditingController(text: '1');
 
   final _categoryController = TextEditingController();
 
@@ -136,6 +136,8 @@ class _PostingPageState extends State<PostingPage> {
                                     currentPrice:
                                         double.parse(_priceController.text),
                                     condition: _conditionController.text.trim(),
+                                    quantity: int.tryParse(_quantityController.text) ??
+                                        1,
                                     address: Address(
                                         lat: localState.position!.latitude
                                             .toString(),
@@ -328,6 +330,26 @@ class _PostingPageState extends State<PostingPage> {
                         },
                         textInputAction: TextInputAction.next,
                         hintText: "Product price",
+                      ),
+                      Gap(2 * SizeConfig.heightMultiplier),
+                      Text(
+                        'Quantity',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Gap(1 * SizeConfig.heightMultiplier),
+                      InputField(
+                        controller: _quantityController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Quantity is required";
+                          }
+                          return null;
+                        },
+                        textInputAction: TextInputAction.next,
+                        hintText: "Product Quantity",
                       ),
                       Gap(2 * SizeConfig.heightMultiplier),
                       Text(

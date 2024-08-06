@@ -1,3 +1,4 @@
+import 'package:ecoville/screens/account/admin_page.dart';
 import 'package:ecoville/screens/account/categories_page.dart';
 import 'package:ecoville/screens/account/onboarding_page.dart';
 import 'package:ecoville/screens/account/orders_page.dart';
@@ -340,6 +341,12 @@ final GoRouter appRouter = GoRouter(
                     builder: (context, state) {
                       return  OrdersPage();
                     }),
+                     GoRoute(
+                    path: 'admin',
+                    name: Routes.admin,
+                    builder: (context, state) {
+                      return  AdminPage();
+                    }),
               ]),
           GoRoute(
             path: '/inbox',
@@ -410,4 +417,5 @@ class Routes {
   static const String editAddress = '/editAddress';
   static const String messages = '/messages';
   static const String orders = '/account/orders';
+  static const String admin = '/account/admin';
 }

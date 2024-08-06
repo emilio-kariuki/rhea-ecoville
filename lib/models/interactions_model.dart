@@ -193,8 +193,8 @@ class Product {
 }
 
 class Address {
-    final String lon;
-    final String lat;
+    final dynamic lon;
+    final dynamic lat;
     final String city;
     final String country;
 
@@ -206,8 +206,8 @@ class Address {
     });
 
     Address copyWith({
-        String? lon,
-        String? lat,
+        dynamic lon,
+        dynamic lat,
         String? city,
         String? country,
     }) => 

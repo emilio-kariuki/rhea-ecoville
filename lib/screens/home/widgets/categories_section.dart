@@ -6,7 +6,7 @@ class CategoriesSection extends StatelessWidget {
   });
 
   final List<Map<String, dynamic>> categories = [
-    {'name': "Categories", "icon": AppImages.category, "page": Routes.categories},
+    // {'name': "Categories", "icon": AppImages.category, "page": Routes.categories},
     {'name': "Orders", "icon": AppImages.flash, "page": Routes.orders},
     {'name': "Saved", "icon": AppImages.favourite, "page": Routes.saved},
     {'name': "Wishlist", "icon": AppImages.wishlist, "page":Routes.wishlist},

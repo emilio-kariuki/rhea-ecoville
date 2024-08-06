@@ -2,6 +2,7 @@ import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/shared/icon_container.dart';
+import 'package:ecoville/shared/input_field.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class AccountPage extends StatefulWidget {
@@ -43,12 +44,12 @@ class _AccountPageState extends State<AccountPage> {
       'icon': AppImages.recent,
       'page': Routes.watchlist
     },
-    {
-      "name": "Categories",
-      'description': "Shop by category",
-      'icon': AppImages.category,
-      'page': Routes.categories
-    },
+    // {
+    //   "name": "Categories",
+    //   'description': "Shop by category",
+    //   'icon': AppImages.category,
+    //   'page': Routes.categories
+    // },
     // {
     //   "name": "Listings",
     //   'description': "Your all time listings",
@@ -66,7 +67,7 @@ class _AccountPageState extends State<AccountPage> {
     {
       "name": "Saved",
       'description': "Searches, sellers, feed",
-      'icon': AppImages.favourite,
+      'icon': AppImages.save,
       'page': Routes.saved
     },
     {
@@ -83,7 +84,7 @@ class _AccountPageState extends State<AccountPage> {
     //   'icon': AppImages.payment,
     //   'page': Routes.cart
     // },
-    
+
     {
       "name": "Settings",
       'description': "Modify anything in the app",
@@ -116,38 +117,37 @@ class _AccountPageState extends State<AccountPage> {
                 function: () =>
                     context.read<NavigationCubit>().changePage(page: 1)),
             Gap(1 * SizeConfig.widthMultiplier),
-              BlocBuilder<LocalCubit, LocalState>(
-         
-                builder: (context, state) {
-                  return Stack(
-                    children: [
-                      IconContainer(
-                          icon: AppImages.cart,
-                          function: () => context.pushNamed(Routes.cart)),
-                      if (state.cartItems.isNotEmpty)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: Color(0xffF4521E),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              state.cartItems.length.toString(),
-                              style: GoogleFonts.inter(
-                                color: darkGrey,
-                                fontSize: 1.3 * SizeConfig.textMultiplier,
-                                fontWeight: FontWeight.w600,
-                              ),
+            BlocBuilder<LocalCubit, LocalState>(
+              builder: (context, state) {
+                return Stack(
+                  children: [
+                    IconContainer(
+                        icon: AppImages.cart,
+                        function: () => context.pushNamed(Routes.cart)),
+                    if (state.cartItems.isNotEmpty)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            color: Color(0xffF4521E),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            state.cartItems.length.toString(),
+                            style: GoogleFonts.inter(
+                              color: darkGrey,
+                              fontSize: 1.3 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                    ],
-                  );
-                },
-              ),
+                      ),
+                  ],
+                );
+              },
+            ),
             Gap(1 * SizeConfig.widthMultiplier),
           ],
         ),
@@ -294,6 +294,32 @@ class _AccountPageState extends State<AccountPage> {
                   separatorBuilder: (context, index) =>
                       Gap(0.2 * SizeConfig.heightMultiplier),
                   itemCount: accountList.length,
+                ),
+                //* Admin
+                BlocBuilder<UserCubit, UserState>(
+                  builder: (context, state) {
+                    return state.user!.role == "admin" ?Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Admin",
+                          style: GoogleFonts.inter(
+                              color: black,
+                              fontSize: 2.2 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w700,
+                              height: 1.2,
+                              letterSpacing: 0.1),
+                        ),
+                        Gap(2 * SizeConfig.heightMultiplier),
+                        AccountContainer(
+                          icon: AppImages.admin,
+                          name: "Manage Orders",
+                          description: "Manage all orders",
+                          function: () => context.pushNamed(Routes.admin),
+                        ),
+                      ],
+                    ):const SizedBox.shrink();
+                  },
                 ),
               ],
             ),

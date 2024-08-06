@@ -44,9 +44,9 @@ class EditAddressPage extends StatelessWidget {
           _altPhoneController.text = state.selectedAddress!.altPhone;
           _cityController.text = state.selectedAddress!.city;
           _countryController.text = state.selectedAddress!.country;
-          _informationController.text = state.selectedAddress!.additionalInformation;
+          _informationController.text =
+              state.selectedAddress!.additionalInformation;
           _addressController.text = state.selectedAddress!.address;
-         
         }
       },
       builder: (context, state) {
@@ -77,6 +77,21 @@ class EditAddressPage extends StatelessWidget {
               ),
             ),
             actions: [
+              GestureDetector(
+                onTap: () {
+                  context.read<AddressCubit>().removeAddress(id: id);
+                  context.pop();
+                },
+                child: Text(
+                  "delete",
+                  style: GoogleFonts.inter(
+                    fontSize: 1.7 * SizeConfig.textMultiplier,
+                    color: red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Gap(3 * SizeConfig.widthMultiplier),
               GestureDetector(
                 onTap: () async {
                   if (_formKey.currentState?.validate() ?? false) {
@@ -158,7 +173,6 @@ class EditAddressPage extends StatelessWidget {
                       },
                       hintText: "City"),
                   Gap(1.5 * SizeConfig.heightMultiplier),
-                  
                   InputField(
                       onChanged: (value) {
                         _formKey.currentState?.validate();
@@ -202,8 +216,8 @@ class EditAddressPage extends StatelessWidget {
                       hintText: "Country"),
                   Gap(1.5 * SizeConfig.heightMultiplier),
                   InputField(
-                    maxLines: 5,
-                    minLines: 3,
+                      maxLines: 5,
+                      minLines: 3,
                       onChanged: (value) {
                         _formKey.currentState?.validate();
                         return null;
@@ -218,8 +232,8 @@ class EditAddressPage extends StatelessWidget {
                       hintText: "Additional Information"),
                   Gap(1.5 * SizeConfig.heightMultiplier),
                   InputField(
-                    maxLines: 5,
-                    minLines: 3,
+                      maxLines: 5,
+                      minLines: 3,
                       onChanged: (value) {
                         _formKey.currentState?.validate();
                         return null;
@@ -233,7 +247,6 @@ class EditAddressPage extends StatelessWidget {
                       },
                       hintText: "Your Address"),
                   Gap(1.5 * SizeConfig.heightMultiplier),
-                  
                 ],
               ),
             ),

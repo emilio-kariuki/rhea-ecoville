@@ -8,13 +8,13 @@ abstract class SocketTemplate {
 }
 
 // Socket socket = io('https://84.247.174.84/ecoville/');
-Socket socket = io(
-    'http://localhost:4003',
-    OptionBuilder().setTransports(['websocket']) // For Flutter or Dart VM
-        .setExtraHeaders({
-      'user': supabase.auth.currentUser!.id,
-    }) // Optional: Extra headers
-        .build());
+// Socket socket = io(
+//     'http://localhost:4003',
+//     OptionBuilder().setTransports(['websocket']) // For Flutter or Dart VM
+//         .setExtraHeaders({
+//       'user': supabase.auth.currentUser!.id,
+//     }) // Optional: Extra headers
+//         .build());
 
 class SocketRepository extends SocketTemplate {
   @override
@@ -24,17 +24,17 @@ class SocketRepository extends SocketTemplate {
       //   'user': supabase.auth.currentUser!.id,
       //   'email': supabase.auth.currentUser!.email,
       // };
-      socket.connect();
+      // socket.connect();
       
-      socket.onConnectError((data) {
-        debugPrint('Connection error: $data');
-      });
-      socket.onConnectTimeout((data) {
-        debugPrint('Connection timeout: $data');
-      });
-      socket.onDisconnect((data) {
-        debugPrint('Disconnected: $data');
-      });
+      // socket.onConnectError((data) {
+      //   debugPrint('Connection error: $data');
+      // });
+      // socket.onConnectTimeout((data) {
+      //   debugPrint('Connection timeout: $data');
+      // });
+      // socket.onDisconnect((data) {
+      //   debugPrint('Disconnected: $data');
+      // });
       return;
     } catch (e) {
       debugPrint(e.toString());

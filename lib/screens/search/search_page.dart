@@ -58,12 +58,18 @@ class _SearchPageState extends State<SearchPage> {
                     cursorHeight: 15,
                     style: TextStyle(fontSize: 1.6 * SizeConfig.textMultiplier),
                     onFieldSubmitted: (value) {
-                      _searchController.text = value;
-                      context.push(Routes.searchResults,
-                          extra: {'controller': _searchController});
-                      context.read<AppCubit>().insertSearch(name: value);
-                      _searchController.clear();
-                      _focusNode.requestFocus();
+                      // _searchController.text = value;
+                      // context.push(Routes.searchResults,
+                      //     extra: {'controller': _searchController});
+                      context.read<AppCubit>().insertSearch(name: _searchController.text);
+                      // _searchController.clear();
+                      // _focusNode.requestFocus();
+                      context.push(
+                                          Routes.searchResults,
+                                          extra: {
+                                            'controller': _searchController
+                                          },
+                                        );
                     },
                     decoration: InputDecoration(
                       hintText: 'Search on Ecoville',

@@ -33,11 +33,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    socket.onConnect((data) {
-      socket.on('update', (data) {
-        debugPrint('message received ' + data);
-      });
-    });
+    // socket.onConnect((data) {
+    //   socket.on('update', (data) {
+    //     debugPrint('message received ' + data);
+    //   });
+    // });
   }
 
   @override
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: white,
       floatingActionButton: FloatingActionButton(
-        tooltip: "View Map emilio",
+        tooltip: "View Map",
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
         ),
@@ -128,7 +128,8 @@ class _HomePageState extends State<HomePage> {
           context
             ..read<ProductCubit>().getProducts()
             ..read<ProductCubit>().getNearbyProducts()
-            ..read<LocalCubit>().getWatchedProduct();
+            ..read<LocalCubit>().getWatchedProduct()
+            ..read<LocalCubit>().getCartProducts();
           return Future.delayed(const Duration(seconds: 1));
         },
         child: SingleChildScrollView(
@@ -141,8 +142,8 @@ class _HomePageState extends State<HomePage> {
                 Gap(3 * SizeConfig.heightMultiplier),
                 const RecentItems(),
                 const BiddingItems(),
-                const NearbyItems(),
                 const WatchedItems(),
+                const NearbyItems(),
                 const EcovilleCategories(),
                 // const WatchedItems(),
                 // const YourDeals(),

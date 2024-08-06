@@ -83,85 +83,106 @@ class ProductDetailsPage extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                       height: 1.2),
                                 ),
-                                Gap(2 * SizeConfig.heightMultiplier),
-                                Row(
-                                  children: [
-                                    NetworkImageContainer(
-                                      imageUrl: AppImages.defaultImage,
-                                      height: height * 0.07,
-                                      width: height * 0.07,
-                                      isCirlce: true,
-                                    ),
-                                    Gap(2 * SizeConfig.widthMultiplier),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        BlocBuilder<ProductCubit, ProductState>(
-                                          buildWhen: (previous, current) =>
-                                              previous.product !=
-                                              current.product,
-                                          builder: (context, state) {
-                                            return Text(
-                                              state.product!.user!.name!,
-                                              style: GoogleFonts.inter(
-                                                  color: black,
-                                                  fontSize: 2.2 *
-                                                      SizeConfig.textMultiplier,
-                                                  fontWeight: FontWeight.w600,
-                                                  height: 1.2),
-                                            );
-                                          },
-                                        ),
-                                        Text(
-                                          "90% Positive Rating",
-                                          style: GoogleFonts.inter(
-                                              color: black,
-                                              fontSize: 1.6 *
-                                                  SizeConfig.textMultiplier,
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.2),
-                                        ),
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    state.product!.userId !=
-                                            supabase.auth.currentUser!.id
-                                        ? BlocProvider(
-                                            create: (context) => MessageCubit(),
-                                            child: Builder(builder: (context) {
-                                              return BlocListener<MessageCubit,
-                                                  MessageState>(
-                                                listener: (context, state) {
-                                                  debugPrint(
-                                                      "Message State: ${state.status}");
-                                                  if (state.status ==
-                                                      MessageStatus.success) {
-                                                    context
-                                                        .push(Routes.messages);
-                                                  }
-                                                },
-                                                child: IconContainer(
-                                                  icon: AppImages.messages,
-                                                  function: () => state.product!
-                                                              .userId !=
-                                                          supabase.auth
-                                                              .currentUser!.id
-                                                      ? context
-                                                          .read<MessageCubit>()
-                                                          .createConversation(
-                                                              sellerId: state
-                                                                  .product!
-                                                                  .userId!)
-                                                      : null,
-                                                ),
-                                              );
-                                            }),
-                                          )
-                                        : const SizedBox.shrink(),
-                                  ],
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: state.product!.sold!
+                                        ? Colors.red.withOpacity(0.2)
+                                        : Colors.blue.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Text(
+                                    state.product!.sold! ? "Sold Out" : "Available",
+                                    style: GoogleFonts.inter(
+                                        fontSize:
+                                            1.5 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w600,
+                                        color: state.product!.sold!
+                                            ? Colors.red
+                                            : Colors.blue),
+                                  ),
                                 ),
-                                Gap(3 * SizeConfig.heightMultiplier),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                // Row(
+                                //   children: [
+                                //     NetworkImageContainer(
+                                //       imageUrl: AppImages.defaultImage,
+                                //       height: height * 0.05,
+                                //       width: height * 0.05,
+                                //       isCirlce: true,
+                                //     ),
+                                //     Gap(2 * SizeConfig.widthMultiplier),
+                                //     Column(
+                                //       crossAxisAlignment:
+                                //           CrossAxisAlignment.start,
+                                //       children: [
+                                //         BlocBuilder<ProductCubit, ProductState>(
+                                //           buildWhen: (previous, current) =>
+                                //               previous.product !=
+                                //               current.product,
+                                //           builder: (context, state) {
+                                //             return Text(
+                                //               state.product!.user!.name!,
+                                //               style: GoogleFonts.inter(
+                                //                   color: black,
+                                //                   fontSize: 2.2 *
+                                //                       SizeConfig.textMultiplier,
+                                //                   fontWeight: FontWeight.w600,
+                                //                   height: 1.2),
+                                //             );
+                                //           },
+                                //         ),
+                                //         Text(
+                                //           "90% Positive Rating",
+                                //           style: GoogleFonts.inter(
+                                //               color: black,
+                                //               fontSize: 1.6 *
+                                //                   SizeConfig.textMultiplier,
+                                //               fontWeight: FontWeight.w500,
+                                //               height: 1.2),
+                                //         ),
+                                //       ],
+                                //     ),
+                                //     const Spacer(),
+                                //     state.product!.userId !=
+                                //             supabase.auth.currentUser!.id
+                                //         ? BlocProvider(
+                                //             create: (context) => MessageCubit(),
+                                //             child: Builder(builder: (context) {
+                                //               return BlocListener<MessageCubit,
+                                //                   MessageState>(
+                                //                 listener: (context, state) {
+                                //                   debugPrint(
+                                //                       "Message State: ${state.status}");
+                                //                   if (state.status ==
+                                //                       MessageStatus.success) {
+                                //                     context
+                                //                         .push(Routes.messages);
+                                //                   }
+                                //                 },
+                                //                 child: IconContainer(
+                                //                   icon: AppImages.messages,
+                                //                   function: () => state.product!
+                                //                               .userId !=
+                                //                           supabase.auth
+                                //                               .currentUser!.id
+                                //                       ? context
+                                //                           .read<MessageCubit>()
+                                //                           .createConversation(
+                                //                               sellerId: state
+                                //                                   .product!
+                                //                                   .userId!)
+                                //                       : null,
+                                //                 ),
+                                //               );
+                                //             }),
+                                //           )
+                                //         : const SizedBox.shrink(),
+                                //   ],
+                                // ),
+                                // Gap(3 * SizeConfig.heightMultiplier),
                                 Text(
                                   state.product!.allowBidding!
                                       ? "Kes ${state.product!.biddingPrice}"
@@ -277,9 +298,14 @@ class ProductDetailsPage extends StatelessWidget {
                                     },
                                   ),
                                 Gap(1 * SizeConfig.heightMultiplier),
-                                if (state.product!.biddingStatus! == "closed" &&
-                                    state.product!.highestBidder ==
-                                        supabase.auth.currentUser!.id)
+                                if ((state.product!.userId! !=
+                                        supabase.auth.currentUser!.id) &&
+                                    !state.product!.sold! &&
+                                    (state.product!.allowBidding == false ||
+                                        (state.product!.biddingStatus! ==
+                                                "closed" &&
+                                            state.product!.highestBidder ==
+                                                supabase.auth.currentUser!.id)))
                                   BlocConsumer<LocalCubit, LocalState>(
                                     listenWhen: (previous, current) =>
                                         previous.status != current.status,
@@ -428,6 +454,15 @@ class ProductDetailsPage extends StatelessWidget {
                                   style: GoogleFonts.inter(
                                       color: black,
                                       fontSize: 2.5 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.2),
+                                ),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                Text(
+                                  "Available items: ${state.product!.quantity}",
+                                  style: GoogleFonts.inter(
+                                      color: black,
+                                      fontSize: 1.6 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.w600,
                                       height: 1.2),
                                 ),
@@ -587,18 +622,18 @@ class SellerSection extends StatelessWidget {
           },
         ),
         Gap(1.5 * SizeConfig.heightMultiplier),
-        BorderButton(
-            height: 6 * SizeConfig.heightMultiplier,
-            borderRadius: 30,
-            text: Text(
-              "Contact Seller",
-              style: GoogleFonts.inter(
-                  color: green,
-                  fontSize: 1.8 * SizeConfig.textMultiplier,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.1),
-            ),
-            function: () {}),
+        // BorderButton(
+        //     height: 6 * SizeConfig.heightMultiplier,
+        //     borderRadius: 30,
+        //     text: Text(
+        //       "Contact Seller",
+        //       style: GoogleFonts.inter(
+        //           color: green,
+        //           fontSize: 1.8 * SizeConfig.textMultiplier,
+        //           fontWeight: FontWeight.w600,
+        //           letterSpacing: 0.1),
+        //     ),
+        //     function: () {}),
         Gap(3 * SizeConfig.heightMultiplier),
         Text(
           "Detailed Seller Ratings",

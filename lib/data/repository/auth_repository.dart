@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
+import 'package:ecoville/data/repository/user_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -41,6 +45,7 @@ class AuthRepository extends AuthTemplate {
       'email': user.email!,
       'avatar_url': user.userMetadata?['avatar_url'] ?? AppImages.defaultImage,
     });
+    await UserRepository().updateFCMToken();
     return true;
   }
 
@@ -74,6 +79,7 @@ class AuthRepository extends AuthTemplate {
           email: response.user!.email!,
           image: response.user!.userMetadata?['avatar_url'],
           token: token,
+          role: 'user'
         ),
       );
 
@@ -104,8 +110,8 @@ class AuthRepository extends AuthTemplate {
     required String phone,
   }) async {
     try {
-      AuthResponse response = await supabase.auth
-          .signUp(email: email, password: password, data: {
+      AuthResponse response =
+          await supabase.auth.signUp(email: email, password: password, data: {
         'phone': phone,
         'full_name': name,
       });
@@ -115,6 +121,7 @@ class AuthRepository extends AuthTemplate {
         id: response.user!.id,
         name: name,
         email: email,
+        role: 'user',
         image: AppImages.defaultImage,
         token: token,
       ));
