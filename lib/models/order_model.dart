@@ -337,6 +337,7 @@ class AddressElement {
     final String email;
     final String region;
     final String city;
+    final String address;
     final String additionalInformation;
     final DateTime createdAt;
     final DateTime updatedAt;
@@ -350,6 +351,7 @@ class AddressElement {
         required this.email,
         required this.region,
         required this.city,
+        required this.address,
         required this.additionalInformation,
         required this.createdAt,
         required this.updatedAt,
@@ -364,6 +366,7 @@ class AddressElement {
         String? email,
         String? region,
         String? city,
+        String? address,
         String? additionalInformation,
         DateTime? createdAt,
         DateTime? updatedAt,
@@ -377,6 +380,7 @@ class AddressElement {
             email: email ?? this.email,
             region: region ?? this.region,
             city: city ?? this.city,
+            address: address ?? this.address,
             additionalInformation: additionalInformation ?? this.additionalInformation,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
@@ -391,6 +395,7 @@ class AddressElement {
         email: json["email"],
         region: json["region"],
         city: json["city"],
+        address: json["address"],
         additionalInformation: json["additionalInformation"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
@@ -405,6 +410,7 @@ class AddressElement {
         "email": email,
         "region": region,
         "city": city,
+        "address": address,
         "additionalInformation": additionalInformation,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),

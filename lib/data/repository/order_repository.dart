@@ -11,6 +11,8 @@ abstract class OrderTemplate {
   Future<bool> cancelOrder({required OrderModel order});
   Future<bool> confirmOrder({required OrderModel order});
   Future<bool> createOrder({required OrderRequestModel order});
+  Future<List<OrderModel>> getAllOrders();
+  Future<bool> payOrder({required String orderId, required String phone, required int amount});
 }
 
 class OrderRepository implements OrderTemplate {
@@ -68,7 +70,7 @@ class OrderRepository implements OrderTemplate {
                 "token": order.user.token,
                 "email": order.user.email
               }),
-              data: {"status": "confirmed"});
+              data: {"status": "completed"});
       if (response.statusCode != 200) {
         throw Exception("Error getting the products, ${response.data}");
       }
@@ -101,6 +103,53 @@ class OrderRepository implements OrderTemplate {
     } catch (e) {
       logger.e(e);
       throw Exception(e);
+    }
+  }
+  
+  @override
+  Future<List<OrderModel>> getAllOrders() async{
+   try {
+      final response = await Dio().get(
+          "$API_URL/admin/orders",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      debugPrint(response.toString());
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<OrderModel> products =
+          (response.data as List).map((e) => OrderModel.fromJson(e)).toList();
+      debugPrint(products.toString());
+      return products;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+  
+  @override
+  Future<bool> payOrder({required String orderId, required String phone, required int amount}) async{
+    try {
+      final request = {
+        'orderId': orderId,
+        'userId': supabase.auth.currentUser!.id,
+        'amount': amount,
+        'phone': phone,
+      };
+      final response = await Dio().post(
+          "$API_URL/mpesa/initiatestkpush",
+          data: jsonEncode(request),
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

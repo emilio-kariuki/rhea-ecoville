@@ -57,6 +57,7 @@ class AppImages {
   static const String watch = 'assets/icons/watch.svg';
   static const String upload = 'assets/icons/upload.svg';
     static const String refresh = 'assets/icons/refresh.svg';
+    static const String admin = 'assets/icons/admin.svg';
 
 
   static const String ecoville = 'assets/ecoville.svg';

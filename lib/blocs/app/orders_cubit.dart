@@ -17,11 +17,45 @@ class OrderCubit extends Cubit<OrderState> {
     }
   }
 
+  void getAllOrders() async {
+    emit(state.copyWith(status: OrderStatus.loading));
+    try {
+      final response = await OrderRepository().getAllOrders();
+      debugPrint(response.toString());
+      emit(state.copyWith(status: OrderStatus.loaded, orders: response));
+    } catch (e) {
+      emit(state.copyWith(status: OrderStatus.error, message: e.toString()));
+    }
+  }
+
+  void payOrder({
+    required String orderId,
+    required String phone,
+    required int amount,
+  }) async {
+    emit(state.copyWith(status: OrderStatus.loading));
+    try {
+      final response = await OrderRepository().payOrder(
+        orderId: orderId,
+        phone: phone,
+        amount: amount,
+      );
+      debugPrint(response.toString());
+      getUserOrders();
+      emit(state.copyWith(
+        status: OrderStatus.success,
+      ));
+    } catch (e) {
+      emit(state.copyWith(status: OrderStatus.error, message: e.toString()));
+    }
+  }
+
   void cancelOrder({required OrderModel order}) async {
     emit(state.copyWith(status: OrderStatus.loading));
     try {
       final response = await OrderRepository().cancelOrder(order: order);
       if (response) {
+        getUserOrders();
         emit(state.copyWith(status: OrderStatus.updated));
       }
     } catch (e) {
@@ -34,6 +68,7 @@ class OrderCubit extends Cubit<OrderState> {
     try {
       final response = await OrderRepository().confirmOrder(order: order);
       if (response) {
+        getUserOrders();
         emit(state.copyWith(status: OrderStatus.updated));
       }
     } catch (e) {
@@ -54,7 +89,7 @@ class OrderCubit extends Cubit<OrderState> {
   }
 }
 
-enum OrderStatus { initial, loading, loaded, error, updated,success }
+enum OrderStatus { initial, loading, loaded, error, updated, success }
 
 class OrderState {
   final List<OrderModel> orders;

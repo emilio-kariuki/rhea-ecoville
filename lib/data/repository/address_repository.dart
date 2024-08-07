@@ -64,8 +64,17 @@ class AddressRepository extends AddressTemplate {
   @override
   Future<bool> removeAddress({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-      await db.delete(LOCAL_TABLE_ADDRESS, where: 'id = ?', whereArgs: [id]);
+      final response = await Dio().delete(
+          "$API_URL/address/delete/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+          logger.d("Response: ${response.data}");
+      if (response.statusCode != 200) {
+        throw Exception("Error deleting the address, ${response.data}");
+      }
+
       return true;
     } catch (error) {
       debugPrint(error.toString());

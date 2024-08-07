@@ -312,8 +312,8 @@ class ProductRepository extends ProductTemplate {
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
                 longitude:
-                    double.tryParse(product.address?.lon ?? "0.0") ?? 0.0,
-                latitude: double.tryParse(product.address?.lat ?? "0.0") ?? 0.0,
+                    double.tryParse(product.address?.lon.toString() ?? "0.0") ?? 0.0,
+                latitude: double.tryParse(product.address?.lat.toString() ?? "0.0") ?? 0.0,
                 radius: NEARBY_RADIUS);
         if (isWithinRange) {
           nearbyProducts.add(product);

@@ -25,6 +25,7 @@ class ProductRequestModel {
   final Address address;
   final bool allowBidding;
   final DateTime endBidding;
+  final int quantity ;
 
   ProductRequestModel({
     required this.name,
@@ -36,6 +37,7 @@ class ProductRequestModel {
     required this.currentPrice,
     required this.condition,
     required this.address,
+    required this.quantity,
     this.allowBidding = false,
    required  this.endBidding,
   });
@@ -53,6 +55,7 @@ class ProductRequestModel {
     Address? address,
     bool? allowBidding,
     DateTime? endBidding,
+    int? quantity,
   }) =>
       ProductRequestModel(
         name: name ?? this.name,
@@ -66,6 +69,7 @@ class ProductRequestModel {
         address: address ?? this.address,
         allowBidding: allowBidding ?? this.allowBidding,
         endBidding: endBidding ?? this.endBidding,
+        quantity: quantity ?? this.quantity,
       );
 
   factory ProductRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -80,6 +84,7 @@ class ProductRequestModel {
         condition: json["condition"],
         address: Address.fromJson(json["address"]),
         allowBidding: json["allowBidding"] ?? false,
+        quantity: json["quantity"],
         endBidding: DateTime.parse(json["endBidding"]),
       );
 
@@ -94,6 +99,7 @@ class ProductRequestModel {
         "condition": condition,
         "address": address.toJson(),
         "allowBidding": allowBidding,
+        "quantity": quantity,
         "endBidding": endBidding.toIso8601String(),
       };
 }

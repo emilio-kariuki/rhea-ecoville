@@ -134,19 +134,19 @@ class _InboxPageState extends State<InboxPage> {
                       ),
                     ),
                     const Spacer(),
-                    // GestureDetector(
-                    //   onTap: () => context
-                    //       .read<NotificationCubit>()
-                    //       .readAllNotifications,
-                    //   child: Text(
-                    //     "Mark all as read",
-                    //     style: GoogleFonts.inter(
-                    //         fontSize: 1.6 * SizeConfig.textMultiplier,
-                    //         fontWeight: FontWeight.w600,
-                    //         decoration: TextDecoration.underline,
-                    //         color: darkGrey),
-                    //   ),
-                    // ),
+                    GestureDetector(
+                      onTap: () => context
+                          .read<NotificationCubit>()
+                          .getAllNotifications(),
+                      child: Text(
+                        "refresh",
+                        style: GoogleFonts.inter(
+                            fontSize: 1.6 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                            color: darkGrey),
+                      ),
+                    ),
                   ],
                 ),
                 Gap(2 * SizeConfig.heightMultiplier),

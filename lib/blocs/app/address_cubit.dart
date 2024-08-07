@@ -80,6 +80,17 @@ class AddressCubit extends Cubit<AddressState> {
       emit(state.copyWith(status: AddressStatus.error, message: e.toString()));
     }
   }
+  Future<void> deleteAddressById({required String id}) async {
+    emit(state.copyWith(status: AddressStatus.loading));
+    try {
+      await _addressProvider.removeAddress(id: id);
+      await getAddresses();
+      emit(state.copyWith(
+          status: AddressStatus.success, ));
+    } catch (e) {
+      emit(state.copyWith(status: AddressStatus.error, message: e.toString()));
+    }
+  }
 }
 
 enum AddressStatus { initial, loading,added, success, error }

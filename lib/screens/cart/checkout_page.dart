@@ -15,6 +15,7 @@ class CheckoutPage extends StatelessWidget {
   CheckoutPage({super.key});
 
   double totalAmount = 0.0;
+  double serviceFee = 0.00;
   List<String> products = [];
 
   List<Map<String, dynamic>> paymentMethods = [
@@ -79,6 +80,7 @@ class CheckoutPage extends StatelessWidget {
                           // close snackbar
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           context.read<LocalCubit>().clearCart();
+                          context.read<LocalCubit>().getCartProducts();
                           context.showSuccessToast(
                               title: "Success",
                               message: "Order created successfully",
@@ -87,7 +89,7 @@ class CheckoutPage extends StatelessWidget {
                         }
                         if (orderState.status == OrderStatus.loading) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text("loading....."),
                             ),
                           );
@@ -103,42 +105,62 @@ class CheckoutPage extends StatelessWidget {
                       builder: (context, state) {
                         return BlocBuilder<LocalCubit, LocalState>(
                           builder: (context, state) {
-                            return CompleteButton(
-                                height: 6 * SizeConfig.heightMultiplier,
-                                loaderColor: white,
-                                borderRadius: 30,
-                                text: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(AppImages.lock,
-                                        height: 2 * SizeConfig.heightMultiplier,
-                                        width: 2 * SizeConfig.heightMultiplier,
-                                        color: white),
-                                    Gap(1 * SizeConfig.widthMultiplier),
-                                    Text(
-                                      "Place order",
-                                      style: GoogleFonts.inter(
-                                          color: white,
-                                          fontSize:
-                                              1.8 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 0.1),
+                            return BlocBuilder<AddressCubit, AddressState>(
+                              builder: (context, addressState) {
+                                return CompleteButton(
+                                    height: 6 * SizeConfig.heightMultiplier,
+                                    loaderColor: white,
+                                    borderRadius: 30,
+                                    text: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(AppImages.lock,
+                                            height:
+                                                2 * SizeConfig.heightMultiplier,
+                                            width:
+                                                2 * SizeConfig.heightMultiplier,
+                                            color: white),
+                                        Gap(1 * SizeConfig.widthMultiplier),
+                                        Text(
+                                          "Place order",
+                                          style: GoogleFonts.inter(
+                                              color: white,
+                                              fontSize: 1.8 *
+                                                  SizeConfig.textMultiplier,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.1),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                function: () {
-                                  final cartItems = state.cartItems;
-                                  for (var product in cartItems) {
-                                    context.read<OrderCubit>().createOrder(
-                                        order: OrderRequestModel(
-                                            productId: product.id,
-                                            quantity: 1,
-                                            price:
-                                                product.startingPrice.toInt()));
-                                  }
-                                });
+                                    function: () {
+                                      if (addressState.addresses.isEmpty) {
+                                        context.showInfoToast(
+                                            title: "Info",
+                                            message:
+                                                "Please add an address to continue",
+                                            context: context);
+                                        return;
+                                      } else {
+                                        final cartItems = state.cartItems;
+                                        for (var product in cartItems) {
+                                          context
+                                              .read<OrderCubit>()
+                                              .createOrder(
+                                                  order: OrderRequestModel(
+                                                      productId: product.id,
+                                                      quantity: 1,
+                                                      price:
+                                                          (totalAmount + (0.05 * totalAmount) + 129.00)
+                                                              .toInt()));
+                                        }
+                                      }
+                                    });
+                              },
+                            );
                           },
                         );
                       },
@@ -305,7 +327,7 @@ class CheckoutPage extends StatelessWidget {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Message the seller to communicate about the delivery",
+                                              "Incase of any issues, contact us on 07962550443",
                                               style: GoogleFonts.inter(
                                                   fontSize: 1.5 *
                                                       SizeConfig
@@ -486,7 +508,46 @@ class CheckoutPage extends StatelessWidget {
                               BlocBuilder<PageCubit, PageState>(
                                 builder: (context, state) {
                                   return Text(
-                                    "Kes 200.00",
+                                    '${
+                                      0.05 * totalAmount
+                                    }',
+                                    style: GoogleFonts.inter(
+                                        fontSize:
+                                            1.6 * SizeConfig.heightMultiplier,
+                                        fontWeight: FontWeight.w700,
+                                        color: black),
+                                  );
+                                },
+                              ),
+                              Gap(2 * SizeConfig.heightMultiplier),
+                            ],
+                          ),
+                          Divider(
+                            color: Colors.grey[300],
+                            thickness: 0.4,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BlocBuilder<LocalCubit, LocalState>(
+                                buildWhen: (previous, current) =>
+                                    current.cartItems != previous.cartItems,
+                                builder: (context, state) {
+                                  return Text(
+                                    "Delivery fee",
+                                    style: GoogleFonts.inter(
+                                        fontSize:
+                                            1.5 * SizeConfig.heightMultiplier,
+                                        fontWeight: FontWeight.w600,
+                                        color: darkGrey),
+                                  );
+                                },
+                              ),
+                              const Spacer(),
+                              BlocBuilder<PageCubit, PageState>(
+                                builder: (context, state) {
+                                  return Text(
+                                    "Kes 150.00",
                                     style: GoogleFonts.inter(
                                         fontSize:
                                             1.6 * SizeConfig.heightMultiplier,
@@ -525,7 +586,7 @@ class CheckoutPage extends StatelessWidget {
                                     current.page != previous.page,
                                 builder: (context, state) {
                                   return Text(
-                                    "Kes ${(totalAmount + 200.00).toStringAsFixed(2)}",
+                                    "Kes ${(totalAmount + 200.00 + (0.05 * totalAmount)).toStringAsFixed(2)}",
                                     style: GoogleFonts.inter(
                                         fontSize:
                                             1.8 * SizeConfig.heightMultiplier,
@@ -673,7 +734,8 @@ class AddressSection extends StatelessWidget {
                                     Text(
                                       address.country,
                                       style: GoogleFonts.inter(
-                                          fontSize: 1.6 * SizeConfig.heightMultiplier,
+                                          fontSize:
+                                              1.6 * SizeConfig.heightMultiplier,
                                           fontWeight: FontWeight.w400,
                                           color: black),
                                     ),

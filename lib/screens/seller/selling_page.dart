@@ -33,7 +33,7 @@ class SellingPage extends StatelessWidget {
     {
       'name': 'Ship to its new home',
       'description':
-          'Box it up, print a label directly on ecoville and say farewell. It\'s that simple.',
+          'Box it up, ship it to us and we will take care of the rest.',
       'icon': AppImages.ship
     }
   ];
@@ -259,72 +259,78 @@ class SellingPage extends StatelessWidget {
                     ),
                   ),
                   Gap(3 * SizeConfig.heightMultiplier),
-                  
+
                   BlocProvider(
-                    create: (context) => ProductCubit()..getUserProductsPosted(),
-                    child: Builder(
-                      builder: (context) {
-                        return BlocBuilder<ProductCubit, ProductState>(
-                          buildWhen: (previous, current) =>
-                              previous.products != current.products,
-                          builder: (context, state) {
-                            return state.status == ProductStatus.loading
-                                ? const ProductListShimmer()
-                                : state.products.isEmpty
-                                    ? const SizedBox.shrink()
-                                    : Column(
-                                        children: [
-                                          Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      children: [
-                        Text(
-                          "Your listings",
-                          style: GoogleFonts.inter(
-                              color: black,
-                              fontSize: 2 * SizeConfig.textMultiplier,
-                              fontWeight: FontWeight.w700,
-                              height: 1.2,
-                              letterSpacing: 0.1),
-                        ),
-                        const Spacer(),
-                        IconContainer(icon: AppImages.refresh, function: ()=> context.read<ProductCubit>().getUserProductsPosted())
-                      ],
-                    ),
-                  ),
-                  Gap(2 * SizeConfig.heightMultiplier),
-                                          SizedBox(
-                                            height: size.height * 0.26,
-                                            child: ListView.separated(
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.horizontal,
-                                              itemBuilder: (context, index) =>
-                                                  Padding(
-                                                padding: EdgeInsets.only(
-                                                  left: index == 0 ? 10 : 0,
-                                                  right: index ==
-                                                          (state.products.length -
-                                                              1)
-                                                      ? 10
-                                                      : 0,
-                                                ),
-                                                child: ProductContainer(
-                                                  key: UniqueKey(),
-                                                  product: state.products[index],
-                                                ),
+                    create: (context) =>
+                        ProductCubit()..getUserProductsPosted(),
+                    child: Builder(builder: (context) {
+                      return BlocBuilder<ProductCubit, ProductState>(
+                        buildWhen: (previous, current) =>
+                            previous.products != current.products,
+                        builder: (context, state) {
+                          return state.status == ProductStatus.loading
+                              ? const ProductListShimmer()
+                              : state.products.isEmpty
+                                  ? const SizedBox.shrink()
+                                  : Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "Your listings",
+                                                style: GoogleFonts.inter(
+                                                    color: black,
+                                                    fontSize: 2 *
+                                                        SizeConfig
+                                                            .textMultiplier,
+                                                    fontWeight: FontWeight.w700,
+                                                    height: 1.2,
+                                                    letterSpacing: 0.1),
                                               ),
-                                              separatorBuilder: (context, index) =>
-                                                  Gap(1.3 *
-                                                      SizeConfig.widthMultiplier),
-                                              itemCount: state.products.length,
-                                            ),
+                                              const Spacer(),
+                                              IconContainer(
+                                                  icon: AppImages.refresh,
+                                                  function: () => context
+                                                      .read<ProductCubit>()
+                                                      .getUserProductsPosted())
+                                            ],
                                           ),
-                                        ],
-                                      );
-                          },
-                        );
-                      }
-                    ),
+                                        ),
+                                        Gap(2 * SizeConfig.heightMultiplier),
+                                        SizedBox(
+                                          height: size.height * 0.26,
+                                          child: ListView.separated(
+                                            shrinkWrap: true,
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (context, index) =>
+                                                Padding(
+                                              padding: EdgeInsets.only(
+                                                left: index == 0 ? 10 : 0,
+                                                right: index ==
+                                                        (state.products.length -
+                                                            1)
+                                                    ? 10
+                                                    : 0,
+                                              ),
+                                              child: ProductContainer(
+                                                key: UniqueKey(),
+                                                product: state.products[index],
+                                              ),
+                                            ),
+                                            separatorBuilder:
+                                                (context, index) => Gap(1.3 *
+                                                    SizeConfig.widthMultiplier),
+                                            itemCount: state.products.length,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                        },
+                      );
+                    }),
                   ),
                   Gap(3 * SizeConfig.heightMultiplier),
                   Padding(

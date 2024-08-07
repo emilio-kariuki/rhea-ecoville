@@ -15,6 +15,7 @@ abstract class UserTemplate {
       {required String userId,
       required String interaction,
       required String productId});
+  Future<bool> updateFCMToken();
 }
 
 class UserRepository extends UserTemplate {
@@ -27,6 +28,7 @@ class UserRepository extends UserTemplate {
         "name": user.name,
         "image": user.image,
         "token": user.token,
+        "role": user.role,
       });
       final response = await Dio().post(
           "$API_URL/user/create/",
@@ -60,6 +62,7 @@ class UserRepository extends UserTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       final user = UserModel.fromJson(response.data);
+      logger.d("user role: ${user.toJson()}");
       return user;
     } catch (e) {
       debugPrint(e.toString());
@@ -108,6 +111,30 @@ class UserRepository extends UserTemplate {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Error getting user by id');
+    }
+  }
+  
+  @override
+  Future<bool> updateFCMToken() async{
+    try{
+      final request = jsonEncode({
+        "token": await NotificationRepository().getNotificationToken()
+      });
+      final id = supabase.auth.currentUser!.id;
+      final response = await Dio().put(
+          "$API_URL/user/update/$id",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      return true;
+    }catch(e){
+      debugPrint(e.toString());
+      return false;
     }
   }
 }
