@@ -28,6 +28,9 @@ abstract class ProductTemp {
   Future<bool> unsaveProduct({required String id});
   Future<bool> watchProduct({required LocalProductModel product});
   Future<bool> unwatchProduct({required String id});
+  Future<List<ProductModel>> getProductsBySeller(
+      {required String sellerId});
+  Future<List<ProductModel>> getBiddingProducts();
 }
 
 class ProductRepo extends ProductTemp {
@@ -242,5 +245,46 @@ class ProductRepo extends ProductTemp {
       throw Exception("Error saving the product, $e");
     }
   }
-
+  @override
+  Future<List<ProductModel>> getProductsBySeller(
+      {required String sellerId}) async {
+    try {
+      final response = await Dio().get("$API_URL/product/sellerProducts",
+        options: Options(headers: {
+          "APIKEY" : API_KEY,
+          "user" : sellerId
+        }));
+      debugPrint(response.data.toString());
+      if(response.statusCode != 200){
+        throw Exception("Error getting Seller Products, ${response.data}");
+      }
+      final List<ProductModel> products = (response.data as List).map(
+          (e) => ProductModel.fromJson(e)).toList();
+      final sellerProducts = products.where((element) => element.userId == sellerId).toList();
+      return sellerProducts;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error saving the product, $e");      
+    }
+  }
+  
+  @override
+  Future<List<ProductModel>> getBiddingProducts() async{
+    try {
+      final response = await Dio().get("$API_URL/product/get?allowBidding=true",
+      options: Options(headers: {
+        "APIKEY": API_KEY,
+        "user" : supabase.auth.currentUser!.id
+      }));
+      if(response.statusCode != 200){
+        throw Exception("Error getting Seller Products, ${response.data}");
+      }
+      final List<ProductModel> bidProducts = (response.data as List).map(
+          (e) => ProductModel.fromJson(e)).toList();
+      return bidProducts;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the products, $error");
+    }
+  }
 }

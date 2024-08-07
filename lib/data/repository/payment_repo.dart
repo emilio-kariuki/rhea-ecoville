@@ -34,7 +34,7 @@ class PaymentRepo implements PaymentTemp{
         'https://fuvjfsjfehyistbfkmkg.supabase.co/functions/v1/product-purchase',
         options: Options(headers: {
           "Authorization":
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1dmpmc2pmZWh5aXN0YmZrbWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NDU0ODMsImV4cCI6MjAzMTUyMTQ4M30.EaKs4B9BheWafF7u2Cz0uQhw-m9C8LTVYuT_YVlXGR4"
+              "Bearer "
         }),
         data: {
           "checkoutRequestID" : checkoutRequestID,
