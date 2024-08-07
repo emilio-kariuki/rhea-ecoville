@@ -20,6 +20,12 @@ class CartRepo extends cartTemp {
   Future<bool> addToCart({required LocalProductModel product}) async {
     try {
       final db = await _dbHelper.init();
+      final currentUserId = supabase.auth.currentUser!.id;
+      if (product.userId == currentUserId){
+        debugPrint("User cant add their own products");
+        return false;
+      }
+
       final result = await _dbHelper.insertLocalProduct(
           db: db, product: product, table: LOCAL_TABLE_CART);
       return result > 0;
@@ -33,6 +39,11 @@ class CartRepo extends cartTemp {
   Future<bool> addToCartLater({required LocalProductModel product}) async {
     try {
       final db = await _dbHelper.init();
+      final currentUserId = supabase.auth.currentUser!.id;
+      if (product.userId == currentUserId){
+        debugPrint("User cant add their own products");
+        return false;
+      }
       await _dbHelper.insertLocalProduct(
           db: db, product: product, table: LOCAL_TABLE_LATER_CART);
       return true;
