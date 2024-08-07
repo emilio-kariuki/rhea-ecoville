@@ -5,10 +5,13 @@ import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/category_model.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/product_request_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+
+import '../../models/interactions_model.dart';
 
 abstract class ProductTemp {
   Future<List<ProductModel>> getProducts();
@@ -21,7 +24,7 @@ abstract class ProductTemp {
   Future<bool> updateProduct({required ProductModel product});
   Future<bool> deleteProduct({required String id});
   Future<bool> saveProduct({required String productId});
-  Future<List<LocalProductModel>> getSavedProducts();
+  Future<List<InteractionsModel>> getSavedProducts();
   Future<bool> unsaveProduct({required String id});
   Future<bool> watchProduct({required LocalProductModel product});
   Future<bool> unwatchProduct({required String id});
@@ -33,11 +36,21 @@ class ProductRepo extends ProductTemp {
   @override
   Future<bool> createProduct({required ProductRequestModel product, required bool allowBidding}) async {
     try {
-      await supabase.from(TABLE_PRODUCT).insert(product.toJson());
+      logger.d(product.toJson());
+      final request = jsonEncode(product.toJson());
+      final response = await Dio().post("$API_URL/product/create",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
       return true;
-    } catch (e) {
-      debugPrint(e.toString());
-      throw Exception("ERROR");
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the products, $error");
     }
   }
 
@@ -55,8 +68,7 @@ class ProductRepo extends ProductTemp {
   @override
   Future<ProductModel> getProduct({required String id}) async {
     try {
-      final response = await Dio().get(
-        "http://localhost:4003/api/product/get/$id",
+      final response = await Dio().get("$API_URL/product/get/$id",
         options: Options(headers: {
           "API KEY" : API_KEY,
           "user" : supabase.auth.currentUser!.id
@@ -76,8 +88,7 @@ class ProductRepo extends ProductTemp {
   @override
   Future<List<ProductModel>> getProducts() async{ // all products
     try {
-      final response = await Dio().get(
-          "http://localhost:4003/api/product/get/",
+      final response = await Dio().get("$API_URL/product/get/",
           options: Options(headers: {
             "API KEY" : API_KEY,
             "user" : supabase.auth.currentUser!.id
@@ -107,21 +118,45 @@ class ProductRepo extends ProductTemp {
   }
 
   @override
-  Future<List<LocalProductModel>> getSavedProducts() async {
-    try{
-      final db = await _dbHelper.init();
-      final savedProducts = await _dbHelper.getUserLocalProducts(db: db, table: LOCAL_TABLE_PRODUCT_SAVED);
+  Future<List<InteractionsModel>> getSavedProducts() async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      final reply = await Dio().get("$API_URL/saved/user/$userId",
+          options: Options(headers: {
+            "API KEY" : API_KEY,
+            "user" : supabase.auth.currentUser!.id
+          }));
+      if(reply.statusCode != 200) {
+        throw Exception("Unable to save, ${reply.data}");
+      }
+      final List<InteractionsModel> savedProducts = (reply.data as List).map(
+              (e) => InteractionsModel.fromJson(e)).toList();
       return savedProducts;
     } catch (e) {
       debugPrint(e.toString());
-      throw Exception("Error getting product, $e");
+      throw Exception("Error deleting product, $e");
     }
   }
 
   @override
-  Future<List<ProductModel>> getUserProductsPosted() {
-    // TODO: implement getUserProductsPosted
-    throw UnimplementedError();
+  Future<List<ProductModel>> getUserProductsPosted() async {
+    try {
+      final reply = await Dio().get("$API_URL/product/sellerProducts",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      debugPrint(reply.data.toString());
+      if(reply.statusCode != 200) {
+        throw Exception("Error getting the products, ${reply.data}");
+      }
+      final List<ProductModel> products = (reply.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      return products;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error saving the product, $e");
+    }
+
   }
 
   @override
@@ -130,7 +165,7 @@ class ProductRepo extends ProductTemp {
       final prod = jsonEncode({
         "productId" : productId
       });
-      final reply = await Dio().get("http://localhost:4003/api/likes/add",
+      final reply = await Dio().get("$API_URL/saved/add",
         data: prod,
         options: Options(headers: {
           "API KEY" : API_KEY,
@@ -148,9 +183,19 @@ class ProductRepo extends ProductTemp {
 
   @override
   Future<bool> unsaveProduct({required String id}) async {
-    final db = await _dbHelper.init();
     try {
-      await _dbHelper.deleteLocalProduct(db: db, id: id, table: LOCAL_TABLE_PRODUCT_SAVED);
+      final prod = jsonEncode({
+        "productId" : id
+      });
+      final reply = await Dio().post("$API_URL/saved/remove",
+          data: prod,
+          options: Options(headers: {
+            "API KEY" : API_KEY,
+            "user" : supabase.auth.currentUser!.id
+          }));
+      if(reply.statusCode != 200) {
+        throw Exception("Unable to save, ${reply.data}");
+      }
       return true;
     } catch (e) {
       debugPrint(e.toString());
