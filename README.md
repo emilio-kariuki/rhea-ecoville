@@ -1,6 +1,6 @@
 # ecoville
 
-A new Flutter project.
+A  Flutter project.
 
 [] - add the real products data in the product details page
 [x] - add shimmer for the products page
