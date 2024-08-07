@@ -96,7 +96,8 @@ class ProductRepo extends ProductTemp {
       if(response.statusCode != 200) {
         throw Exception("Error getting products, ${response.data}");
       }
-      final List<ProductModel> products = (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      final List<ProductModel> products = (response.data as List).map(
+              (e) => ProductModel.fromJson(e)).toList();
       return products;
     } catch (e) {
       debugPrint(e.toString());
@@ -165,14 +166,14 @@ class ProductRepo extends ProductTemp {
       final prod = jsonEncode({
         "productId" : productId
       });
-      final reply = await Dio().get("$API_URL/saved/add",
+      final response = await Dio().post("$API_URL/saved/add",
         data: prod,
         options: Options(headers: {
           "API KEY" : API_KEY,
           "user" : supabase.auth.currentUser!.id
         }));
-      if(reply.statusCode != 200) {
-        throw Exception("Unable to save, ${reply.data}");
+      if(response.statusCode != 200) {
+        throw Exception("Unable to save, ${response.data}");
       }
       return true;
     } catch (e) {
