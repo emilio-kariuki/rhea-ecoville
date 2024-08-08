@@ -4,13 +4,17 @@ import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/bid_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
+/// `BidCubit` manages the state and business logic related to bids.
+/// This class extends `Cubit<BidState>` and handles various actions such as creating, updating, and deleting bids.
 class BidCubit extends Cubit<BidState> {
   final _bidProvider = service<BidProvider>();
   BidCubit() : super(BidState());
 
+  /// Creates a new bid for a product.
+  /// Emits a loading state while the operation is in progress, and either a success or error state depending on the outcome.
   Future<void> createBid({required String productId, required int price}) async {
     try {
-      emit(state.copyWith(status: BidStatus.loading));
+      emit(state.copyWith(status: BidStatus.loading)); // Emit loading state before making the API call.
       final bool isCreated = await _bidProvider.createBid(
           productId: productId, price: price
       );
@@ -21,11 +25,12 @@ class BidCubit extends Cubit<BidState> {
         emit(state.copyWith(
             status: BidStatus.error, message: 'Failed to create bid'));
       }
-    } on DioException catch (error) {
+    } on DioException catch (error) { // Handle Dio-specific exceptions and emit an error state.
       emit(state.copyWith(status: BidStatus.error, message: error.message));
     }
   }
 
+  /// Updates an existing bid.
   Future<void> updateBid({required String bidId, required int price}) async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
@@ -39,11 +44,12 @@ class BidCubit extends Cubit<BidState> {
         emit(state.copyWith(
             status: BidStatus.error, message: 'Failed to update bid'));
       }
-    } catch (error) {
+    } catch (error) { // Handle general exceptions and emit an error state.
       emit(state.copyWith(status: BidStatus.error, message: error.toString().toException()));
     }
   }
 
+  /// Deletes an existing bid.
   Future<void> deleteBid({required String id}) async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
@@ -60,6 +66,7 @@ class BidCubit extends Cubit<BidState> {
     }
   }
 
+  /// Fetches all bids related to a specific product.
   Future<void> getProductBids({required String productId}) async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
@@ -71,6 +78,7 @@ class BidCubit extends Cubit<BidState> {
     }
   }
 
+  /// Fetches all bids made by the current user.
   Future<void> getUserBids() async {
     try {
       emit(state.copyWith(status: BidStatus.loading));

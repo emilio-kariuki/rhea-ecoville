@@ -6,6 +6,9 @@ import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/search_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
+/// `AppCubit` class to manage the state and operations related to the application.
+/// This class extends `Cubit<AppState>` and handles various operations such as
+/// launching URLs, emails, phones, and managing searches.
 class AppCubit extends Cubit<AppState> {
   final _appProvider = service<AppProvider>();
   AppCubit() : super(AppState());

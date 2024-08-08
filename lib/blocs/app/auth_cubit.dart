@@ -2,14 +2,19 @@ import 'package:ecoville/data/provider/auth_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/utilities/packages.dart';
 
+/// `AuthCubit` class manages the state and operations related to user authentication.
+/// This class extends `Cubit<AuthenticationState>` and handles various authentication
+/// actions such as sign-in, sign-out, account creation, and password reset.
 class AuthCubit extends Cubit<AuthenticationState> {
-  final _authProvider = service<AuthProvider>();
-  AuthCubit() : super(AuthenticationState());
+  final _authProvider = service<AuthProvider>(); // Initializing AuthProvider using service locator.
+  AuthCubit() : super(AuthenticationState()); // Constructor initializing the cubit with an initial state.
 
+
+  /// Method to sign in the user with Google authentication.
   Future<void> signInWithGoogle() async {
-    emit(state.copyWith(status: AuthStatus.loading));
+    emit(state.copyWith(status: AuthStatus.loading)); // Set state to loading.
     try {
-      await _authProvider.signInWithGoogle();
+      await _authProvider.signInWithGoogle(); // Call the provider to sign in with Google.
       emit(state.copyWith(
           status: AuthStatus.success, message: "Sign in success"));
     } catch (e) {
@@ -17,6 +22,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
     }
   }
 
+   /// Method to sign out the user from the application.
   Future<void> signOut() async {
     emit(state.copyWith(status: AuthStatus.loading));
     try {
@@ -32,6 +38,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
     }
   }
 
+  /// Method to create a new account with email and password.
   Future<void> createAccountWithEmailPassword(
       {required String email,
       required String password,
@@ -53,6 +60,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
     }
   }
 
+  /// Method to reset the user's password using their email.
   Future<void> resetPassword({required String email}) async {
     emit(state.copyWith(status: AuthStatus.loading));
     try {
@@ -68,6 +76,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
     }
   }
 
+  /// Method to sign in the user with email and password.
   Future<void> signInWithEmailPassword(
       {required String email, required String password}) async {
     emit(state.copyWith(status: AuthStatus.loading));
@@ -86,24 +95,27 @@ class AuthCubit extends Cubit<AuthenticationState> {
   }
 }
 
+/// Enum representing the possible states of authentication operations.
 enum AuthStatus { initial, loading, success }
 
+/// `AuthenticationState` class to represent the state of authentication operations.
 class AuthenticationState {
-  final AuthStatus status;
-  final String message;
+  final AuthStatus status; // Current status of the authentication operation.
+  final String message; // Message for displaying status or errors.
 
   AuthenticationState({
     this.status = AuthStatus.initial,
     this.message = '',
   });
 
-  AuthenticationState copyWith({
+  /// Method to create a copy of the current state with updated properties.
+   AuthenticationState copyWith({
     AuthStatus? status,
     String? message,
   }) {
     return AuthenticationState(
-      status: status ?? this.status,
-      message: message ?? this.message,
+      status: status ?? this.status, // Keeping current status if not provided.
+      message: message ?? this.message, // Keeping current message if not provided.
     );
   }
 }
