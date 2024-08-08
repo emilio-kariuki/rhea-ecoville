@@ -1,8 +1,10 @@
 import 'package:ecoville/data/repository/product_repository.dart';
 import 'package:ecoville/models/category_model.dart';
+import 'package:ecoville/models/interactions_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/product_request_model.dart';
+import 'package:ecoville/models/recommendation_model.dart';
 
 class ProductProvider extends ProductTemplate {
   final ProductRepository _productRepository;
@@ -58,7 +60,7 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<List<LocalProductModel>> getSavedProducts() {
+  Future<List<InteractionsModel>> getSavedProducts() {
     return _productRepository.getSavedProducts();
   }
 
@@ -88,23 +90,23 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<bool> addProductToWishlist({required LocalProductModel product}) {
-    return _productRepository.addProductToWishlist(product: product);
+  Future<bool> addProductToWishlist({required String id}) {
+    return _productRepository.addProductToWishlist(id: id);
   }
 
   @override
-  Future<List<LocalProductModel>> getWishlistProducts() {
+  Future<List<InteractionsModel>> getWishlistProducts() {
     return _productRepository.getWishlistProducts();
   }
 
   @override
-  Future<List<LocalProductModel>> getLikedProducts() {
+  Future<List<InteractionsModel>> getLikedProducts() {
     return _productRepository.getLikedProducts();
   }
 
   @override
-  Future<bool> likeProduct({required LocalProductModel product}) {
-    return _productRepository.likeProduct(product: product);
+  Future<bool> likeProduct({required String id}) {
+    return _productRepository.likeProduct(id: id);
   }
 
   @override
@@ -123,7 +125,24 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<List<ProductModel>> searchResults({required String name}) {
-    return _productRepository.searchResults(name: name);
+  Future<List<ProductModel>> searchResults({required String query}) {
+    return _productRepository.searchResults(
+      query: query,
+    );
+  }
+
+  @override
+  Future<List<RecommendationModel>> getRecommendations({required String query}) {
+    return _productRepository.getRecommendations(query: query);
+  }
+  
+  @override
+  Future<List<ProductModel>> getProductsBySeller({required String sellerId}) {
+    return _productRepository.getProductsBySeller(sellerId: sellerId);
+  }
+  
+  @override
+  Future<List<ProductModel>> getBiddingProducts() {
+    return _productRepository.getBiddingProducts();
   }
 }

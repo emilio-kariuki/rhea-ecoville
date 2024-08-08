@@ -31,5 +31,11 @@ class UserProvider extends UserTemplate {
   Future<UserModel> getUserById({required String id}) {
     return _userRepository.getUserById(id: id);
   }
+  
+  @override
+  Future<bool> updateFCMToken() {
+    // TODO: implement updateFCMToken
+    throw UnimplementedError();
+  }
 
 }

@@ -1,75 +1,69 @@
 // To parse this JSON data, do
 //
-//     final bidsModel = bidsModelFromJson(jsonString);
+//     final interactionsModel = interactionsModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<BidsModel> bidsModelFromJson(String str) => List<BidsModel>.from(json.decode(str).map((x) => BidsModel.fromJson(x)));
+List<InteractionsModel> interactionsModelFromJson(String str) => List<InteractionsModel>.from(json.decode(str).map((x) => InteractionsModel.fromJson(x)));
 
-String bidsModelToJson(List<BidsModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String interactionsModelToJson(List<InteractionsModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class BidsModel {
+class InteractionsModel {
     final String id;
     final String productId;
     final String userId;
-    final int price;
     final DateTime createdAt;
     final DateTime updatedAt;
-    final Product product;
     final User user;
+    final Product product;
 
-    BidsModel({
+    InteractionsModel({
         required this.id,
         required this.productId,
         required this.userId,
-        required this.price,
         required this.createdAt,
         required this.updatedAt,
-        required this.product,
         required this.user,
+        required this.product,
     });
 
-    BidsModel copyWith({
+    InteractionsModel copyWith({
         String? id,
         String? productId,
         String? userId,
-        int? price,
         DateTime? createdAt,
         DateTime? updatedAt,
-        Product? product,
         User? user,
+        Product? product,
     }) => 
-        BidsModel(
+        InteractionsModel(
             id: id ?? this.id,
             productId: productId ?? this.productId,
             userId: userId ?? this.userId,
-            price: price ?? this.price,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
-            product: product ?? this.product,
             user: user ?? this.user,
+            product: product ?? this.product,
         );
 
-    factory BidsModel.fromJson(Map<String, dynamic> json) => BidsModel(
+    factory InteractionsModel.fromJson(Map<String, dynamic> json) => InteractionsModel(
         id: json["id"],
         productId: json["productId"],
         userId: json["userId"],
-        price: json["price"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
-        product: Product.fromJson(json["product"]),
         user: User.fromJson(json["user"]),
+        product: Product.fromJson(json["product"]),
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "productId": productId,
         "userId": userId,
-        "price": price,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
-        "product": product.toJson(),
         "user": user.toJson(),
+        "product": product.toJson(),
     };
 }
 
@@ -85,15 +79,11 @@ class Product {
     final bool allowBidding;
     final bool sold;
     final int price;
-    final int biddingPrice;
     final int likes;
     final bool isLiked;
     final bool isWishlisted;
     final bool isSaved;
     final String condition;
-    final DateTime startBidding;
-    final DateTime endBidding;
-    final String biddingStatus;
     final DateTime createdAt;
     final DateTime updatedAt;
 
@@ -109,15 +99,11 @@ class Product {
         required this.allowBidding,
         required this.sold,
         required this.price,
-        required this.biddingPrice,
         required this.likes,
         required this.isLiked,
         required this.isWishlisted,
         required this.isSaved,
         required this.condition,
-        required this.startBidding,
-        required this.endBidding,
-        required this.biddingStatus,
         required this.createdAt,
         required this.updatedAt,
     });
@@ -134,15 +120,11 @@ class Product {
         bool? allowBidding,
         bool? sold,
         int? price,
-        int? biddingPrice,
         int? likes,
         bool? isLiked,
         bool? isWishlisted,
         bool? isSaved,
         String? condition,
-        DateTime? startBidding,
-        DateTime? endBidding,
-        String? biddingStatus,
         DateTime? createdAt,
         DateTime? updatedAt,
     }) => 
@@ -158,15 +140,11 @@ class Product {
             allowBidding: allowBidding ?? this.allowBidding,
             sold: sold ?? this.sold,
             price: price ?? this.price,
-            biddingPrice: biddingPrice ?? this.biddingPrice,
             likes: likes ?? this.likes,
             isLiked: isLiked ?? this.isLiked,
             isWishlisted: isWishlisted ?? this.isWishlisted,
             isSaved: isSaved ?? this.isSaved,
             condition: condition ?? this.condition,
-            startBidding: startBidding ?? this.startBidding,
-            endBidding: endBidding ?? this.endBidding,
-            biddingStatus: biddingStatus ?? this.biddingStatus,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
         );
@@ -183,15 +161,11 @@ class Product {
         allowBidding: json["allowBidding"],
         sold: json["sold"],
         price: json["price"],
-        biddingPrice: json["biddingPrice"],
         likes: json["likes"],
         isLiked: json["isLiked"],
         isWishlisted: json["isWishlisted"],
         isSaved: json["isSaved"],
         condition: json["condition"],
-        startBidding: DateTime.parse(json["startBidding"]),
-        endBidding: DateTime.parse(json["endBidding"]),
-        biddingStatus: json["biddingStatus"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
     );
@@ -208,23 +182,19 @@ class Product {
         "allowBidding": allowBidding,
         "sold": sold,
         "price": price,
-        "biddingPrice": biddingPrice,
         "likes": likes,
         "isLiked": isLiked,
         "isWishlisted": isWishlisted,
         "isSaved": isSaved,
         "condition": condition,
-        "startBidding": startBidding.toIso8601String(),
-        "endBidding": endBidding.toIso8601String(),
-        "biddingStatus": biddingStatus,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
     };
 }
 
 class Address {
-    final String lon;
-    final String lat;
+    final dynamic lon;
+    final dynamic lat;
     final String city;
     final String country;
 
@@ -236,8 +206,8 @@ class Address {
     });
 
     Address copyWith({
-        String? lon,
-        String? lat,
+        dynamic lon,
+        dynamic lat,
         String? city,
         String? country,
     }) => 

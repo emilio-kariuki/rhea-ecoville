@@ -1,161 +1,205 @@
-// To parse this JSON data, do
-//
 //     final userModel = userModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<UserModel> userModelFromJson(String str) => List<UserModel>.from(json.decode(str).map((x) => UserModel.fromJson(x)));
+UserModel userModelFromJson(String str) => UserModel.fromJson(json.decode(str));
 
-String userModelToJson(List<UserModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String userModelToJson(UserModel data) => json.encode(data.toJson());
 
 class UserModel {
-    final String id;
-    final String name;
-    final String email;
-    final String ?phone;
-    final String image;
-    final String token;
-    final Address ?address;
-    final DateTime ?createdAt;
-    final UserRating ?rating;
+  final String id;
+  final String name;
+  final String email;
+  final String image;
+  final String? phone;
+  final String token;
+  final String?role;
+  final Rating? rating;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final List<Address>? addresses;
 
-    UserModel({
-        required this.id,
-        required this.name,
-        required this.email,
-        required this.image,
-        required this.token,
-        this.phone,
-         this.address,
-        this.createdAt,
-        this.rating,
-    });
+  UserModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.phone,
+    required this.image,
+    required this.token,
+     this.role,
+    this.rating,
+    this.createdAt,
+    this.updatedAt,
+    this.addresses,
+  });
 
-    UserModel copyWith({
-        String? id,
-        String? name,
-        String? email,
-        String? phone,
-        String? image,
-        String? token,
-        Address? address,
-        DateTime? createdAt,
-        UserRating? rating,
-    }) => 
-        UserModel(
-            id: id ?? this.id,
-            name: name ?? this.name,
-            email: email ?? this.email,
-            phone: phone ?? this.phone,
-            image: image ?? this.image,
-            token: token ?? this.token,
-            address: address ?? this.address,
-            createdAt: createdAt ?? this.createdAt,
-            rating: rating ?? this.rating,
-        );
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? image,
+    String? token,
+    Rating? rating,
+    String? role,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<Address>? addresses,
+  }) =>
+      UserModel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        email: email ?? this.email,
+        phone: phone ?? this.phone,
+        image: image ?? this.image,
+        token: token ?? this.token,
+        rating: rating ?? this.rating,
+        role: role ?? this.role,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        addresses: addresses ?? this.addresses,
+      );
 
-    factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json["id"],
         name: json["name"],
         email: json["email"],
         phone: json["phone"],
         image: json["image"],
         token: json["token"],
-        address: Address.fromJson(json["address"]),
-        createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
-        rating: json["rating"] == null ? null : UserRating.fromJson(json["rating"]),
-    );
+        role: json["role"],
+        rating: Rating.fromJson(json["rating"]),
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+        addresses: List<Address>.from(
+            json["addresses"].map((x) => Address.fromJson(x))),
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "email": email,
         "phone": phone,
         "image": image,
         "token": token,
-        "address": address!.toJson(),
-        "createdAt": createdAt?.toIso8601String(),
-        "rating": rating?.toJson(),
-    };
+        "rating": rating!.toJson(),
+        "role": role,
+        "createdAt": createdAt!.toIso8601String(),
+        "updatedAt": updatedAt!.toIso8601String(),
+        "addresses": List<dynamic>.from(addresses!.map((x) => x.toJson())),
+      };
 }
 
 class Address {
-    final double lat;
-    final double lon;
-    final String city;
-    final String country;
+  final String userId;
+  final String name;
+  final String phone;
+  final String altPhone;
+  final String email;
+  final String region;
+  final String city;
+  final String additionalInformation;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-    Address({
-        required this.lat,
-        required this.lon,
-        required this.city,
-        required this.country,
-    });
+  Address({
+    required this.userId,
+    required this.name,
+    required this.phone,
+    required this.altPhone,
+    required this.email,
+    required this.region,
+    required this.city,
+    required this.additionalInformation,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-    Address copyWith({
-        double? lat,
-        double? lon,
-        String? city,
-        String? country,
-    }) => 
-        Address(
-            lat: lat ?? this.lat,
-            lon: lon ?? this.lon,
-            city: city ?? this.city,
-            country: country ?? this.country,
-        );
+  Address copyWith({
+    String? id,
+    String? userId,
+    String? name,
+    String? phone,
+    String? altPhone,
+    String? email,
+    String? region,
+    String? city,
+    String? additionalInformation,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) =>
+      Address(
+        userId: userId ?? this.userId,
+        name: name ?? this.name,
+        phone: phone ?? this.phone,
+        altPhone: altPhone ?? this.altPhone,
+        email: email ?? this.email,
+        region: region ?? this.region,
+        city: city ?? this.city,
+        additionalInformation:
+            additionalInformation ?? this.additionalInformation,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
 
-    factory Address.fromJson(Map<String, dynamic> json) => Address(
-        lat: json["lat"]?.toDouble(),
-        lon: json["lon"]?.toDouble(),
+  factory Address.fromJson(Map<String, dynamic> json) => Address(
+        userId: json["userId"],
+        name: json["name"],
+        phone: json["phone"],
+        altPhone: json["altPhone"],
+        email: json["email"],
+        region: json["region"],
         city: json["city"],
-        country: json["country"],
-    );
+        additionalInformation: json["additionalInformation"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+      );
 
-    Map<String, dynamic> toJson() => {
-        "lat": lat,
-        "lon": lon,
+  Map<String, dynamic> toJson() => {
+        "userId": userId,
+        "name": name,
+        "phone": phone,
+        "altPhone": altPhone,
+        "email": email,
+        "region": region,
         "city": city,
-        "country": country,
-    };
+        "additionalInformation": additionalInformation,
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+      };
 }
 
+class Rating {
+  final double description;
+  final double communication;
+  final double shipping;
 
-UserRating userRatingFromJson(String str) => UserRating.fromJson(json.decode(str));
+  Rating({
+    required this.description,
+    required this.communication,
+    required this.shipping,
+  });
 
-String userRatingToJson(UserRating data) => json.encode(data.toJson());
+  Rating copyWith({
+    double? description,
+    double? communication,
+    double? shipping,
+  }) =>
+      Rating(
+        description: description ?? this.description,
+        communication: communication ?? this.communication,
+        shipping: shipping ?? this.shipping,
+      );
 
-class UserRating {
-    final double description;
-    final double shipping;
-    final double communication;
+  factory Rating.fromJson(Map<String, dynamic> json) => Rating(
+        description: json["description"]?.toDouble(),
+        communication: json["communication"]?.toDouble(),
+        shipping: json["shipping"]?.toDouble(),
+      );
 
-    UserRating({
-        required this.description,
-        required this.shipping,
-        required this.communication,
-    });
-
-    UserRating copyWith({
-        double? description,
-        double? shipping,
-        double? communication,
-    }) => 
-        UserRating(
-            description: description ?? this.description,
-            shipping: shipping ?? this.shipping,
-            communication: communication ?? this.communication,
-        );
-
-    factory UserRating.fromJson(Map<String, dynamic> json) => UserRating(
-        description: json["description"],
-        shipping: json["shipping"],
-        communication: json["communication"],
-    );
-
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "description": description,
-        "shipping": shipping,
         "communication": communication,
-    };
+        "shipping": shipping,
+      };
 }

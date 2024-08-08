@@ -46,24 +46,24 @@ class ProductContainer extends StatelessWidget {
                         })
                         ..read<LocalCubit>().watchProduct(
                             product: LocalProductModel(
-                                id: product.id!,
-                                name: product.name!,
-                                image: product.image![0],
+                                id: product.id,
+                                name: product.name,
+                                image: product.image[0],
                                 userId: product.userId!,
-                                startingPrice: product.price!));
+                                startingPrice: product.price));
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         NetworkImageContainer(
-                          imageUrl: product.image![0],
+                          imageUrl: product.image[0],
                           height: width * 0.37,
                           borderRadius: BorderRadius.circular(15),
                           width: width,
                         ),
                         Gap(1.3 * SizeConfig.heightMultiplier),
                         Text(
-                          product.name!,
+                          product.name,
                           maxLines: 2,
                           style: GoogleFonts.inter(
                               color: black,
@@ -73,13 +73,15 @@ class ProductContainer extends StatelessWidget {
                         ),
                         Gap(0.8 * SizeConfig.heightMultiplier),
                         Text(
-                          "Ksh ${product.price}",
-                          style: GoogleFonts.inter(
-                              color: black,
-                              fontSize: 2.2 * SizeConfig.textMultiplier,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2),
-                        ),
+                                  product.allowBidding!
+                                      ? "Kes ${product.biddingPrice}"
+                                      : "Kes ${product.price}",
+                                  style: GoogleFonts.inter(
+                                      color: black,
+                                      fontSize: 2.2 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.2),
+                                ),
                       ],
                     )),
               );
@@ -101,35 +103,42 @@ class ProductContainer extends StatelessWidget {
                             ..read<ProductCubit>().getNearbyProducts();
                         }
                       },
-                      child: GestureDetector(
-                        onTap: () => product.isLiked!
-                            ? context
-                                .read<LocalCubit>()
-                                .unLikeProduct(id: product.id!)
-                            : context.read<LocalCubit>().likeProduct(
-                                product: LocalProductModel(
-                                    id: product.id!,
-                                    name: product.name!,
-                                    image: product.image![0],
-                                    userId: product.userId!,
-                                    startingPrice: product.price!)),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: white, shape: BoxShape.circle),
-                          child: Center(
-                            widthFactor: 1,
-                            heightFactor: 1,
-                            child: SvgPicture.asset(
-                              product.isLiked!
-                                  ? AppImages.favouriteSolid
-                                  : AppImages.favourite,
-                              height: 2.7 * SizeConfig.heightMultiplier,
-                              width: 2.7 * SizeConfig.heightMultiplier,
-                              color: black,
+                      child: BlocBuilder<ProductCubit, ProductState>(
+                        builder: (context, state) {
+                          return GestureDetector(
+                            onTap: () {
+                              var isLiked = product.isLiked!;
+                              state.products
+                                  .firstWhere(
+                                      (element) => element.id == product.id)
+                                  .copyWith(isLiked: !isLiked);
+                              isLiked
+                                  ? context
+                                      .read<LocalCubit>()
+                                      .unLikeProduct(id: product.id)
+                                  : context
+                                      .read<LocalCubit>()
+                                      .likeProduct(id: product.id);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: white, shape: BoxShape.circle),
+                              child: Center(
+                                widthFactor: 1,
+                                heightFactor: 1,
+                                child: SvgPicture.asset(
+                                  product.isLiked!
+                                      ? AppImages.favouriteSolid
+                                      : AppImages.favourite,
+                                  height: 2.7 * SizeConfig.heightMultiplier,
+                                  width: 2.7 * SizeConfig.heightMultiplier,
+                                  color: black,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     );
                   }),

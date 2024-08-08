@@ -7,8 +7,11 @@ class BidProvider extends BidTemplate {
       : _bidRepository = bidRepository;
 
   @override
-  Future<bool> createBid({required BidModel bid}) {
-    return _bidRepository.createBid(bid: bid);
+  Future<bool> createBid({required String productId, required int price}) {
+    return _bidRepository.createBid(
+      productId: productId,
+      price: price,
+    );
   }
 
   @override
@@ -17,17 +20,20 @@ class BidProvider extends BidTemplate {
   }
   
   @override
-  Future<List<BidModel>> getProductBids({required String productId}) {
+  Future<List<BidsModel>> getProductBids({required String productId}) {
     return _bidRepository.getProductBids(productId: productId);
   }
 
   @override
-  Future<List<BidModel>> getUserBids({required String userId}) {
-    return _bidRepository.getUserBids(userId: userId);
+  Future<List<BidsModel>> getUserBids() {
+    return _bidRepository.getUserBids();
   }
 
   @override
-  Future<bool> updateBid({required BidModel bid}) {
-    return _bidRepository.updateBid(bid: bid);
+  Future<bool> updateBid({required String bidId, required int price}) {
+    return _bidRepository.updateBid(
+      bidId: bidId,
+      price: price,
+    );
   }
 }

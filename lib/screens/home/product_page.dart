@@ -6,6 +6,8 @@ import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/blocs/minimal/page_cubit.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/rating_model.dart';
+import 'package:ecoville/screens/home/bidding_page.dart';
+import 'package:ecoville/screens/home/widgets/product_list_shimmer.dart';
 import 'package:ecoville/shared/border_button.dart';
 import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/icon_container.dart';
@@ -14,22 +16,26 @@ import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/screens/home/widgets/product_container.dart';
 import 'package:ecoville/screens/home/widgets/product_shimmer.dart';
 
-class ProductDetailsPage extends StatefulWidget {
+class ProductDetailsPage extends StatelessWidget {
   ProductDetailsPage({super.key, required this.id, required this.title});
   final String id;
   final String title;
 
-  @override
-  State<ProductDetailsPage> createState() => _ProductDetailsPageState();
-}
-
-class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final _pageController = PageController();
 
-  @override
-  void initState() {
-    super.initState();
-    
+  String formatMinutes(int totalMinutes) {
+    if (totalMinutes < 0) {
+      throw ArgumentError('Minutes cannot be negative');
+    }
+
+    int hours = totalMinutes ~/ 60;
+    int minutes = totalMinutes % 60;
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    } else {
+      return '${minutes}m';
+    }
   }
 
   @override
@@ -37,14 +43,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     final height = MediaQuery.of(context).size.height;
     return BlocBuilder<ProductCubit, ProductState>(
       buildWhen: (previous, current) => previous.product != current.product,
-      bloc: context.read<ProductCubit>()..getProduct(id: widget.id),
+      bloc: context.read<ProductCubit>()
+        ..getProduct(id: id)
+        ..getProductRecommendations(query: title),
       builder: (context, state) {
         return Scaffold(
             backgroundColor: white,
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(8 * SizeConfig.heightMultiplier),
               child: ProductAppBar(
-                id: widget.id,
+                id: id,
               ),
             ),
             body: SingleChildScrollView(
@@ -52,13 +60,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 create: (context) => PageCubit(),
                 child: state.status == ProductStatus.loading
                     ? ProductPageShimmer(
-                        title: widget.title,
+                        title: title,
                       )
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ProductImagesSection(
-                            id: widget.id,
+                            id: id,
                             pageController: _pageController,
                           ),
                           Gap(2 * SizeConfig.widthMultiplier),
@@ -75,93 +83,147 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       fontWeight: FontWeight.bold,
                                       height: 1.2),
                                 ),
-                                Gap(2 * SizeConfig.heightMultiplier),
-                                Row(
-                                  children: [
-                                    NetworkImageContainer(
-                                      imageUrl: AppImages.defaultImage,
-                                      height: height * 0.07,
-                                      width: height * 0.07,
-                                      isCirlce: true,
-                                    ),
-                                    Gap(2 * SizeConfig.widthMultiplier),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        BlocBuilder<ProductCubit, ProductState>(
-                                          buildWhen: (previous, current) =>
-                                              previous.product !=
-                                              current.product,
-                                          builder: (context, state) {
-                                            return Text(
-                                              state.product!.user!.name!,
-                                              style: GoogleFonts.inter(
-                                                  color: black,
-                                                  fontSize: 2.2 *
-                                                      SizeConfig.textMultiplier,
-                                                  fontWeight: FontWeight.w600,
-                                                  height: 1.2),
-                                            );
-                                          },
-                                        ),
-                                        Text(
-                                          "90% Positive Rating",
-                                          style: GoogleFonts.inter(
-                                              color: black,
-                                              fontSize: 1.6 *
-                                                  SizeConfig.textMultiplier,
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.2),
-                                        ),
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    state.product!.userId !=
-                                            supabase.auth.currentUser!.id
-                                        ? BlocProvider(
-                                            create: (context) => MessageCubit(),
-                                            child: Builder(builder: (context) {
-                                              return BlocListener<MessageCubit,
-                                                  MessageState>(
-                                                listener: (context, state) {
-                                                  debugPrint(
-                                                      "Message State: ${state.status}");
-                                                  if (state.status ==
-                                                      MessageStatus.success) {
-                                                    context
-                                                        .push(Routes.messages);
-                                                  }
-                                                },
-                                                child: IconContainer(
-                                                  icon: AppImages.messages,
-                                                  function: () => state.product!
-                                                              .userId !=
-                                                          supabase.auth
-                                                              .currentUser!.id
-                                                      ? context
-                                                          .read<MessageCubit>()
-                                                          .createConversation(
-                                                              sellerId: state
-                                                                  .product!
-                                                                  .userId!)
-                                                      : null,
-                                                ),
-                                              );
-                                            }),
-                                          )
-                                        : const SizedBox.shrink(),
-                                  ],
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: state.product!.sold!
+                                        ? Colors.red.withOpacity(0.2)
+                                        : Colors.blue.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Text(
+                                    state.product!.sold! ? "Sold Out" : "Available",
+                                    style: GoogleFonts.inter(
+                                        fontSize:
+                                            1.5 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w600,
+                                        color: state.product!.sold!
+                                            ? Colors.red
+                                            : Colors.blue),
+                                  ),
                                 ),
-                                Gap(3 * SizeConfig.heightMultiplier),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                // Row(
+                                //   children: [
+                                //     NetworkImageContainer(
+                                //       imageUrl: AppImages.defaultImage,
+                                //       height: height * 0.05,
+                                //       width: height * 0.05,
+                                //       isCirlce: true,
+                                //     ),
+                                //     Gap(2 * SizeConfig.widthMultiplier),
+                                //     Column(
+                                //       crossAxisAlignment:
+                                //           CrossAxisAlignment.start,
+                                //       children: [
+                                //         BlocBuilder<ProductCubit, ProductState>(
+                                //           buildWhen: (previous, current) =>
+                                //               previous.product !=
+                                //               current.product,
+                                //           builder: (context, state) {
+                                //             return Text(
+                                //               state.product!.user!.name!,
+                                //               style: GoogleFonts.inter(
+                                //                   color: black,
+                                //                   fontSize: 2.2 *
+                                //                       SizeConfig.textMultiplier,
+                                //                   fontWeight: FontWeight.w600,
+                                //                   height: 1.2),
+                                //             );
+                                //           },
+                                //         ),
+                                //         Text(
+                                //           "90% Positive Rating",
+                                //           style: GoogleFonts.inter(
+                                //               color: black,
+                                //               fontSize: 1.6 *
+                                //                   SizeConfig.textMultiplier,
+                                //               fontWeight: FontWeight.w500,
+                                //               height: 1.2),
+                                //         ),
+                                //       ],
+                                //     ),
+                                //     const Spacer(),
+                                //     state.product!.userId !=
+                                //             supabase.auth.currentUser!.id
+                                //         ? BlocProvider(
+                                //             create: (context) => MessageCubit(),
+                                //             child: Builder(builder: (context) {
+                                //               return BlocListener<MessageCubit,
+                                //                   MessageState>(
+                                //                 listener: (context, state) {
+                                //                   debugPrint(
+                                //                       "Message State: ${state.status}");
+                                //                   if (state.status ==
+                                //                       MessageStatus.success) {
+                                //                     context
+                                //                         .push(Routes.messages);
+                                //                   }
+                                //                 },
+                                //                 child: IconContainer(
+                                //                   icon: AppImages.messages,
+                                //                   function: () => state.product!
+                                //                               .userId !=
+                                //                           supabase.auth
+                                //                               .currentUser!.id
+                                //                       ? context
+                                //                           .read<MessageCubit>()
+                                //                           .createConversation(
+                                //                               sellerId: state
+                                //                                   .product!
+                                //                                   .userId!)
+                                //                       : null,
+                                //                 ),
+                                //               );
+                                //             }),
+                                //           )
+                                //         : const SizedBox.shrink(),
+                                //   ],
+                                // ),
+                                // Gap(3 * SizeConfig.heightMultiplier),
                                 Text(
-                                  'Ksh ${state.product?.price ?? "Ksh 0"}',
+                                  state.product!.allowBidding!
+                                      ? "Kes ${state.product!.biddingPrice}"
+                                      : "Kes ${state.product!.price}",
                                   style: GoogleFonts.inter(
                                       color: black,
                                       fontSize: 2.8 * SizeConfig.textMultiplier,
                                       fontWeight: FontWeight.bold,
                                       height: 1.2),
                                 ),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                if (state.product!.allowBidding!)
+                                  Row(
+                                    children: [
+                                      Text(
+                                        state.product!.bids!.isEmpty
+                                            ? "No Bids"
+                                            : "${state.product!.bids!.length} Bids",
+                                        style: GoogleFonts.inter(
+                                            color: black,
+                                            fontSize:
+                                                1.6 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.2),
+                                      ),
+                                      const Spacer(),
+                                      // time left endBidding - startBidding
+                                      if (state.product!.biddingStatus ==
+                                          "open")
+                                        Text(
+                                          "Ends in ${formatMinutes(state.product!.endBidding!.difference(DateTime.timestamp()).inMinutes)}",
+                                          style: GoogleFonts.inter(
+                                              color: black,
+                                              fontSize: 1.6 *
+                                                  SizeConfig.textMultiplier,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.2),
+                                        ),
+                                    ],
+                                  ),
+                                Gap(1 * SizeConfig.heightMultiplier),
                                 Text(
                                   "${state.product!.address!.city!}, ${state.product!.address!.country!}",
                                   style: GoogleFonts.inter(
@@ -186,7 +248,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     Row(
                                       children: [
                                         Text(
-                                          "Used",
+                                          state.product!.condition!,
                                           style: GoogleFonts.inter(
                                               color: black,
                                               fontSize: 1.6 *
@@ -206,51 +268,108 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ],
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
-                                // CompleteButton(
-                                //     height: 6.5 * SizeConfig.heightMultiplier,
-                                //     borderRadius: 30,
-                                //     text: Text(
-                                //       "Buy it Now",
-                                //       style: GoogleFonts.inter(
-                                //           color: white,
-                                //           fontSize:
-                                //               1.8 * SizeConfig.textMultiplier,
-                                //           fontWeight: FontWeight.w600,
-                                //           letterSpacing: 0.1),
-                                //     ),
-                                //     function: () {}),
-                                // Gap(1 * SizeConfig.heightMultiplier),
-                                BlocConsumer<LocalCubit, LocalState>(
-                                  listener: (context, state) {
-                                    if (state.status == LocalStatus.success) {
-                                      context
-                                        ..read<ProductCubit>()
-                                            .getProduct(id: widget.id)
-                                        ..read<LocalCubit>().getCartProducts();
-                                    }
-                                  },
-                                  builder: (context, localState) {
-                                    return BlocBuilder<ProductCubit,
-                                        ProductState>(
-                                      builder: (context, state) {
-                                        return BorderButton(
-                                            height:
-                                                6 * SizeConfig.heightMultiplier,
-                                            borderRadius: 30,
-                                            text: Text(
-                                               "Add to Cart",
-                                              style: GoogleFonts.inter(
-                                                  color: green,
-                                                  fontSize: 1.8 *
-                                                      SizeConfig.textMultiplier,
-                                                  fontWeight: FontWeight.w600,
-                                                  letterSpacing: 0.1),
-                                            ),
-                                            function: (){});
-                                      },
-                                    );
-                                  },
-                                ),
+                                if (state.product!.biddingStatus == "open")
+                                  BlocBuilder<ProductCubit, ProductState>(
+                                    builder: (context, state) {
+                                      if (state.product!.allowBidding!) {
+                                        return CompleteButton(
+                                          height:
+                                              6.5 * SizeConfig.heightMultiplier,
+                                          borderRadius: 30,
+                                          text: Text(
+                                            "Place Bid",
+                                            style: GoogleFonts.inter(
+                                                color: white,
+                                                fontSize: 1.8 *
+                                                    SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 0.1),
+                                          ),
+                                          function: () => Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BiddingPage(
+                                                        productId:
+                                                            state.product!.id,
+                                                      ))),
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                if ((state.product!.userId! !=
+                                        supabase.auth.currentUser!.id) &&
+                                    !state.product!.sold! &&
+                                    (state.product!.allowBidding == false ||
+                                        (state.product!.biddingStatus! ==
+                                                "closed" &&
+                                            state.product!.highestBidder ==
+                                                supabase.auth.currentUser!.id)))
+                                  BlocConsumer<LocalCubit, LocalState>(
+                                    listenWhen: (previous, current) =>
+                                        previous.status != current.status,
+                                    buildWhen: (previous, current) =>
+                                        previous.status != current.status,
+                                    listener: (context, state) {
+                                      if (state.status == LocalStatus.updated) {
+                                        context
+                                          ..read<ProductCubit>()
+                                              .getProduct(id: id)
+                                          ..read<LocalCubit>()
+                                              .getCartProducts();
+                                      }
+                                    },
+                                    builder: (context, localState) {
+                                      return BlocBuilder<ProductCubit,
+                                          ProductState>(
+                                        builder: (context, pstate) {
+                                          return BorderButton(
+                                              height: 6 *
+                                                  SizeConfig.heightMultiplier,
+                                              borderRadius: 30,
+                                              text: BlocBuilder<LocalCubit,
+                                                  LocalState>(
+                                                builder: (context, state) {
+                                                  return Text(
+                                                    state.cartItems.any(
+                                                            (element) =>
+                                                                element.id ==
+                                                                pstate.product!
+                                                                    .id)
+                                                        ? "Added to Cart"
+                                                        : "Add to Cart",
+                                                    style: GoogleFonts.inter(
+                                                        color: green,
+                                                        fontSize: 1.8 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        letterSpacing: 0.1),
+                                                  );
+                                                },
+                                              ),
+                                              function: () {
+                                                context
+                                                    .read<LocalCubit>()
+                                                    .addProductToCart(
+                                                        product:
+                                                            LocalProductModel(
+                                                      id: state.product!.id,
+                                                      name: state.product!.name,
+                                                      image: state
+                                                          .product!.image[0],
+                                                      userId: state
+                                                          .product!.userId!,
+                                                      startingPrice:
+                                                          state.product!.price,
+                                                    ));
+                                              });
+                                        },
+                                      );
+                                    },
+                                  ),
                                 Gap(1 * SizeConfig.heightMultiplier),
                                 BlocBuilder<ProductCubit, ProductState>(
                                   buildWhen: (previous, current) =>
@@ -261,12 +380,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       child: Builder(builder: (context) {
                                         return BlocListener<LocalCubit,
                                             LocalState>(
+                                          listenWhen: (previous, current) =>
+                                              previous.status != current.status,
                                           listener: (context, state) {
                                             if (state.status ==
-                                                LocalStatus.success) {
+                                                LocalStatus.updated) {
                                               context
                                                   .read<ProductCubit>()
-                                                  .getProduct(id: widget.id);
+                                                  .getProduct(id: id);
                                             }
                                           },
                                           child: BorderButton(
@@ -281,7 +402,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   SvgPicture.asset(
-                                                    state.product!.isWishlisted!
+                                                    state.product!.isWishlisted
                                                         ? AppImages
                                                             .favouriteSolid
                                                         : AppImages.favourite,
@@ -297,7 +418,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                       SizeConfig
                                                           .widthMultiplier),
                                                   Text(
-                                                    state.product!.isWishlisted!
+                                                    state.product!.isWishlisted
                                                         ? "Added to Wishlist"
                                                         : "Add to Wishlist",
                                                     style: GoogleFonts.inter(
@@ -311,12 +432,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                   ),
                                                 ],
                                               ),
-                                              function: () => state.product!.isWishlisted!
+                                              function: () => state
+                                                      .product!.isWishlisted
                                                   ? context
                                                       .read<LocalCubit>()
                                                       .removeProductFromWishlist(
-                                                          id: state.product!.id!)
-                                                  :(){}),
+                                                          id: state.product!.id)
+                                                  : context
+                                                      .read<LocalCubit>()
+                                                      .addProductToWishlist(
+                                                          id: state
+                                                              .product!.id)),
                                         );
                                       }),
                                     );
@@ -332,40 +458,27 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       height: 1.2),
                                 ),
                                 Gap(1 * SizeConfig.heightMultiplier),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "See full description",
-                                      style: GoogleFonts.inter(
-                                          color: black,
-                                          fontSize:
-                                              1.8 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          decoration: TextDecoration.underline,
-                                          height: 1.2),
-                                    ),
-                                    const Spacer(),
-                                    IconContainer(
-                                      icon: AppImages.right,
-                                      function: () {},
-                                    ),
-                                  ],
+                                Text(
+                                  "Available items: ${state.product!.quantity}",
+                                  style: GoogleFonts.inter(
+                                      color: black,
+                                      fontSize: 1.6 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.2),
+                                ),
+                                Gap(1 * SizeConfig.heightMultiplier),
+                                Text(
+                                  state.product!.description!,
+                                  style: GoogleFonts.inter(
+                                      color: black,
+                                      fontSize: 1.6 * SizeConfig.textMultiplier,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.2),
                                 ),
                                 Gap(3 * SizeConfig.heightMultiplier),
-                                MoreLikeThisItems(
-                                  title: "More Like This",
-                                ),
-                                MoreLikeThisItems(
-                                  title: "Similar Customers Also Bought",
-                                ),
                                 SellerSection(),
                                 Gap(4 * SizeConfig.heightMultiplier),
-                                MoreLikeThisItems(
-                                  title: "Buyers also viewed",
-                                ),
-                                MoreLikeThisItems(
-                                  title: "Sponsored items from this seller",
-                                ),
+                                RecommendedItems()
                               ],
                             ),
                           ),
@@ -491,31 +604,36 @@ class SellerSection extends StatelessWidget {
           ],
         ),
         Gap(3 * SizeConfig.heightMultiplier),
-        CompleteButton(
-            height: 6 * SizeConfig.heightMultiplier,
-            borderRadius: 30,
-            text: Text(
-              "Seller's Other Items",
-              style: GoogleFonts.inter(
-                  color: white,
-                  fontSize: 1.8 * SizeConfig.textMultiplier,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.1),
-            ),
-            function: () {}),
+        BlocBuilder<ProductCubit, ProductState>(
+          builder: (context, state) {
+            return CompleteButton(
+                height: 6 * SizeConfig.heightMultiplier,
+                borderRadius: 30,
+                text: Text(
+                  "Seller's Other Items",
+                  style: GoogleFonts.inter(
+                      color: white,
+                      fontSize: 1.8 * SizeConfig.textMultiplier,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.1),
+                ),
+                function: () =>
+                    context.push("/home/selleritems/${state.product!.userId}"));
+          },
+        ),
         Gap(1.5 * SizeConfig.heightMultiplier),
-        BorderButton(
-            height: 6 * SizeConfig.heightMultiplier,
-            borderRadius: 30,
-            text: Text(
-              "Contact Seller",
-              style: GoogleFonts.inter(
-                  color: green,
-                  fontSize: 1.8 * SizeConfig.textMultiplier,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.1),
-            ),
-            function: () {}),
+        // BorderButton(
+        //     height: 6 * SizeConfig.heightMultiplier,
+        //     borderRadius: 30,
+        //     text: Text(
+        //       "Contact Seller",
+        //       style: GoogleFonts.inter(
+        //           color: green,
+        //           fontSize: 1.8 * SizeConfig.textMultiplier,
+        //           fontWeight: FontWeight.w600,
+        //           letterSpacing: 0.1),
+        //     ),
+        //     function: () {}),
         Gap(3 * SizeConfig.heightMultiplier),
         Text(
           "Detailed Seller Ratings",
@@ -564,7 +682,7 @@ class SellerSection extends StatelessWidget {
           builder: (context, state) {
             return BlocProvider(
               create: (context) => RatingCubit()
-                ..getSellerRatings(userId: state.product!.userId!),
+                ..getProductRatings(productId: state.product!.id),
               child: Builder(builder: (context) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,7 +690,7 @@ class SellerSection extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "Seller Ratings ",
+                          "Product Ratings ",
                           style: GoogleFonts.inter(
                               color: black,
                               fontSize: 2.5 * SizeConfig.textMultiplier,
@@ -583,7 +701,7 @@ class SellerSection extends StatelessWidget {
                         BlocBuilder<RatingCubit, RatingState>(
                           builder: (context, state) {
                             return Text(
-                              "(${state.sellerRatings.length})",
+                              "(${state.productRatings.length})",
                               style: GoogleFonts.inter(
                                   color: Colors.grey[600],
                                   fontSize: 2.2 * SizeConfig.textMultiplier,
@@ -603,16 +721,16 @@ class SellerSection extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               return RatingContainer(
-                                rating: state.sellerRatings[index],
+                                rating: state.productRatings[index],
                               );
                             },
                             separatorBuilder: (context, index) => const Divider(
                                   color: Colors.grey,
                                   height: 30,
                                 ),
-                            itemCount: state.sellerRatings.length > 3
+                            itemCount: state.productRatings.length > 3
                                 ? 3
-                                : state.sellerRatings.length);
+                                : state.productRatings.length);
                       },
                     )
                   ],
@@ -746,12 +864,12 @@ class ProductImagesSection extends StatelessWidget {
                         _pageController.jumpToPage(value);
                         context.read<PageCubit>().changePage(page: value);
                       },
-                      itemCount: state.product!.image!.length,
+                      itemCount: state.product!.image.length,
                       itemBuilder: (context, index) {
                         return Stack(
                           children: [
                             NetworkImageContainer(
-                              imageUrl: state.product!.image![index],
+                              imageUrl: state.product!.image[index],
                               borderRadius: BorderRadius.zero,
                               height: height,
                               width: width,
@@ -767,6 +885,8 @@ class ProductImagesSection extends StatelessWidget {
                                     child: Builder(builder: (context) {
                                       return BlocListener<LocalCubit,
                                           LocalState>(
+                                        listenWhen: (previous, current) =>
+                                            previous.status != current.status,
                                         listener: (context, state) {
                                           if (state.status ==
                                               LocalStatus.success) {
@@ -779,14 +899,27 @@ class ProductImagesSection extends StatelessWidget {
                                             ProductState>(
                                           builder: (context, state) {
                                             return GestureDetector(
-                                              onTap: () => state
-                                                          .product?.isLiked ??
-                                                      false
-                                                  ? context
-                                                      .read<LocalCubit>()
-                                                      .unLikeProduct(
-                                                          id: state.product!.id!)
-                                                  : (){},
+                                              onTap: () {
+                                                var isLiked =
+                                                    state.product!.isLiked;
+                                                state.products
+                                                    .firstWhere((element) =>
+                                                        element.id ==
+                                                        state.product!.id)
+                                                    .copyWith(
+                                                        isLiked: !isLiked);
+                                                isLiked
+                                                    ? context
+                                                        .read<LocalCubit>()
+                                                        .unLikeProduct(
+                                                            id: state
+                                                                .product!.id)
+                                                    : context
+                                                        .read<LocalCubit>()
+                                                        .likeProduct(
+                                                            id: state
+                                                                .product!.id);
+                                              },
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.all(8),
@@ -826,7 +959,7 @@ class ProductImagesSection extends StatelessWidget {
               },
             ),
             Gap(1 * SizeConfig.widthMultiplier),
-            state.product!.image!.length == 1
+            state.product!.image.length == 1
                 ? const SizedBox.shrink()
                 : BlocBuilder<PageCubit, PageState>(
                     builder: (context, pstate) {
@@ -852,7 +985,7 @@ class ProductImagesSection extends StatelessWidget {
                                             .changePage(page: index);
                                       },
                                       child: NetworkImageContainer(
-                                        imageUrl: state.product!.image![index],
+                                        imageUrl: state.product!.image[index],
                                         height: height * 0.1,
                                         width: height * 0.11,
                                         fit: BoxFit.cover,
@@ -866,7 +999,7 @@ class ProductImagesSection extends StatelessWidget {
                                 ),
                             separatorBuilder: (context, index) =>
                                 Gap(1 * SizeConfig.widthMultiplier),
-                            itemCount: state.product!.image!.length),
+                            itemCount: state.product!.image.length),
                       );
                     },
                   ),
@@ -952,7 +1085,7 @@ class ProductAppBar extends StatelessWidget {
           child: Builder(builder: (context) {
             return BlocListener<LocalCubit, LocalState>(
               listener: (context, state) {
-                if (state.status == LocalStatus.success) {
+                if (state.status == LocalStatus.updated) {
                   context.read<ProductCubit>().getProduct(id: id);
                 }
               },
@@ -962,21 +1095,23 @@ class ProductAppBar extends StatelessWidget {
                       icon: state.product?.isSaved ?? false
                           ? AppImages.saveSolid
                           : AppImages.save,
-                      function: () => state.product!.isSaved!
+                      function: () => state.product!.isSaved
                           ? context
                               .read<LocalCubit>()
-                              .unSaveProduct(id: state.product!.id!)
-                          : (){});
+                              .unSaveProduct(id: state.product!.id)
+                          : context
+                              .read<LocalCubit>()
+                              .saveProduct(productId: state.product!.id));
                 },
               ),
             );
           }),
         ),
         Gap(1 * SizeConfig.widthMultiplier),
-        IconContainer(
-            icon: AppImages.more,
-            function: () => context.pushNamed(Routes.cart)),
-        Gap(1 * SizeConfig.widthMultiplier),
+        // IconContainer(
+        //     icon: AppImages.more,
+        //     function: () => context.pushNamed(Routes.cart)),
+        // Gap(1 * SizeConfig.widthMultiplier),
       ],
     );
   }
@@ -1129,6 +1264,174 @@ class MoreLikeThisItems extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class RecommendedItems extends StatelessWidget {
+  const RecommendedItems({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return BlocBuilder<ProductCubit, ProductState>(
+      // buildWhen: (previous, current) =>
+      //     previous.recommendations != current.recommendations,
+      builder: (context, state) {
+        return state.status == ProductStatus.loading
+            ? const ProductListShimmer()
+            : state.products.isEmpty
+                ? const ProductListShimmer()
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          "Recommended for you",
+                          style: GoogleFonts.inter(
+                              color: black,
+                              fontSize: 2.2 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.1),
+                        ),
+                      ),
+                      Gap(2.5 * SizeConfig.heightMultiplier),
+                      SizedBox(
+                        height: height * 0.26,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) => Padding(
+                              padding: EdgeInsets.only(
+                                left: index == 0 ? 10 : 0,
+                                right:
+                                    index == (state.recommendations.length - 1)
+                                        ? 10
+                                        : 0,
+                              ),
+                              child: SizedBox(
+                                width: width * 0.41,
+                                child: Stack(
+                                  children: [
+                                    BlocProvider(
+                                      create: (context) => LocalCubit(),
+                                      child: Builder(builder: (context) {
+                                        return BlocListener<LocalCubit,
+                                            LocalState>(
+                                          listener: (context, state) {
+                                            if (state.status ==
+                                                LocalStatus.success) {
+                                              context
+                                                  .read<LocalCubit>()
+                                                  .getWatchedProduct();
+                                            }
+                                          },
+                                          child: OutlinedButton(
+                                              style: OutlinedButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                foregroundColor: Colors.grey,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                side: BorderSide.none,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(0),
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                context
+                                                  ..push(
+                                                      '/home/details/${state.recommendations[index].id}',
+                                                      extra: {
+                                                        'title': state
+                                                            .recommendations[
+                                                                index]
+                                                            .name,
+                                                      })
+                                                  ..read<LocalCubit>()
+                                                      .watchProduct(
+                                                          product:
+                                                              LocalProductModel(
+                                                    id: state
+                                                        .recommendations[index]
+                                                        .id,
+                                                    name: state
+                                                        .recommendations[index]
+                                                        .name,
+                                                    image: state
+                                                        .recommendations[index]
+                                                        .image[0],
+                                                    userId: supabase
+                                                        .auth.currentUser!.id,
+                                                    startingPrice: state
+                                                        .recommendations[index]
+                                                        .price,
+                                                  ));
+                                              },
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  NetworkImageContainer(
+                                                    imageUrl: state
+                                                        .recommendations[index]
+                                                        .image[0],
+                                                    height: width * 0.37,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                    width: width,
+                                                  ),
+                                                  Gap(1.3 *
+                                                      SizeConfig
+                                                          .heightMultiplier),
+                                                  Text(
+                                                    state.recommendations[index]
+                                                        .name,
+                                                    maxLines: 2,
+                                                    style: GoogleFonts.inter(
+                                                        color: black,
+                                                        fontSize: 1.7 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        height: 1),
+                                                  ),
+                                                  Gap(0.8 *
+                                                      SizeConfig
+                                                          .heightMultiplier),
+                                                  Text(
+                                                    "Ksh ${state.recommendations[index].price}",
+                                                    style: GoogleFonts.inter(
+                                                        color: black,
+                                                        fontSize: 2.2 *
+                                                            SizeConfig
+                                                                .textMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        letterSpacing: 0.2),
+                                                  ),
+                                                ],
+                                              )),
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                          separatorBuilder: (context, index) =>
+                              Gap(1.3 * SizeConfig.widthMultiplier),
+                          itemCount: state.recommendations.length,
+                        ),
+                      ),
+                    ],
+                  );
+      },
     );
   }
 }

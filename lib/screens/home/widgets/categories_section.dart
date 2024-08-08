@@ -6,12 +6,12 @@ class CategoriesSection extends StatelessWidget {
   });
 
   final List<Map<String, dynamic>> categories = [
-    {'name': "Categories", "icon": AppImages.category, "page": Routes.categories},
-    // {'name': "Deals", "icon": AppImages.flash, "page": ""},
+    // {'name': "Categories", "icon": AppImages.category, "page": Routes.categories},
+    {'name': "Orders", "icon": AppImages.flash, "page": Routes.orders},
     {'name': "Saved", "icon": AppImages.favourite, "page": Routes.saved},
     {'name': "Wishlist", "icon": AppImages.wishlist, "page":Routes.wishlist},
     // {'name': "Bids", "icon": AppImages.recent, "page": Routes.bids},
-    {'name': "Messages", "icon": AppImages.messages, "page": Routes.messages},
+    // {'name': "Messages", "icon": AppImages.messages, "page": Routes.messages},
     {'name': "Settings", "icon": AppImages.settings, "page": Routes.settings},
   ];
 

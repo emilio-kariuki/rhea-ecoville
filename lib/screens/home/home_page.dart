@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
@@ -34,19 +33,19 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    socket.onConnect((data) {
-      socket.on('update', (data) {
-        debugPrint('message received ' + data);
-      });
-    });
+    // socket.onConnect((data) {
+    //   socket.on('update', (data) {
+    //     debugPrint('message received ' + data);
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    socket.on('product', (data) {
-      debugPrint('message received ' + data);
-      context.read<ProductCubit>().getProducts();
-    });
+    // socket.on('product', (data) {
+    //   debugPrint('message received ' + data);
+    //   context.read<ProductCubit>().getProducts();
+    // });
     return Scaffold(
       backgroundColor: white,
       floatingActionButton: FloatingActionButton(
@@ -75,10 +74,10 @@ class _HomePageState extends State<HomePage> {
                 width: 4 * SizeConfig.heightMultiplier,
               ),
               const Spacer(),
-              IconContainer(
-                icon: AppImages.messages,
-                function: () => context.pushNamed(Routes.messages),
-              ),
+              // IconContainer(
+              //   icon: AppImages.messages,
+              //   function: () => context.pushNamed(Routes.messages),
+              // ),
               Gap(1 * SizeConfig.widthMultiplier),
               IconContainer(
                 icon: AppImages.notifications,
@@ -129,7 +128,8 @@ class _HomePageState extends State<HomePage> {
           context
             ..read<ProductCubit>().getProducts()
             ..read<ProductCubit>().getNearbyProducts()
-            ..read<LocalCubit>().getWatchedProduct();
+            ..read<LocalCubit>().getWatchedProduct()
+            ..read<LocalCubit>().getCartProducts();
           return Future.delayed(const Duration(seconds: 1));
         },
         child: SingleChildScrollView(
@@ -141,8 +141,9 @@ class _HomePageState extends State<HomePage> {
                 CategoriesSection(),
                 Gap(3 * SizeConfig.heightMultiplier),
                 const RecentItems(),
-                const NearbyItems(),
+                const BiddingItems(),
                 const WatchedItems(),
+                const NearbyItems(),
                 const EcovilleCategories(),
                 // const WatchedItems(),
                 // const YourDeals(),
@@ -266,6 +267,61 @@ class RecentItems extends StatelessWidget {
   }
 }
 
+
+class BiddingItems extends StatelessWidget {
+  const BiddingItems({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
+    return BlocBuilder<ProductCubit, ProductState>(
+      buildWhen: (previous, current) => previous.biddingProducts != current.biddingProducts,
+      builder: (context, state) {
+        return state.status == ProductStatus.loading
+            ? const ProductListShimmer()
+            : state.biddingProducts.isEmpty
+                ? const SizedBox.shrink()
+                : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SectionTitle(
+                          title: 'Bidding Items',
+                          onTap: () {},
+                        ),
+                      ),
+                      Gap(2.5 * SizeConfig.heightMultiplier),
+                      SizedBox(
+                        height: height * 0.26,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) => Padding(
+                            padding: EdgeInsets.only(
+                              left: index == 0 ? 10 : 0,
+                              right:
+                                  index == (state.biddingProducts.length - 1) ? 10 : 0,
+                            ),
+                            child: ProductContainer(
+                              key: UniqueKey(),
+                              product: state.biddingProducts[index],
+                            ),
+                          ),
+                          separatorBuilder: (context, index) =>
+                              Gap(1.3 * SizeConfig.widthMultiplier),
+                          itemCount: state.biddingProducts.length,
+                        ),
+                      ),
+                    ],
+                  );
+      },
+    );
+  }
+}
+
 class RecommendedItems extends StatelessWidget {
   const RecommendedItems({
     super.key,
@@ -362,7 +418,10 @@ class WatchedItems extends StatelessWidget {
                                   : 0,
                             ),
                             child: LocalProductContainer(
-                              product: state.watchedProducts[index],
+                              productId: state.watchedProducts[index].id,
+                                image: state.watchedProducts[index].image[0],
+                                name: state.watchedProducts[index].name,
+                                price: state.watchedProducts[index].startingPrice,
                             ),
                           ),
                           separatorBuilder: (context, index) =>
@@ -426,24 +485,28 @@ class EcovilleCategories extends StatelessWidget {
                                   mainAxisSpacing: 10,
                                   childAspectRatio: 0.9),
                           itemBuilder: (context, index) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                NetworkImageContainer(
-                                  imageUrl: state.categories[index].image,
-                                  isCirlce: true,
-                                  height: size.width * 0.23,
-                                  width: size.width,
-                                ),
-                                Gap(0.3 * SizeConfig.heightMultiplier),
-                                Text(
-                                  state.categories[index].name,
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 1.5 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
+                            return GestureDetector(
+                              onTap: ()=>context.push(Routes.searchResults,
+                          extra: {'controller': TextEditingController(text: "&&category=${state.categories[index].id}")}),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  NetworkImageContainer(
+                                    imageUrl: state.categories[index].image,
+                                    isCirlce: true,
+                                    height: size.width * 0.23,
+                                    width: size.width,
+                                  ),
+                                  Gap(0.3 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    state.categories[index].name,
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize: 1.5 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
                             );
                           });
                 },

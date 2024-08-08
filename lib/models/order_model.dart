@@ -1,75 +1,87 @@
 // To parse this JSON data, do
 //
-//     final bidsModel = bidsModelFromJson(jsonString);
+//     final orderModel = orderModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<BidsModel> bidsModelFromJson(String str) => List<BidsModel>.from(json.decode(str).map((x) => BidsModel.fromJson(x)));
+List<OrderModel> orderModelFromJson(String str) => List<OrderModel>.from(json.decode(str).map((x) => OrderModel.fromJson(x)));
 
-String bidsModelToJson(List<BidsModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String orderModelToJson(List<OrderModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class BidsModel {
+class OrderModel {
     final String id;
-    final String productId;
     final String userId;
-    final int price;
+    final String productId;
+    final int totalPrice;
+    final int quantity;
+    final String status;
     final DateTime createdAt;
     final DateTime updatedAt;
-    final Product product;
     final User user;
+    final Product product;
 
-    BidsModel({
+    OrderModel({
         required this.id,
-        required this.productId,
         required this.userId,
-        required this.price,
+        required this.productId,
+        required this.totalPrice,
+        required this.quantity,
+        required this.status,
         required this.createdAt,
         required this.updatedAt,
-        required this.product,
         required this.user,
+        required this.product,
     });
 
-    BidsModel copyWith({
+    OrderModel copyWith({
         String? id,
-        String? productId,
         String? userId,
-        int? price,
+        String? productId,
+        int? totalPrice,
+        int? quantity,
+        String? status,
         DateTime? createdAt,
         DateTime? updatedAt,
-        Product? product,
         User? user,
+        Product? product,
     }) => 
-        BidsModel(
+        OrderModel(
             id: id ?? this.id,
-            productId: productId ?? this.productId,
             userId: userId ?? this.userId,
-            price: price ?? this.price,
+            productId: productId ?? this.productId,
+            totalPrice: totalPrice ?? this.totalPrice,
+            quantity: quantity ?? this.quantity,
+            status: status ?? this.status,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
-            product: product ?? this.product,
             user: user ?? this.user,
+            product: product ?? this.product,
         );
 
-    factory BidsModel.fromJson(Map<String, dynamic> json) => BidsModel(
+    factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
         id: json["id"],
-        productId: json["productId"],
         userId: json["userId"],
-        price: json["price"],
+        productId: json["productId"],
+        totalPrice: json["totalPrice"],
+        quantity: json["quantity"],
+        status: json["status"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
-        product: Product.fromJson(json["product"]),
         user: User.fromJson(json["user"]),
+        product: Product.fromJson(json["product"]),
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
-        "productId": productId,
         "userId": userId,
-        "price": price,
+        "productId": productId,
+        "totalPrice": totalPrice,
+        "quantity": quantity,
+        "status": status,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
-        "product": product.toJson(),
         "user": user.toJson(),
+        "product": product.toJson(),
     };
 }
 
@@ -78,22 +90,18 @@ class Product {
     final String name;
     final String description;
     final List<String> image;
-    final Address address;
+    final ProductAddress address;
     final String userId;
     final String categoryId;
     final int quantity;
     final bool allowBidding;
     final bool sold;
     final int price;
-    final int biddingPrice;
     final int likes;
     final bool isLiked;
     final bool isWishlisted;
     final bool isSaved;
     final String condition;
-    final DateTime startBidding;
-    final DateTime endBidding;
-    final String biddingStatus;
     final DateTime createdAt;
     final DateTime updatedAt;
 
@@ -109,15 +117,11 @@ class Product {
         required this.allowBidding,
         required this.sold,
         required this.price,
-        required this.biddingPrice,
         required this.likes,
         required this.isLiked,
         required this.isWishlisted,
         required this.isSaved,
         required this.condition,
-        required this.startBidding,
-        required this.endBidding,
-        required this.biddingStatus,
         required this.createdAt,
         required this.updatedAt,
     });
@@ -127,22 +131,18 @@ class Product {
         String? name,
         String? description,
         List<String>? image,
-        Address? address,
+        ProductAddress? address,
         String? userId,
         String? categoryId,
         int? quantity,
         bool? allowBidding,
         bool? sold,
         int? price,
-        int? biddingPrice,
         int? likes,
         bool? isLiked,
         bool? isWishlisted,
         bool? isSaved,
         String? condition,
-        DateTime? startBidding,
-        DateTime? endBidding,
-        String? biddingStatus,
         DateTime? createdAt,
         DateTime? updatedAt,
     }) => 
@@ -158,15 +158,11 @@ class Product {
             allowBidding: allowBidding ?? this.allowBidding,
             sold: sold ?? this.sold,
             price: price ?? this.price,
-            biddingPrice: biddingPrice ?? this.biddingPrice,
             likes: likes ?? this.likes,
             isLiked: isLiked ?? this.isLiked,
             isWishlisted: isWishlisted ?? this.isWishlisted,
             isSaved: isSaved ?? this.isSaved,
             condition: condition ?? this.condition,
-            startBidding: startBidding ?? this.startBidding,
-            endBidding: endBidding ?? this.endBidding,
-            biddingStatus: biddingStatus ?? this.biddingStatus,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
         );
@@ -176,22 +172,18 @@ class Product {
         name: json["name"],
         description: json["description"],
         image: List<String>.from(json["image"].map((x) => x)),
-        address: Address.fromJson(json["address"]),
+        address: ProductAddress.fromJson(json["address"]),
         userId: json["userId"],
         categoryId: json["categoryId"],
         quantity: json["quantity"],
         allowBidding: json["allowBidding"],
         sold: json["sold"],
         price: json["price"],
-        biddingPrice: json["biddingPrice"],
         likes: json["likes"],
         isLiked: json["isLiked"],
         isWishlisted: json["isWishlisted"],
         isSaved: json["isSaved"],
         condition: json["condition"],
-        startBidding: DateTime.parse(json["startBidding"]),
-        endBidding: DateTime.parse(json["endBidding"]),
-        biddingStatus: json["biddingStatus"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
     );
@@ -208,47 +200,43 @@ class Product {
         "allowBidding": allowBidding,
         "sold": sold,
         "price": price,
-        "biddingPrice": biddingPrice,
         "likes": likes,
         "isLiked": isLiked,
         "isWishlisted": isWishlisted,
         "isSaved": isSaved,
         "condition": condition,
-        "startBidding": startBidding.toIso8601String(),
-        "endBidding": endBidding.toIso8601String(),
-        "biddingStatus": biddingStatus,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
     };
 }
 
-class Address {
-    final String lon;
-    final String lat;
+class ProductAddress {
+    final dynamic lon;
+    final dynamic lat;
     final String city;
     final String country;
 
-    Address({
+    ProductAddress({
         required this.lon,
         required this.lat,
         required this.city,
         required this.country,
     });
 
-    Address copyWith({
-        String? lon,
-        String? lat,
+    ProductAddress copyWith({
+        dynamic lon,
+        dynamic lat,
         String? city,
         String? country,
     }) => 
-        Address(
+        ProductAddress(
             lon: lon ?? this.lon,
             lat: lat ?? this.lat,
             city: city ?? this.city,
             country: country ?? this.country,
         );
 
-    factory Address.fromJson(Map<String, dynamic> json) => Address(
+    factory ProductAddress.fromJson(Map<String, dynamic> json) => ProductAddress(
         lon: json["lon"],
         lat: json["lat"],
         city: json["city"],
@@ -273,6 +261,7 @@ class User {
     final Rating rating;
     final DateTime createdAt;
     final DateTime updatedAt;
+    final List<AddressElement> addresses;
 
     User({
         required this.id,
@@ -284,6 +273,7 @@ class User {
         required this.rating,
         required this.createdAt,
         required this.updatedAt,
+        required this.addresses,
     });
 
     User copyWith({
@@ -296,6 +286,7 @@ class User {
         Rating? rating,
         DateTime? createdAt,
         DateTime? updatedAt,
+        List<AddressElement>? addresses,
     }) => 
         User(
             id: id ?? this.id,
@@ -307,6 +298,7 @@ class User {
             rating: rating ?? this.rating,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
+            addresses: addresses ?? this.addresses,
         );
 
     factory User.fromJson(Map<String, dynamic> json) => User(
@@ -319,6 +311,7 @@ class User {
         rating: Rating.fromJson(json["rating"]),
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
+        addresses: List<AddressElement>.from(json["addresses"].map((x) => AddressElement.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -329,6 +322,96 @@ class User {
         "image": image,
         "token": token,
         "rating": rating.toJson(),
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+        "addresses": List<dynamic>.from(addresses.map((x) => x.toJson())),
+    };
+}
+
+class AddressElement {
+    final String id;
+    final String userId;
+    final String name;
+    final String phone;
+    final String altPhone;
+    final String email;
+    final String region;
+    final String city;
+    final String address;
+    final String additionalInformation;
+    final DateTime createdAt;
+    final DateTime updatedAt;
+
+    AddressElement({
+        required this.id,
+        required this.userId,
+        required this.name,
+        required this.phone,
+        required this.altPhone,
+        required this.email,
+        required this.region,
+        required this.city,
+        required this.address,
+        required this.additionalInformation,
+        required this.createdAt,
+        required this.updatedAt,
+    });
+
+    AddressElement copyWith({
+        String? id,
+        String? userId,
+        String? name,
+        String? phone,
+        String? altPhone,
+        String? email,
+        String? region,
+        String? city,
+        String? address,
+        String? additionalInformation,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+    }) => 
+        AddressElement(
+            id: id ?? this.id,
+            userId: userId ?? this.userId,
+            name: name ?? this.name,
+            phone: phone ?? this.phone,
+            altPhone: altPhone ?? this.altPhone,
+            email: email ?? this.email,
+            region: region ?? this.region,
+            city: city ?? this.city,
+            address: address ?? this.address,
+            additionalInformation: additionalInformation ?? this.additionalInformation,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+        );
+
+    factory AddressElement.fromJson(Map<String, dynamic> json) => AddressElement(
+        id: json["id"],
+        userId: json["userId"],
+        name: json["name"],
+        phone: json["phone"],
+        altPhone: json["altPhone"],
+        email: json["email"],
+        region: json["region"],
+        city: json["city"],
+        address: json["address"],
+        additionalInformation: json["additionalInformation"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "userId": userId,
+        "name": name,
+        "phone": phone,
+        "altPhone": altPhone,
+        "email": email,
+        "region": region,
+        "city": city,
+        "address": address,
+        "additionalInformation": additionalInformation,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
     };

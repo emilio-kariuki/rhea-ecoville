@@ -1,6 +1,7 @@
 import 'package:ecoville/data/provider/cart_provider.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/models/interactions_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -34,7 +35,7 @@ class LocalCubit extends Cubit<LocalState> {
       await _productProvider.unsaveProduct(id: id);
       final savedProducts = await _productProvider.getSavedProducts();
       emit(state.copyWith(
-        status: LocalStatus.success,
+        status: LocalStatus.updated,
         savedProducts: savedProducts,
       ));
     } catch (error) {
@@ -95,11 +96,28 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
-  Future<void> likeProduct({required LocalProductModel product}) async {
+  Future<void> likeProduct({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
 
-      await _productProvider.likeProduct(product: product);
+      await _productProvider.likeProduct(id: id);
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: "Product added to favourite.",
+      ));
+    } catch (error) {
+      emit(state.copyWith(
+        status: LocalStatus.success,
+        message: error.toString(),
+      ));
+    }
+  }
+
+    Future<void> unlikeProduct({required String id}) async {
+    try {
+      emit(state.copyWith(status: LocalStatus.loading));
+
+      await _productProvider.unlikeProduct(id: id);
       emit(state.copyWith(
         status: LocalStatus.success,
         message: "Product added to favourite.",
@@ -180,10 +198,21 @@ class LocalCubit extends Cubit<LocalState> {
     }
   }
 
+    Future<void> saveProduct({required String productId}) async {
+    emit(state.copyWith(status: LocalStatus.loading));
+    try {
+      await _productProvider.saveProduct(productId: productId);
+      final savedProducts = await _productProvider.getSavedProducts();
+      emit(state.copyWith(
+          status: LocalStatus.updated, savedProducts: savedProducts));
+    } catch (e) {
+      emit(state.copyWith(status: LocalStatus.error, message: e.toString()));
+    }
+  }
+
   Future<void> unSaveProduct({required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
-      await _productProvider.unwatchProduct(id: id);
       await _productProvider.unsaveProduct(id: id);
       await getSavedProduct();
       emit(state.copyWith(
@@ -215,12 +244,12 @@ class LocalCubit extends Cubit<LocalState> {
   }
 
   Future<void> addProductToWishlist(
-      {required LocalProductModel product}) async {
+      {required String id}) async {
     try {
       emit(state.copyWith(status: LocalStatus.loading));
-      await _productProvider.addProductToWishlist(product: product);
+      await _productProvider.addProductToWishlist(id: id);
       emit(state.copyWith(
-        status: LocalStatus.success,
+        status: LocalStatus.updated,
       ));
     } catch (error) {
       emit(state.copyWith(
@@ -235,7 +264,7 @@ class LocalCubit extends Cubit<LocalState> {
       emit(state.copyWith(status: LocalStatus.loading));
       await _cartProvider.addToCart(product: product);
       emit(state.copyWith(
-        status: LocalStatus.success,
+        status: LocalStatus.updated,
       ));
     } catch (error) {
       emit(state.copyWith(
@@ -267,7 +296,7 @@ class LocalCubit extends Cubit<LocalState> {
       await _productProvider.unwatchProduct(id: id);
       await _productProvider.removeFromWishlist(id: id);
       emit(state.copyWith(
-        status: LocalStatus.success,
+        status: LocalStatus.updated,
       ));
     } catch (error) {
       emit(state.copyWith(
@@ -323,14 +352,14 @@ class LocalCubit extends Cubit<LocalState> {
   }
 }
 
-enum LocalStatus { initial, loading,removed, success }
+enum LocalStatus { initial, loading,removed, success, updated, error }
 
 class LocalState {
   final LocalStatus status;
-  final List<LocalProductModel> savedProducts;
+  final List<InteractionsModel> savedProducts;
   final List<LocalProductModel> watchedProducts;
-  final List<LocalProductModel> wishlistProducts;
-  final List<LocalProductModel> likedProducts;
+  final List<InteractionsModel> wishlistProducts;
+  final List<InteractionsModel> likedProducts;
   final List<LocalProductModel> cartItems;
   final List<LocalProductModel> laterCartItems;
   final String message;
@@ -348,10 +377,10 @@ class LocalState {
 
   LocalState copyWith({
     LocalStatus? status,
-    List<LocalProductModel>? savedProducts,
+    List<InteractionsModel>? savedProducts,
     List<LocalProductModel>? watchedProducts,
-    List<LocalProductModel>? wishlistProducts,
-    List<LocalProductModel>? likedProducts,
+    List<InteractionsModel>? wishlistProducts,
+    List<InteractionsModel>? likedProducts,
     List<LocalProductModel>? cartItems,
     List<LocalProductModel>? laterCartItems,
     String? message,

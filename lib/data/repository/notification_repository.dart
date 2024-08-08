@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/repository/app_repository.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/notification_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
@@ -159,9 +161,17 @@ class NotificationRepository extends NotificationTemplate {
   @override
   Future<List<NotificationModel>> getNotifications() async {
     try {
-      final userId = supabase.auth.currentUser!.id;
-      final response = await supabase.from(TABLE_NOTIFICATION).select().eq("userId", userId);
-      return response.map((e) => NotificationModel.fromJson(e)).toList();
+      final response = await Dio().get(
+          "$API_URL/notification",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      final notifications = response.data
+          .map((e) => NotificationModel.fromJson(e))
+          .toList()
+          .cast<NotificationModel>();
+      return notifications;
     } catch (e) {
       debugPrint(e.toString());
       throw Exception("Error getting notifications");

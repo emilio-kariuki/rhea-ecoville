@@ -77,7 +77,7 @@
             <intent-filter android:priority="-500">
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
-            </service>
+        </service>
             <receiver android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy" android:enabled="false" android:exported="false" android:directBootAware="false">
             <intent-filter>
                 <action android:name="android.intent.action.DEVICE_STORAGE_LOW"/>

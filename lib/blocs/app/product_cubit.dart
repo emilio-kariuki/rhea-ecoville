@@ -1,9 +1,11 @@
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/category_model.dart';
+import 'package:ecoville/models/interactions_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/product_request_model.dart';
+import 'package:ecoville/models/recommendation_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 class ProductCubit extends Cubit<ProductState> {
@@ -11,6 +13,7 @@ class ProductCubit extends Cubit<ProductState> {
   ProductCubit() : super(ProductState());
 
   void setLoading() => emit(state.copyWith(status: ProductStatus.loading));
+  void rebuild() => emit(state.copyWith(status: ProductStatus.success));
   void setError(String message) =>
       emit(state.copyWith(status: ProductStatus.success, message: message));
 
@@ -21,6 +24,19 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(
         status: ProductStatus.success,
         products: products,
+      ));
+    } catch (e) {
+      emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
+    }
+  }
+
+  Future<void> getBiddingProducts() async {
+    setLoading();
+    try {
+      final biddingProducts = await _productProvider.getBiddingProducts();
+      emit(state.copyWith(
+        status: ProductStatus.success,
+        biddingProducts: biddingProducts,
       ));
     } catch (e) {
       emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
@@ -189,13 +205,36 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> getSearchResults({required String name}) async {
+  Future<void> getSearchResults({required String query}) async {
     try {
       setLoading();
-      final searchResults = await _productProvider.searchResults(name: name);
+      final searchResults = await _productProvider.searchResults(query: query);
       debugPrint("search results: $searchResults");
       emit(state.copyWith(
           status: ProductStatus.success, searchResults: searchResults));
+    } catch (error) {
+      setError(error.toString());
+    }
+  }
+
+  Future<void> getProductRecommendations({required String query}) async {
+    try {
+      setLoading();
+      final recommendations =
+          await _productProvider.getRecommendations(query: query);
+      emit(state.copyWith(
+          status: ProductStatus.success, recommendations: recommendations));
+    } catch (error) {
+      setError(error.toString());
+    }
+  }
+
+  Future<void> getSellerProducts({required String sellerId}) async {
+    try {
+      setLoading();
+      final sellerProducts = await _productProvider.getProductsBySeller(sellerId: sellerId);
+      emit(state.copyWith(
+          status: ProductStatus.success, sellerProducts: sellerProducts));
     } catch (error) {
       setError(error.toString());
     }
@@ -207,11 +246,14 @@ enum ProductStatus { initial, created, updated, loading, success, error }
 class ProductState {
   final ProductModel? product;
   final List<ProductModel> products;
+  final List<ProductModel> biddingProducts;
   final List<ProductModel> productsNearby;
-  final List<LocalProductModel> savedProducts;
+  final List<InteractionsModel> savedProducts;
   final List<ProductModel> similarProducts;
   final List<ProductModel> searchResults;
   final List<LocalProductModel> watchedProducts;
+  final List<RecommendationModel> recommendations;
+  final List<ProductModel> sellerProducts;
   final List<CategoryModel> categories;
   final ProductStatus status;
   final String message;
@@ -219,12 +261,15 @@ class ProductState {
   ProductState({
     this.product,
     this.products = const <ProductModel>[],
+    this.biddingProducts = const <ProductModel>[],
     this.productsNearby = const <ProductModel>[],
-    this.savedProducts = const <LocalProductModel>[],
+    this.savedProducts = const <InteractionsModel>[],
     this.similarProducts = const <ProductModel>[],
     this.searchResults = const <ProductModel>[],
     this.watchedProducts = const <LocalProductModel>[],
     this.categories = const <CategoryModel>[],
+    this.recommendations = const <RecommendationModel>[],
+    this.sellerProducts = const <ProductModel>[],
     this.status = ProductStatus.initial,
     this.message = '',
   });
@@ -232,24 +277,30 @@ class ProductState {
   ProductState copyWith({
     ProductModel? product,
     List<ProductModel>? products,
+    List<ProductModel>? biddingProducts,
     List<ProductModel>? productsNearby,
-    List<LocalProductModel>? savedProducts,
+    List<InteractionsModel>? savedProducts,
     List<ProductModel>? similarProducts,
     List<ProductModel>? searchResults,
     List<LocalProductModel>? watchedProducts,
     List<CategoryModel>? categories,
+    List<RecommendationModel>? recommendations,
+    List<ProductModel>? sellerProducts,
     ProductStatus? status,
     String? message,
   }) {
     return ProductState(
       product: product ?? this.product,
       products: products ?? this.products,
+      biddingProducts: biddingProducts ?? this.biddingProducts,
       productsNearby: productsNearby ?? this.productsNearby,
       savedProducts: savedProducts ?? this.savedProducts,
       similarProducts: similarProducts ?? this.similarProducts,
       searchResults: searchResults ?? this.searchResults,
       watchedProducts: watchedProducts ?? this.watchedProducts,
       categories: categories ?? this.categories,
+      recommendations: recommendations ?? this.recommendations,
+      sellerProducts: sellerProducts ?? this.sellerProducts,
       status: status ?? this.status,
       message: message ?? this.message,
     );

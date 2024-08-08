@@ -1,11 +1,14 @@
 // ignore_for_file: constant_identifier_names
 
+
 const String APP_NAME = 'Ecoville';
 const String APP_VERSION = '1.0.0';
 const String APP_DESCRIPTION = 'Your Waste is Someone\'s Treasure.';
 const String APP_URL = 'https://ecoville.site';
 const String APP_DEVELOPER = 'Ecoville Team';
-const String APP_DEVELOPER_URL = 'https://ecoville.site';
+const String APP_DEV_URL = 'http://localhost:4003/api';
+const String APP_PROD_URL = 'http://84.247.174.84:4003/api';
+const String API_URL = APP_PROD_URL;
 const String APP_EMAIL = "emiliokariuki0@gmail.com";
 const String APP_PHONE = '+254796250443';
 const String APP_ADDRESS = 'Nairobi, Kenya';

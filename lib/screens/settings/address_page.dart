@@ -34,9 +34,14 @@ class AddressPage extends StatelessWidget {
                 color: black),
           ),
           actions: [
-            IconContainer(
-                icon: AppImages.add,
-                function: () => context.pushNamed(Routes.addAddress)),
+            BlocBuilder<AddressCubit, AddressState>(
+              builder: (context, state) {
+                return
+                state.addresses.isEmpty ? IconContainer(
+                    icon: AppImages.add,
+                    function: () => context.pushNamed(Routes.addAddress)) : Container();
+              },
+            ),
             Gap(1 * SizeConfig.widthMultiplier),
           ],
         ),
@@ -57,10 +62,10 @@ class AddressPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final address = state.addresses[index];
                     return OutlinedButton(
-                      onPressed:  () =>
-                        context.pushNamed(Routes.editAddress, extra: {
-                      "id": address.id,
-                    }),
+                      onPressed: () =>
+                          context.pushNamed(Routes.editAddress, extra: {
+                        "id": address.id,
+                      }),
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.zero,
                         backgroundColor: Colors.transparent,
@@ -83,69 +88,47 @@ class AddressPage extends StatelessWidget {
                                         color: black),
                                   ),
                                   Gap(1 * SizeConfig.widthMultiplier),
-                                 bool.parse(address.primary) ? Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: green,
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Text(
-                                     "Primary",
-                                      style: GoogleFonts.inter(
-                                          fontSize:
-                                              1.2 * SizeConfig.heightMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          color: white),
-                                    ),
-                                  ) : Container(),
                                 ],
                               ),
                               Text(
-                                address.addressLine1,
+                                address.city,
                                 style: GoogleFonts.inter(
-                                    fontSize:
-                                        1.6 * SizeConfig.heightMultiplier,
+                                    fontSize: 1.6 * SizeConfig.heightMultiplier,
                                     fontWeight: FontWeight.w400,
                                     color: black),
                               ),
                               Text(
-                                address.addressLine2,
+                                address.region,
                                 style: GoogleFonts.inter(
-                                    fontSize:
-                                        1.6 * SizeConfig.heightMultiplier,
+                                    fontSize: 1.6 * SizeConfig.heightMultiplier,
                                     fontWeight: FontWeight.w400,
                                     color: black),
                               ),
                               Text(
                                 address.city,
                                 style: GoogleFonts.inter(
-                                    fontSize:
-                                        1.6 * SizeConfig.heightMultiplier,
+                                    fontSize: 1.6 * SizeConfig.heightMultiplier,
                                     fontWeight: FontWeight.w400,
                                     color: black),
                               ),
                               Text(
                                 address.country,
                                 style: GoogleFonts.inter(
-                                    fontSize:
-                                        1.6 * SizeConfig.heightMultiplier,
+                                    fontSize: 1.6 * SizeConfig.heightMultiplier,
                                     fontWeight: FontWeight.w400,
                                     color: black),
                               ),
                               Text(
                                 address.phone,
                                 style: GoogleFonts.inter(
-                                    fontSize:
-                                        1.6 * SizeConfig.heightMultiplier,
+                                    fontSize: 1.6 * SizeConfig.heightMultiplier,
                                     fontWeight: FontWeight.w400,
                                     color: black),
                               ),
                             ],
                           ),
                           const Spacer(),
-                          IconContainer(
-                              icon: AppImages.right, function: () {})
+                          IconContainer(icon: AppImages.right, function: () {})
                         ],
                       ),
                     );

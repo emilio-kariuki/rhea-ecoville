@@ -1,66 +1,51 @@
 // To parse this JSON data, do
 //
-//     final ratingModel = ratingModelFromJson(jsonString);
+//     final feedbackModel = feedbackModelFromJson(jsonString);
 
 import 'dart:convert';
 
-List<RatingModel> ratingModelFromJson(String str) => List<RatingModel>.from(json.decode(str).map((x) => RatingModel.fromJson(x)));
+List<FeedbackModel> feedbackModelFromJson(String str) => List<FeedbackModel>.from(json.decode(str).map((x) => FeedbackModel.fromJson(x)));
 
-String ratingModelToJson(List<RatingModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String feedbackModelToJson(List<FeedbackModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class RatingModel {
+class FeedbackModel {
     final String id;
     final String userId;
-    final String sellerId;
-    final String productId;
-    final double rating;
-    final String review;
+    final String message;
     final DateTime createdAt;
     final DateTime updatedAt;
     final User user;
 
-    RatingModel({
+    FeedbackModel({
         required this.id,
         required this.userId,
-        required this.sellerId,
-        required this.productId,
-        required this.rating,
-        required this.review,
+        required this.message,
         required this.createdAt,
         required this.updatedAt,
         required this.user,
     });
 
-    RatingModel copyWith({
+    FeedbackModel copyWith({
         String? id,
         String? userId,
-        String? sellerId,
-        String? productId,
-        double? rating,
-        String? review,
+        String? message,
         DateTime? createdAt,
         DateTime? updatedAt,
         User? user,
     }) => 
-        RatingModel(
+        FeedbackModel(
             id: id ?? this.id,
             userId: userId ?? this.userId,
-            sellerId: sellerId ?? this.sellerId,
-            productId: productId ?? this.productId,
-            rating: rating ?? this.rating,
-            review: review ?? this.review,
+            message: message ?? this.message,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
             user: user ?? this.user,
         );
 
-    factory RatingModel.fromJson(Map<String, dynamic> json) => RatingModel(
+    factory FeedbackModel.fromJson(Map<String, dynamic> json) => FeedbackModel(
         id: json["id"],
         userId: json["userId"],
-        sellerId: json["sellerId"],
-        productId: json["productId"],
-        rating: json["rating"]?.toDouble(),
-        review: json["review"],
+        message: json["message"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         user: User.fromJson(json["user"]),
@@ -69,10 +54,7 @@ class RatingModel {
     Map<String, dynamic> toJson() => {
         "id": id,
         "userId": userId,
-        "sellerId": sellerId,
-        "productId": productId,
-        "rating": rating,
-        "review": review,
+        "message": message,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
         "user": user.toJson(),

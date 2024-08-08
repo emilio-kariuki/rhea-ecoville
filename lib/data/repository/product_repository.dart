@@ -4,38 +4,57 @@ import 'package:dio/dio.dart';
 import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/provider/location_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/category_model.dart';
+import 'package:ecoville/models/interactions_model.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/product_request_model.dart';
+import 'package:ecoville/models/recommendation_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 abstract class ProductTemplate {
   Future<List<ProductModel>> getProducts();
+  Future<List<ProductModel>> getBiddingProducts();
   Future<ProductModel> getProduct({required String id});
   Future<List<ProductModel>> getProductsByCategory(
       {required String categoryId});
+  Future<List<ProductModel>> getProductsBySeller({required String sellerId});
   Future<List<ProductModel>> getUserProductsPosted();
   Future<bool> createProduct(
       {required ProductRequestModel product, required bool allowBidding});
   Future<bool> updateProduct({required ProductModel product});
   Future<bool> deleteProduct({required String id});
+
+  //* saved products
   Future<bool> saveProduct({required String productId});
-  Future<List<LocalProductModel>> getSavedProducts();
+  Future<List<InteractionsModel>> getSavedProducts();
   Future<bool> unsaveProduct({required String id});
+
+  //* watch product
   Future<bool> watchProduct({required LocalProductModel product});
   Future<bool> unwatchProduct({required String id});
   Future<List<LocalProductModel>> getWatchedProducts();
-  Future<bool> addProductToWishlist({required LocalProductModel product});
-  Future<List<LocalProductModel>> getWishlistProducts();
+
+  //* product wishlist
+  Future<bool> addProductToWishlist({required String id});
+  Future<List<InteractionsModel>> getWishlistProducts();
   Future<bool> removeFromWishlist({required String id});
+
+  //* Nearby products
   Future<List<ProductModel>> getNearbyProducts();
   Future<List<ProductModel>> getSimilarProducts({required String productId});
-  Future<bool> likeProduct({required LocalProductModel product});
-  Future<List<LocalProductModel>> getLikedProducts();
+
+  //* Like products
+  Future<bool> likeProduct({required String id});
   Future<bool> unlikeProduct({required String id});
+  Future<List<InteractionsModel>> getLikedProducts();
+
   Future<List<CategoryModel>> getCategories();
-  Future<List<ProductModel>> searchResults({required String name});
+  Future<List<ProductModel>> searchResults({
+    required String query,
+  });
+  Future<List<RecommendationModel>> getRecommendations({required String query});
 }
 
 class ProductRepository extends ProductTemplate {
@@ -47,11 +66,21 @@ class ProductRepository extends ProductTemplate {
       {required ProductRequestModel product,
       required bool allowBidding}) async {
     try {
-      await supabase.from(TABLE_PRODUCT).insert(product.toJson());
+      logger.d(product.toJson());
+      final request = jsonEncode(product.toJson());
+      final response = await Dio().post("$API_URL/product/create",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
       return true;
     } catch (error) {
       debugPrint(error.toString());
-      throw Exception("Error creating the product, $error");
+      throw Exception("Error getting the products, $error");
     }
   }
 
@@ -83,8 +112,7 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<ProductModel> getProduct({required String id}) async {
     try {
-      final response = await Dio().get(
-          "http://localhost:4003/api/product/get/$id",
+      final response = await Dio().get("$API_URL/product/get/$id",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -104,7 +132,7 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> getProducts() async {
     try {
-      final response = await Dio().get("http://localhost:4003/api/product/get",
+      final response = await Dio().get("$API_URL/product/get",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -140,12 +168,17 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<List<ProductModel>> getUserProductsPosted() async {
     try {
-      final userId = supabase.auth.currentUser!.id;
-      final response = await supabase
-          .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_product_category(*)")
-          .eq('userId', userId);
-      final products = response.map((e) => ProductModel.fromJson(e)).toList();
+      final response = await Dio().get("$API_URL/product/sellerProducts",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      debugPrint(response.data.toString());
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
     } catch (error) {
       debugPrint(error.toString());
@@ -159,7 +192,7 @@ class ProductRepository extends ProductTemplate {
       final data = jsonEncode({
         "productId": productId,
       });
-      final response = await Dio().get("http://localhost:4003/api/likes/add",
+      final response = await Dio().post("$API_URL/saved/add",
           data: data,
           options: Options(headers: {
             "APIKEY": API_KEY,
@@ -178,27 +211,45 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<bool> unsaveProduct({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-
-      await _dbHelper.deleteLocalProduct(
-          db: db, id: id, table: LOCAL_TABLE_PRODUCT_SAVED);
+      final request = jsonEncode({
+        "productId": id,
+      });
+      final response = await Dio().post("$API_URL/saved/remove",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
       return true;
     } catch (e) {
       debugPrint(e.toString());
-      throw Exception("Error saving the product, $e");
+      throw Exception("Error liking the product, $e");
     }
   }
 
   @override
-  Future<List<LocalProductModel>> getSavedProducts() async {
+  Future<List<InteractionsModel>> getSavedProducts() async {
     try {
-      final db = await _dbHelper.init();
-      final savedProducts = await _dbHelper.getUserLocalProducts(
-          db: db, table: LOCAL_TABLE_PRODUCT_SAVED);
-      return savedProducts;
-    } catch (error) {
-      debugPrint(error.toString());
-      throw Exception("Error getting the products, $error");
+      final userId = supabase.auth.currentUser!.id;
+      final response = await Dio().get("$API_URL/saved/user/$userId",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      logger.d(response);
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
+      final List<InteractionsModel> products = (response.data as List)
+          .map((e) => InteractionsModel.fromJson(e))
+          .toList();
+      return products;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
     }
   }
 
@@ -247,7 +298,7 @@ class ProductRepository extends ProductTemplate {
   Future<List<ProductModel>> getNearbyProducts() async {
     try {
       var nearbyProducts = <ProductModel>[];
-      final response = await Dio().get("http://localhost:4003/api/product/get",
+      final response = await Dio().get("$API_URL/product/get",
           options: Options(headers: {
             "APIKEY": API_KEY,
             "user": supabase.auth.currentUser!.id
@@ -260,8 +311,9 @@ class ProductRepository extends ProductTemplate {
       for (var product in products) {
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
-                longitude: product.address!.lon!,
-                latitude: product.address!.lat!,
+                longitude:
+                    double.tryParse(product.address?.lon.toString() ?? "0.0") ?? 0.0,
+                latitude: double.tryParse(product.address?.lat.toString() ?? "0.0") ?? 0.0,
                 radius: NEARBY_RADIUS);
         if (isWithinRange) {
           nearbyProducts.add(product);
@@ -298,51 +350,87 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<bool> addProductToWishlist(
-      {required LocalProductModel product}) async {
+  Future<bool> addProductToWishlist({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-      final savedProducts = await _dbHelper.insertLocalProduct(
-          db: db, product: product, table: LOCAL_TABLE_WISHLIST);
-      return savedProducts;
-    } catch (error) {
-      debugPrint(error.toString());
-      throw Exception("Error inserting the wishlist product, $error");
+      final request = jsonEncode({
+        "productId": id,
+      });
+      final response = await Dio().post("$API_URL/wishlist/add",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
     }
   }
 
   @override
-  Future<List<LocalProductModel>> getWishlistProducts() async {
+  Future<List<InteractionsModel>> getWishlistProducts() async {
     try {
-      final db = await _dbHelper.init();
-      final savedProducts =
-          await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_WISHLIST);
-      return savedProducts;
-    } catch (error) {
-      debugPrint(error.toString());
-      throw Exception("Error getting the wishlist products, $error");
+      final userId = supabase.auth.currentUser!.id;
+      final response = await Dio().get("$API_URL/wishlist/user/$userId",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
+      final List<InteractionsModel> products = (response.data as List)
+          .map((e) => InteractionsModel.fromJson(e))
+          .toList();
+      return products;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
     }
   }
 
   @override
-  Future<List<LocalProductModel>> getLikedProducts() async {
+  Future<List<InteractionsModel>> getLikedProducts() async {
     try {
-      final db = await _dbHelper.init();
-      final savedProducts = await _dbHelper.getUserLocalProducts(
-          db: db, table: LOCAL_TABLE_FAVOURITE);
-      return savedProducts;
-    } catch (error) {
-      debugPrint(error.toString());
-      throw Exception("Error getting the liked products, $error");
+      final userId = supabase.auth.currentUser!.id;
+      final response = await Dio().get("$API_URL/likes/user/$userId",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      logger.d(response);
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
+      final List<InteractionsModel> products = (response.data as List)
+          .map((e) => InteractionsModel.fromJson(e))
+          .toList();
+      return products;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception("Error liking the product, $e");
     }
   }
 
   @override
-  Future<bool> likeProduct({required LocalProductModel product}) async {
+  Future<bool> likeProduct({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-      await _dbHelper.insertLocalProduct(
-          db: db, product: product, table: LOCAL_TABLE_FAVOURITE);
+      final request = jsonEncode({
+        "productId": id,
+      });
+      final response = await Dio().post("$API_URL/likes/add",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -353,10 +441,18 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<bool> unlikeProduct({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-
-      await _dbHelper.deleteLocalProduct(
-          db: db, id: id, table: LOCAL_TABLE_FAVOURITE);
+      final request = jsonEncode({
+        "productId": id,
+      });
+      final response = await Dio().post("$API_URL/likes/remove",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -367,10 +463,18 @@ class ProductRepository extends ProductTemplate {
   @override
   Future<bool> removeFromWishlist({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-
-      await _dbHelper.deleteLocalProduct(
-          db: db, id: id, table: LOCAL_TABLE_WISHLIST);
+      final request = jsonEncode({
+        "productId": id,
+      });
+      final response = await Dio().post("$API_URL/wishlist/remove",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error liking the products, ${response.data}");
+      }
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -387,9 +491,17 @@ class ProductRepository extends ProductTemplate {
       if (localCategory.isNotEmpty) {
         return localCategory.map((e) => CategoryModel.fromJson(e)).toList();
       } else {
-        final response = await supabase.from(TABLE_CATEGORY).select();
-        final categories =
-            response.map((e) => CategoryModel.fromJson(e)).toList();
+        final response = await Dio().get("$API_URL/categories",
+            options: Options(headers: {
+              "APIKEY": API_KEY,
+              "user": supabase.auth.currentUser!.id
+            }));
+        if (response.statusCode != 200) {
+          throw Exception("Error liking the products, ${response.data}");
+        }
+        final List<CategoryModel> categories = (response.data as List)
+            .map((e) => CategoryModel.fromJson(e))
+            .toList();
         categories.forEach((element) async {
           await db.insert(LOCAL_TABLE_CATEGORY, element.toJson());
         });
@@ -402,18 +514,99 @@ class ProductRepository extends ProductTemplate {
   }
 
   @override
-  Future<List<ProductModel>> searchResults({required String name}) async {
+  Future<List<ProductModel>> searchResults({required String query}) async {
     try {
-      final searchResultPage = await supabase
-          .from(TABLE_PRODUCT)
-          .select("ecoville_user(*), *, ecoville_product_category(*)")
-          .eq('sold', false)
-          .ilike("name", '%$name%')
-          .limit(10);
-      return searchResultPage.map((e) => ProductModel.fromJson(e)).toList();
+      final queries = <String, String>{};
+      final parts = query.split('&&');
+      for (var part in parts) {
+        if (part.contains('=')) {
+          final keyValue = part.split('=');
+          if (keyValue.length == 2) {
+            queries[keyValue[0]] = keyValue[1];
+          }
+        } else {
+          queries['name'] = part;
+        }
+      }
+      final response = await Dio().get(
+          "$API_URL/product/get?${Uri(queryParameters: queries).query}",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      return products;
     } catch (error) {
       debugPrint(error.toString());
       throw Exception(error);
+    }
+  }
+
+  @override
+  Future<List<RecommendationModel>> getRecommendations(
+      {required String query}) async {
+    try {
+      final request = jsonEncode({"query": query});
+      final response = await Dio().get("$API_URL/ai/product/recommendations",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<RecommendationModel> products = (response.data as List)
+          .map((e) => RecommendationModel.fromJson(e))
+          .toList();
+      return products;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the recommendations, $error");
+    }
+  }
+
+  @override
+  Future<List<ProductModel>> getProductsBySeller(
+      {required String sellerId}) async {
+    try {
+      final response = await Dio().get("$API_URL/product/sellerProducts",
+          options: Options(headers: {"APIKEY": API_KEY, "user": sellerId}));
+      debugPrint(response.data.toString());
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      final sellerProducts =
+          products.where((element) => element.userId == sellerId).toList();
+      return sellerProducts;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the products, $error");
+    }
+  }
+  
+  @override
+  Future<List<ProductModel>> getBiddingProducts() async{
+    try {
+      final response = await Dio().get("$API_URL/product/get?allowBidding=true",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<ProductModel> products =
+          (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
+      return products;
+    } catch (error) {
+      debugPrint(error.toString());
+      throw Exception("Error getting the products, $error");
     }
   }
 }

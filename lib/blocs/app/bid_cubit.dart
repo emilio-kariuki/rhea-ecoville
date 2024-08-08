@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/provider/bid_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/bid_model.dart';
@@ -7,10 +8,12 @@ class BidCubit extends Cubit<BidState> {
   final _bidProvider = service<BidProvider>();
   BidCubit() : super(BidState());
 
-  Future<void> createBid({required BidModel bid}) async {
+  Future<void> createBid({required String productId, required int price}) async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
-      final bool isCreated = await _bidProvider.createBid(bid: bid);
+      final bool isCreated = await _bidProvider.createBid(
+          productId: productId, price: price
+      );
       if (isCreated) {
         emit(state.copyWith(
             status: BidStatus.success, message: 'Bid created successfully'));
@@ -18,15 +21,17 @@ class BidCubit extends Cubit<BidState> {
         emit(state.copyWith(
             status: BidStatus.error, message: 'Failed to create bid'));
       }
-    } catch (error) {
-      emit(state.copyWith(status: BidStatus.error, message: error.toString()));
+    } on DioException catch (error) {
+      emit(state.copyWith(status: BidStatus.error, message: error.message));
     }
   }
 
-  Future<void> updateBid({required BidModel bid}) async {
+  Future<void> updateBid({required String bidId, required int price}) async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
-      final bool isUpdated = await _bidProvider.updateBid(bid: bid);
+      final bool isUpdated = await _bidProvider.updateBid(
+          bidId: bidId, price: price
+      );
       if (isUpdated) {
         emit(state.copyWith(
             status: BidStatus.success, message: 'Bid updated successfully'));
@@ -35,7 +40,7 @@ class BidCubit extends Cubit<BidState> {
             status: BidStatus.error, message: 'Failed to update bid'));
       }
     } catch (error) {
-      emit(state.copyWith(status: BidStatus.error, message: error.toString()));
+      emit(state.copyWith(status: BidStatus.error, message: error.toString().toException()));
     }
   }
 
@@ -58,7 +63,7 @@ class BidCubit extends Cubit<BidState> {
   Future<void> getProductBids({required String productId}) async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
-      final List<BidModel> bids =
+      final bids =
           await _bidProvider.getProductBids(productId: productId);
       emit(state.copyWith(status: BidStatus.success, bids: bids));
     } catch (error) {
@@ -66,11 +71,11 @@ class BidCubit extends Cubit<BidState> {
     }
   }
 
-  Future<void> getUserBids({required String userId}) async {
+  Future<void> getUserBids() async {
     try {
       emit(state.copyWith(status: BidStatus.loading));
-      final List<BidModel> bids =
-          await _bidProvider.getUserBids(userId: userId);
+      final bids =
+          await _bidProvider.getUserBids();
       emit(state.copyWith(status: BidStatus.success, bids: bids));
     } catch (error) {
       emit(state.copyWith(status: BidStatus.error, message: error.toString()));
@@ -83,8 +88,8 @@ enum BidStatus { initial, loading, success, error }
 class BidState {
   final BidStatus status;
   final String message;
-  final BidModel? bid;
-  final List<BidModel> bids;
+  final BidsModel? bid;
+  final List<BidsModel> bids;
 
   BidState({
     this.status = BidStatus.initial,
@@ -96,8 +101,8 @@ class BidState {
   BidState copyWith({
     BidStatus? status,
     String? message,
-    BidModel? bid,
-    List<BidModel>? bids,
+    BidsModel? bid,
+    List<BidsModel>? bids,
   }) {
     return BidState(
       status: status ?? this.status,

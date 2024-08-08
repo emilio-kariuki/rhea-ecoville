@@ -7,7 +7,7 @@ class AddressProvider extends AddressTemplate {
       : _addressRepository = addressRepository;
 
   @override
-  Future<bool> addAddress({required AddressModel address}) {
+  Future<bool> addAddress({required AddressRequestModel address}) {
     return _addressRepository.addAddress(address: address);
   }
 
@@ -22,8 +22,8 @@ class AddressProvider extends AddressTemplate {
   }
 
   @override
-  Future<bool> updateAddress({required AddressModel address}) {
-    return _addressRepository.updateAddress(address: address);
+  Future<bool> updateAddress({required AddressRequestModel address, required String id}) {
+    return _addressRepository.updateAddress(address: address, id: id);
   }
   
   @override

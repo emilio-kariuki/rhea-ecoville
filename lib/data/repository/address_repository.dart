@@ -1,36 +1,60 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/address_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 abstract class AddressTemplate {
-  Future<bool> addAddress({required AddressModel address});
+  Future<bool> addAddress({required AddressRequestModel address});
   Future<bool> removeAddress({required String id});
   Future<List<AddressModel>> getAddresses();
   Future<AddressModel?> getAddressById({required String id});
-  Future<bool> updateAddress({required AddressModel address});
+  Future<bool> updateAddress({required AddressRequestModel address,required String id});
 }
 
 class AddressRepository extends AddressTemplate {
   final _dbHelper = service<DatabaseHelper>();
   @override
-  Future<bool> addAddress({required AddressModel address}) async {
-    try {
-      final db = await _dbHelper.init();
-      final result = await db.insert(LOCAL_TABLE_ADDRESS, address.toJson());
-      return result > 0;
+  Future<bool> addAddress({required AddressRequestModel address}) async {
+   try {
+    logger.d("Address: ${address.toJson()}");
+      final request = jsonEncode(address.toJson());
+      final response = await Dio().post(
+          "$API_URL/address/create",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+        logger.d("Response: ${response.data}");
+      if (response.statusCode != 200) {
+        throw Exception("Error creating the address, ${response.data}");
+      }
+      return true;
     } catch (error) {
       debugPrint(error.toString());
-      return false;
+      throw Exception("Error getting the products, $error");
     }
   }
 
   @override
   Future<List<AddressModel>> getAddresses() async {
     try {
-      final db = await _dbHelper.init();
-      final result = await db.query(LOCAL_TABLE_ADDRESS);
-      return result.map((e) => AddressModel.fromJson(e)).toList();
+     final response = await Dio().get(
+          "$API_URL/address/get",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error creating the address, ${response.data}");
+      }
+      final List<AddressModel> addresses =
+          (response.data as List).map((e) => AddressModel.fromJson(e)).toList();
+      return addresses;
     } catch (error) {
       debugPrint(error.toString());
       return [];
@@ -40,8 +64,17 @@ class AddressRepository extends AddressTemplate {
   @override
   Future<bool> removeAddress({required String id}) async {
     try {
-      final db = await _dbHelper.init();
-      await db.delete(LOCAL_TABLE_ADDRESS, where: 'id = ?', whereArgs: [id]);
+      final response = await Dio().delete(
+          "$API_URL/address/delete/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+          logger.d("Response: ${response.data}");
+      if (response.statusCode != 200) {
+        throw Exception("Error deleting the address, ${response.data}");
+      }
+
       return true;
     } catch (error) {
       debugPrint(error.toString());
@@ -50,12 +83,20 @@ class AddressRepository extends AddressTemplate {
   }
 
   @override
-  Future<bool> updateAddress({required AddressModel address}) async {
+  Future<bool> updateAddress({required AddressRequestModel address, required String id}) async {
     try {
-      final db = await _dbHelper.init();
-      final result = await db.update(LOCAL_TABLE_ADDRESS, address.toJson(),
-          where: 'id = ?', whereArgs: [address.id]);
-      return result > 0;
+      final request = jsonEncode(address.toJson());
+      final response = await Dio().put(
+          "$API_URL/address/update/$id",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error updating the address, ${response.data}");
+      }
+      return true;
     } catch (error) {
       debugPrint(error.toString());
       return false;
@@ -65,12 +106,17 @@ class AddressRepository extends AddressTemplate {
   @override
   Future<AddressModel?> getAddressById({required String id}) async{
     try {
-      final db = await _dbHelper.init();
-      final result = await db.query(LOCAL_TABLE_ADDRESS, where: 'id = ?', whereArgs: [id]);
-      if (result.isNotEmpty) {
-        return AddressModel.fromJson(result.first);
+      final response = await Dio().get(
+          "$API_URL/address/get/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the address, ${response.data}");
       }
-      return null;
+      final AddressModel address = AddressModel.fromJson(response.data);
+      return address;
     } catch (error) {
       debugPrint(error.toString());
       return null;

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ecoville/data/provider/app_provider.dart';
+import 'package:ecoville/data/repository/feedback_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/search_model.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -107,6 +108,17 @@ class AppCubit extends Cubit<AppState> {
       emit(state.copyWith(status: AppStatus.success, message: "Image picked"));
     } catch (error) {
       setError(error.toString());
+    }
+  }
+
+  void addFeedback({required String message}) async {
+    try {
+      setLoading();
+      await FeedbackRepository().addFeedback(message: message);
+      emit(state.copyWith(
+          status: AppStatus.success, message: "Feedback has been added"));
+    } catch (e) {
+      setError(e.toString());
     }
   }
 }

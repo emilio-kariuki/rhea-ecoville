@@ -16,7 +16,7 @@ class LocalProductModel {
   final String name;
   final String image;
   final String userId;
-  final double startingPrice;
+  final dynamic startingPrice;
 
   LocalProductModel({
     required this.id,
@@ -31,7 +31,7 @@ class LocalProductModel {
     String? name,
     String? image,
     String? userId,
-    double? startingPrice,
+    dynamic startingPrice,
   }) =>
       LocalProductModel(
         id: id ?? this.id,

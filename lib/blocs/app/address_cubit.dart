@@ -7,7 +7,7 @@ class AddressCubit extends Cubit<AddressState> {
   final _addressProvider = service<AddressProvider>();
   AddressCubit() : super(AddressState());
 
-  Future<void> addAddress({required AddressModel address}) async {
+  Future<void> addAddress({required AddressRequestModel address}) async {
     emit(state.copyWith(status: AddressStatus.loading));
     try {
       final result = await _addressProvider.addAddress(address: address);
@@ -51,10 +51,10 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  Future<void> updateAddress({required AddressModel address}) async {
+  Future<void> updateAddress({required AddressRequestModel address, required String id}) async {
     emit(state.copyWith(status: AddressStatus.loading));
     try {
-      final result = await _addressProvider.updateAddress(address: address);
+      final result = await _addressProvider.updateAddress(address: address, id: id);
       if (result) {
         final addresses = await _addressProvider.getAddresses();
         emit(state.copyWith(
@@ -76,6 +76,17 @@ class AddressCubit extends Cubit<AddressState> {
       final address = await _addressProvider.getAddressById(id: id);
       emit(state.copyWith(
           status: AddressStatus.success, selectedAddress: address));
+    } catch (e) {
+      emit(state.copyWith(status: AddressStatus.error, message: e.toString()));
+    }
+  }
+  Future<void> deleteAddressById({required String id}) async {
+    emit(state.copyWith(status: AddressStatus.loading));
+    try {
+      await _addressProvider.removeAddress(id: id);
+      await getAddresses();
+      emit(state.copyWith(
+          status: AddressStatus.success, ));
     } catch (e) {
       emit(state.copyWith(status: AddressStatus.error, message: e.toString()));
     }

@@ -19,16 +19,22 @@ class ProductModel {
     final int? quantity;
     final bool? allowBidding;
     final bool? sold;
-    final double? price;
+    final dynamic price;
+    final dynamic biddingPrice;
     final int? likes;
-    final bool? isLiked;
-    final bool? isWishlisted;
-    final bool? isSaved;
+    final bool isLiked;
+    final bool isWishlisted;
+    final bool isSaved;
     final String? condition;
     final DateTime? createdAt;
     final DateTime? updatedAt;
+    final DateTime? startBidding;
+    final DateTime? endBidding;
+    final String? biddingStatus;
     final User? user;
+    final String? highestBidder;
     final Category? category;
+    final List<Bid>? bids;
 
     ProductModel({
         required this.id,
@@ -42,15 +48,21 @@ class ProductModel {
         this.allowBidding,
         this.sold,
         this.price,
+        this.biddingPrice,
         this.likes,
-        this.isLiked,
-        this.isWishlisted,
-        this.isSaved,
+        required this.isLiked,
+        required this.isWishlisted,
+        required this.isSaved,
         this.condition,
         this.createdAt,
         this.updatedAt,
         this.user,
         this.category,
+        this.startBidding,
+        this.endBidding,
+        this.biddingStatus,
+        this.bids,
+        this.highestBidder,
     });
 
     ProductModel copyWith({
@@ -64,7 +76,8 @@ class ProductModel {
         int? quantity,
         bool? allowBidding,
         bool? sold,
-        double? price,
+        dynamic price,
+        dynamic biddingPrice,
         int? likes,
         bool? isLiked,
         bool? isWishlisted,
@@ -74,6 +87,11 @@ class ProductModel {
         DateTime? updatedAt,
         User? user,
         Category? category,
+        DateTime? startBidding,
+        DateTime? endBidding,
+        String? biddingStatus,
+        List<Bid>? bids,
+        String? highestBidder,
     }) => 
         ProductModel(
             id: id ?? this.id,
@@ -87,6 +105,7 @@ class ProductModel {
             allowBidding: allowBidding ?? this.allowBidding,
             sold: sold ?? this.sold,
             price: price ?? this.price,
+            biddingPrice: biddingPrice ?? this.biddingPrice,
             likes: likes ?? this.likes,
             isLiked: isLiked ?? this.isLiked,
             isWishlisted: isWishlisted ?? this.isWishlisted,
@@ -96,6 +115,11 @@ class ProductModel {
             updatedAt: updatedAt ?? this.updatedAt,
             user: user ?? this.user,
             category: category ?? this.category,
+            startBidding: startBidding ?? this.startBidding,
+            endBidding: endBidding ?? this.endBidding,
+            biddingStatus: biddingStatus ?? this.biddingStatus,
+            bids: bids ?? this.bids,
+            highestBidder: highestBidder ?? this.highestBidder,
         );
 
     factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -109,7 +133,8 @@ class ProductModel {
         quantity: json["quantity"],
         allowBidding: json["allowBidding"],
         sold: json["sold"],
-        price: json["price"]?.toDouble(),
+        price: json["price"],
+        biddingPrice: json["biddingPrice"],
         likes: json["likes"],
         isLiked: json["isLiked"],
         isWishlisted: json["isWishlisted"],
@@ -119,13 +144,18 @@ class ProductModel {
         updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
         user: json["user"] == null ? null : User.fromJson(json["user"]),
         category: json["category"] == null ? null : Category.fromJson(json["category"]),
+        startBidding: json["startBidding"] == null ? null : DateTime.parse(json["startBidding"]),
+        endBidding: json["endBidding"] == null ? null : DateTime.parse(json["endBidding"]),
+        biddingStatus: json["biddingStatus"],
+        bids: json["bids"] == null ? null : List<Bid>.from(json["bids"].map((x) => Bid.fromJson(x))),
+        highestBidder: json["highestBidder"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "description": description,
-        "image": image == null ? [] : List<dynamic>.from(image!.map((x) => x)),
+        "image": image == null ? [] : List<dynamic>.from(image.map((x) => x)),
         "address": address?.toJson(),
         "userId": userId,
         "categoryId": categoryId,
@@ -133,6 +163,7 @@ class ProductModel {
         "allowBidding": allowBidding,
         "sold": sold,
         "price": price,
+        "biddingPrice": biddingPrice,
         "likes": likes,
         "isLiked": isLiked,
         "isWishlisted": isWishlisted,
@@ -142,12 +173,76 @@ class ProductModel {
         "updatedAt": updatedAt?.toIso8601String(),
         "user": user?.toJson(),
         "category": category?.toJson(),
+        "startBidding": startBidding?.toIso8601String(),
+        "endBidding": endBidding?.toIso8601String(),
+        "biddingStatus": biddingStatus,
+        "bids": bids == null ? null : List<dynamic>.from(bids!.map((x) => x.toJson())),
     };
 }
 
+
+
+List<Bid> bidFromJson(String str) => List<Bid>.from(json.decode(str).map((x) => Bid.fromJson(x)));
+
+String bidToJson(List<Bid> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class Bid {
+    final String id;
+    final String productId;
+    final String userId;
+    final int price;
+    final DateTime createdAt;
+    final DateTime updatedAt;
+
+    Bid({
+        required this.id,
+        required this.productId,
+        required this.userId,
+        required this.price,
+        required this.createdAt,
+        required this.updatedAt,
+    });
+
+    Bid copyWith({
+        String? id,
+        String? productId,
+        String? userId,
+        int? price,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+    }) => 
+        Bid(
+            id: id ?? this.id,
+            productId: productId ?? this.productId,
+            userId: userId ?? this.userId,
+            price: price ?? this.price,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+        );
+
+    factory Bid.fromJson(Map<String, dynamic> json) => Bid(
+        id: json["id"],
+        productId: json["productId"],
+        userId: json["userId"],
+        price: json["price"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "productId": productId,
+        "userId": userId,
+        "price": price,
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+    };
+}
+
+
 class Address {
-    final double? lon;
-    final double? lat;
+    final dynamic lon;
+    final dynamic lat;
     final String? city;
     final String? country;
 
@@ -159,8 +254,8 @@ class Address {
     });
 
     Address copyWith({
-        double? lon,
-        double? lat,
+        dynamic lon,
+        dynamic lat,
         String? city,
         String? country,
     }) => 
@@ -172,8 +267,8 @@ class Address {
         );
 
     factory Address.fromJson(Map<String, dynamic> json) => Address(
-        lon: json["lon"]?.toDouble(),
-        lat: json["lat"]?.toDouble(),
+        lon: json["lon"],
+        lat: json["lat"],
         city: json["city"],
         country: json["country"],
     );
@@ -338,3 +433,4 @@ class Rating {
         "shipping": shipping,
     };
 }
+

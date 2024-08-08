@@ -1,120 +1,136 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:ecoville/data/provider/product_provider.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/bid_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 
 abstract class BidTemplate {
-  Future<bool> createBid({required BidModel bid});
-  Future<bool> updateBid({required BidModel bid});
+  Future<bool> createBid({required String productId, required int price});
+  Future<bool> updateBid({required String bidId, required int price});
   Future<bool> deleteBid({required String id});
-  Future<List<BidModel>> getProductBids({required String productId});
-  Future<List<BidModel>> getUserBids({required String userId});
+  Future<List<BidsModel>> getProductBids({required String productId});
+  Future<List<BidsModel>> getUserBids();
 }
 
 class BidRepository extends BidTemplate {
   final _productProvider = service<ProductProvider>();
   @override
-  Future<bool> createBid({required BidModel bid}) async {
-    try {
-      final product = await _productProvider.getProduct(id: bid.productId);
-      if (product.allowBidding!) {
-        if (product.price! < bid.price) {
-          await supabase.from(TABLE_BIDDING).insert([
-            {
-              'id': bid.id,
-              'productId': bid.productId,
-              'userId': bid.userId,
-              'price': bid.price,
-              'created_at': DateTime.now().toIso8601String(),
-              'updated_at': DateTime.now().toIso8601String(),
-            }
-          ]);
-          await supabase
-              .from(TABLE_PRODUCT)
-              .update({"currentPrice": bid.price}).eq("id", bid.productId);
-        } else {
-          throw Exception('Bid must be higher than current price');
-        }
-      } else {
-        throw Exception("Bids cannot be placed at this placement");
-      }
+  Future<bool> createBid({required String productId, required int price}) async {
+      try {
 
+      final request = jsonEncode({
+        "productId": productId,
+        "price": price,
+      });
+      final response = await Dio().post(
+          "$API_URL/bid/create",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id,
+            "email": supabase.auth.currentUser!.email,
+          }));
+        logger.d(response.data);
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
       return true;
     } catch (error) {
-      debugPrint("Error creating bid: $error");
-      throw Exception("Error creating bid: $error");
+      debugPrint(error.toString());
+      throw DioException(
+          requestOptions: RequestOptions(path: "$API_URL/bid/create"),
+          response: Response(
+              requestOptions: RequestOptions(path: "$API_URL/bid/create"),
+              statusCode: 500,
+              data: error.toString())
+      );
     }
   }
 
-  @override
-  Future<bool> updateBid({required BidModel bid}) async {
-    try {
-      final product = await _productProvider.getProduct(id: bid.productId);
-      if (product.allowBidding!) {
-        if (product.price! < bid.price) {
-          await supabase.from(TABLE_BIDDING).update({
-            'productId': bid.productId,
-            'userId': bid.userId,
-            'price': bid.price,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          }).eq("id", bid.id);
-          await supabase
-              .from(TABLE_PRODUCT)
-              .update({"currentPrice": bid.price}).eq("id", bid.productId);
-        } else {
-          throw Exception('Bid must be higher than current price');
-        }
-      } else {
-        throw Exception("Bids cannot be placed at this placement");
-      }
 
+  @override
+  Future<bool> updateBid({required String bidId, required int price}) async {
+    try {
+      final request = jsonEncode({
+        "price": price,
+      });
+      final response = await Dio().put(
+          "$API_URL/bid/update/$bidId",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
       return true;
     } catch (error) {
-      debugPrint("Error updating bid: $error");
-      throw Exception("Error updating bid: $error");
+      debugPrint(error.toString());
+      throw Exception(error);
     }
   }
 
   @override
   Future<bool> deleteBid({required String id}) async {
     try {
-      await supabase.from(TABLE_BIDDING).delete().eq('id', id);
+      final response = await Dio().delete(
+          "$API_URL/bid/delete/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
       return true;
     } catch (error) {
-      debugPrint("Error deleting bid: $error");
-      throw Exception("Error deleting bid: $error");
+      debugPrint(error.toString());
+      throw Exception("Error updating the bid, $error");
     }
   }
 
   @override
-  Future<List<BidModel>> getProductBids({required String productId}) async {
-    try {
-      final response = await supabase
-          .from(TABLE_BIDDING)
-          .select(
-            "ecoville_user(*), ecoville_product(*), *",
-          )
-          .eq('productId', productId)
-          .order("price", ascending: false);
-      debugPrint("Bids are: $response");
-      final bids = response.map((e) => BidModel.fromJson(e)).toList();
+  Future<List<BidsModel>> getProductBids({required String productId}) async {
+     try {
+      final response = await Dio().get(
+          "$API_URL/bid/product/$productId",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+          }));
+      logger.d(response.data);
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<BidsModel> bids =
+          (response.data as List).map((e) => BidsModel.fromJson(e)).toList();
       return bids;
     } catch (error) {
-      debugPrint("Error fetching bids: $error");
-      throw Exception("Error fetching bids: $error");
+      debugPrint(error.toString());
+      throw Exception("Error updating the bid, $error");
     }
   }
 
   @override
-  Future<List<BidModel>> getUserBids({required String userId}) async {
+  Future<List<BidsModel>> getUserBids() async {
     try {
-      final bids =
-          await supabase.from(TABLE_BIDDING).select("ecoville_product(*),ecoville_user(*), *").eq('userId', userId);
-      return bids.map((e) => BidModel.fromJson(e)).toList();
+      final response = await Dio().put(
+          "$API_URL/bid/userbids",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id,
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final List<BidsModel> bids = response.data.map((e) => BidsModel.fromJson(e)).toList();
+      return bids;
     } catch (error) {
-      debugPrint("Error fetching user bids: $error");
-      throw Exception("Error fetching user bids: $error");
+      debugPrint(error.toString());
+      throw Exception("Error updating the bid, $error");
     }
   }
   

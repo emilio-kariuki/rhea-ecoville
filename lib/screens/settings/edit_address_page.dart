@@ -15,15 +15,17 @@ class EditAddressPage extends StatelessWidget {
 
   TextEditingController _phoneController = TextEditingController();
 
-  TextEditingController _addressLine1Controller = TextEditingController();
+  TextEditingController _altPhoneController = TextEditingController();
 
-  TextEditingController _addressLine2Controller = TextEditingController();
+  TextEditingController _regionController = TextEditingController();
 
   TextEditingController _cityController = TextEditingController();
 
   TextEditingController _countryController = TextEditingController();
 
-  TextEditingController _postalCodeController = TextEditingController();
+  TextEditingController _informationController = TextEditingController();
+
+  TextEditingController _addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -38,12 +40,13 @@ class EditAddressPage extends StatelessWidget {
           debugPrint("Selected address: ${state.selectedAddress!.toJson()}");
           _nameController.text = state.selectedAddress!.name;
           _phoneController.text = state.selectedAddress!.phone;
-          _addressLine1Controller.text = state.selectedAddress!.addressLine1;
-          _addressLine2Controller.text = state.selectedAddress!.addressLine2;
+          _regionController.text = state.selectedAddress!.region;
+          _altPhoneController.text = state.selectedAddress!.altPhone;
           _cityController.text = state.selectedAddress!.city;
           _countryController.text = state.selectedAddress!.country;
-          _postalCodeController.text = state.selectedAddress!.postalCode;
-          _isDefault = bool.parse(state.selectedAddress!.primary);
+          _informationController.text =
+              state.selectedAddress!.additionalInformation;
+          _addressController.text = state.selectedAddress!.address;
         }
       },
       builder: (context, state) {
@@ -75,21 +78,36 @@ class EditAddressPage extends StatelessWidget {
             ),
             actions: [
               GestureDetector(
+                onTap: () {
+                  context.read<AddressCubit>().removeAddress(id: id);
+                  context.pop();
+                },
+                child: Text(
+                  "delete",
+                  style: GoogleFonts.inter(
+                    fontSize: 1.7 * SizeConfig.textMultiplier,
+                    color: red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Gap(3 * SizeConfig.widthMultiplier),
+              GestureDetector(
                 onTap: () async {
-                  var uuid = Uuid();
                   if (_formKey.currentState?.validate() ?? false) {
                     context.read<AddressCubit>().updateAddress(
-                          address: AddressModel(
-                            id: id,
+                          address: AddressRequestModel(
                             name: _nameController.text,
-                            addressLine1: _addressLine1Controller.text,
-                            addressLine2: _addressLine2Controller.text,
+                            email: supabase.auth.currentUser!.email!,
+                            region: _regionController.text,
+                            altPhone: _altPhoneController.text,
                             city: _cityController.text,
                             country: _countryController.text,
-                            postalCode: _postalCodeController.text,
                             phone: _phoneController.text,
-                            primary: _isDefault.toString().toLowerCase(),
+                            additionalInformation: _informationController.text,
+                            address: _addressController.text,
                           ),
+                          id: id,
                         );
                     context.pop();
                   }
@@ -132,28 +150,14 @@ class EditAddressPage extends StatelessWidget {
                         _formKey.currentState?.validate();
                         return null;
                       },
-                      controller: _addressLine1Controller,
+                      controller: _regionController,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Address line 1 is required";
+                          return "Region required";
                         }
                         return null;
                       },
-                      hintText: "Address Line 1"),
-                  Gap(1.5 * SizeConfig.heightMultiplier),
-                  InputField(
-                      onChanged: (value) {
-                        _formKey.currentState?.validate();
-                        return null;
-                      },
-                      controller: _addressLine2Controller,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Address line 2 is required";
-                        }
-                        return null;
-                      },
-                      hintText: "Address Line 2"),
+                      hintText: "Region"),
                   Gap(1.5 * SizeConfig.heightMultiplier),
                   InputField(
                       onChanged: (value) {
@@ -174,20 +178,6 @@ class EditAddressPage extends StatelessWidget {
                         _formKey.currentState?.validate();
                         return null;
                       },
-                      controller: _postalCodeController,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Zip code is required";
-                        }
-                        return null;
-                      },
-                      hintText: "Zip Code"),
-                  Gap(1.5 * SizeConfig.heightMultiplier),
-                  InputField(
-                      onChanged: (value) {
-                        _formKey.currentState?.validate();
-                        return null;
-                      },
                       controller: _phoneController,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -197,61 +187,66 @@ class EditAddressPage extends StatelessWidget {
                       },
                       hintText: "Phone"),
                   Gap(1.5 * SizeConfig.heightMultiplier),
-                  BlocProvider(
-                    create: (context) => BoolCubit(),
-                    child: BlocConsumer<BoolCubit, BoolState>(
-                      listener: (context, state) {
-                        if (state.status == BoolStatus.changed) {
-                          _isDefault = state.value;
+                  InputField(
+                      onChanged: (value) {
+                        _formKey.currentState?.validate();
+                        return null;
+                      },
+                      controller: _altPhoneController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Alt Phone required";
                         }
+                        return null;
                       },
-                      builder: (context, state) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Checkbox(
-                                visualDensity: const VisualDensity(
-                                    horizontal: -4, vertical: -4),
-                                side: BorderSide(width: 1, color: darkGrey),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                value: _isDefault,
-                                activeColor: green,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                                onChanged: (value) {
-                                  context
-                                      .read<BoolCubit>()
-                                      .changeValue(value: value!);
-                                }),
-                            Gap(
-                              0.3 * SizeConfig.heightMultiplier,
-                            ),
-                            GestureDetector(
-                              onTap: () => context
-                                  .read<BoolCubit>()
-                                  .changeValue(
-                                      value: !context
-                                          .read<BoolCubit>()
-                                          .state
-                                          .value),
-                              child: Text(
-                                "Set as default address",
-                                style: TextStyle(
-                                  fontSize: 1.6 * SizeConfig.textMultiplier,
-                                  fontWeight: FontWeight.w500,
-                                  color: darkGrey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
+                      hintText: "Alt Phone"),
+                  Gap(1.5 * SizeConfig.heightMultiplier),
+                  InputField(
+                      onChanged: (value) {
+                        _formKey.currentState?.validate();
+                        return null;
                       },
-                    ),
-                  )
+                      controller: _countryController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Country is required";
+                        }
+                        return null;
+                      },
+                      hintText: "Country"),
+                  Gap(1.5 * SizeConfig.heightMultiplier),
+                  InputField(
+                      maxLines: 5,
+                      minLines: 3,
+                      onChanged: (value) {
+                        _formKey.currentState?.validate();
+                        return null;
+                      },
+                      controller: _informationController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Additional Information required";
+                        }
+                        return null;
+                      },
+                      hintText: "Additional Information"),
+                  Gap(1.5 * SizeConfig.heightMultiplier),
+                  InputField(
+                      maxLines: 5,
+                      minLines: 3,
+                      onChanged: (value) {
+                        _formKey.currentState?.validate();
+                        return null;
+                      },
+                      controller: _addressController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Address is required";
+                        }
+                        return null;
+                      },
+                      hintText: "Your Address"),
+                  Gap(1.5 * SizeConfig.heightMultiplier),
                 ],
               ),
             ),
