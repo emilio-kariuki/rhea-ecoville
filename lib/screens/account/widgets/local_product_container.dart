@@ -55,7 +55,7 @@ class LocalProductContainer extends StatelessWidget {
                   ),
                   Gap(0.8 * SizeConfig.heightMultiplier),
                   Text(
-                    "\$${price}",
+                    "Ksh ${price}",
                     style: GoogleFonts.inter(
                         color: black,
                         fontSize: 2.2 * SizeConfig.textMultiplier,

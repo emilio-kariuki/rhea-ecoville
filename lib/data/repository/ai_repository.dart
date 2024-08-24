@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:ecoville/main.dart';
 import 'package:ecoville/models/title_description_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class AiTemplate {
   Future<TitleDescriptionModel> generateTitleAndDescription(
@@ -29,7 +30,11 @@ class AiRepository extends AiTemplate {
       }
       final generation = TitleDescriptionModel.fromJson(response.data);
       return generation;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       logger.e(error);
       throw Exception(error);
     }

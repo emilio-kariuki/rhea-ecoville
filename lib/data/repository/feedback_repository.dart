@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class FeedbackTemplate {
   Future<bool> addFeedback({required String message});
@@ -27,7 +28,11 @@ class FeedbackRepository extends FeedbackTemplate {
         throw Exception("Error adding the feedback, ${response.data}");
       }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       throw Exception(e);
     }
   }

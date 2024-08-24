@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:ecoville/data/provider/product_provider.dart';
-import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/main.dart';
 import 'package:ecoville/models/bid_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class BidTemplate {
   Future<bool> createBid({required String productId, required int price});
@@ -16,7 +15,6 @@ abstract class BidTemplate {
 }
 
 class BidRepository extends BidTemplate {
-  final _productProvider = service<ProductProvider>();
   @override
   Future<bool> createBid({required String productId, required int price}) async {
       try {
@@ -37,8 +35,16 @@ class BidRepository extends BidTemplate {
       if (response.statusCode != 200) {
         throw Exception("Error getting the products, ${response.data}");
       }
+      analytics.logEvent(name: "create_bid", parameters: {
+        "productId": productId,
+        "price": price,
+      });
       return true;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw DioException(
           requestOptions: RequestOptions(path: "$API_URL/bid/create"),
@@ -68,7 +74,11 @@ class BidRepository extends BidTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception(error);
     }
@@ -87,7 +97,11 @@ class BidRepository extends BidTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error updating the bid, $error");
     }
@@ -108,7 +122,11 @@ class BidRepository extends BidTemplate {
       final List<BidsModel> bids =
           (response.data as List).map((e) => BidsModel.fromJson(e)).toList();
       return bids;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error updating the bid, $error");
     }
@@ -128,7 +146,11 @@ class BidRepository extends BidTemplate {
       }
       final List<BidsModel> bids = response.data.map((e) => BidsModel.fromJson(e)).toList();
       return bids;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error updating the bid, $error");
     }

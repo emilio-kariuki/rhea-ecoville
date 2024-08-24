@@ -1,8 +1,6 @@
 import 'package:ecoville/blocs/app/address_cubit.dart';
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/orders_cubit.dart';
-import 'package:ecoville/blocs/app/payment_cubit.dart';
-import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/page_cubit.dart';
 import 'package:ecoville/models/order_request_model.dart';
 import 'package:ecoville/shared/complete_button.dart';
@@ -25,8 +23,8 @@ class CheckoutPage extends StatelessWidget {
     },
   ];
 
-  final _phoneController = TextEditingController(text: "254");
   final _formKey = GlobalKey<FormState>();
+  final _quantityController = TextEditingController(text: '1');
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +150,9 @@ class CheckoutPage extends StatelessWidget {
                                               .createOrder(
                                                   order: OrderRequestModel(
                                                       productId: product.id,
-                                                      quantity: 1,
+                                                      quantity: int.parse(
+                                                          _quantityController
+                                                              .text),
                                                       price:
                                                           (totalAmount + (0.05 * totalAmount) + 129.00)
                                                               .toInt()));
@@ -272,20 +272,80 @@ class CheckoutPage extends StatelessWidget {
                                                 CrossAxisAlignment.start,
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Text(
-                                                "Quantity: 1",
-                                                style: GoogleFonts.inter(
-                                                    fontSize: 1.3 *
-                                                        SizeConfig
-                                                            .heightMultiplier,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.grey[500]),
+                                              // Text(
+                                              //   "Quantity: 1",
+                                              //   style: GoogleFonts.inter(
+                                              //       fontSize: 1.3 *
+                                              //           SizeConfig
+                                              //               .heightMultiplier,
+                                              //       fontWeight: FontWeight.w500,
+                                              //       color: Colors.grey[500]),
+                                              // ),
+                                              SizedBox(
+                                                width: size.width * 0.3,
+                                                child: TextFormField(
+                                                  controller: _quantityController,
+                                                  onChanged: (value) {
+                                                    _formKey.currentState!
+                                                        .validate();
+                                                    return null;
+                                                  },
+                                                  validator: (value) {
+                                                    if (value!.isEmpty) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              "Quantity is required"),
+                                                        ),
+                                                      );
+                                                      return "Quantity is required";
+                                                    }
+                                                    else if (int.parse(value) < 1) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              "Quantity is invalid"),
+                                                        ),
+                                                      );
+                                                      return "Quantity is invalid";
+                                                    }
+                                                    else if (int.parse(value) >
+                                                        int.parse(product
+                                                            .available)) {
+                                                     ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              "Quantity is more than available"),
+                                                        ),
+                                                      );
+                                                      return "Quantity is more than available";
+                                                    }
+                                                    return null;
+                                                  },
+                                                  keyboardType: TextInputType.number,
+                                                  decoration: InputDecoration(
+                                                    hintText: "Quantity",
+                                                    hintStyle: GoogleFonts.inter(
+                                                        fontSize: 1.5 *
+                                                            SizeConfig
+                                                                .heightMultiplier,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Colors.grey[500]),
+                                                  )
+                                                ),
                                               ),
-                                              Gap(0.35 *
-                                                  MediaQuery.of(context)
-                                                      .size
-                                                      .width),
-                                              // GestureDetector(
+                                              // Gap(0.35 *
+                                              //     MediaQuery.of(context)
+                                              //         .size
+                                              //         .width),
+                                              // // GestureDetector(
                                               //   onTap: () {
                                               //     context
                                               //         .read<LocalCubit>()
@@ -305,13 +365,16 @@ class CheckoutPage extends StatelessWidget {
                                             ],
                                           ),
                                           Gap(1 * SizeConfig.heightMultiplier),
-                                          Text(
-                                            "Free returns",
-                                            style: GoogleFonts.inter(
-                                                fontSize: 1.5 *
-                                                    SizeConfig.heightMultiplier,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.grey[500]),
+                                          SizedBox(
+                                            width: size.width * 0.6,
+                                            child: Text(
+                                              "You will be charged KES 129.00 delivery fee for returnable items if the ",
+                                              style: GoogleFonts.inter(
+                                                  fontSize: 1.5 *
+                                                      SizeConfig.heightMultiplier,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.grey[500]),
+                                            ),
                                           ),
                                           Gap(1 * SizeConfig.heightMultiplier),
                                           Text(
@@ -547,7 +610,7 @@ class CheckoutPage extends StatelessWidget {
                               BlocBuilder<PageCubit, PageState>(
                                 builder: (context, state) {
                                   return Text(
-                                    "Kes 150.00",
+                                    "Kes 129.00",
                                     style: GoogleFonts.inter(
                                         fontSize:
                                             1.6 * SizeConfig.heightMultiplier,
@@ -586,7 +649,7 @@ class CheckoutPage extends StatelessWidget {
                                     current.page != previous.page,
                                 builder: (context, state) {
                                   return Text(
-                                    "Kes ${(totalAmount + 200.00 + (0.05 * totalAmount)).toStringAsFixed(2)}",
+                                    "Kes ${(totalAmount + 129.00 + (0.05 * totalAmount)).toStringAsFixed(2)}",
                                     style: GoogleFonts.inter(
                                         fontSize:
                                             1.8 * SizeConfig.heightMultiplier,

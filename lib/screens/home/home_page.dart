@@ -1,9 +1,9 @@
-
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
 import 'package:ecoville/data/repository/socket_repository.dart';
 import 'package:ecoville/screens/account/widgets/local_product_container.dart';
+import 'package:ecoville/shared/complete_button.dart';
 import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
@@ -267,7 +267,6 @@ class RecentItems extends StatelessWidget {
   }
 }
 
-
 class BiddingItems extends StatelessWidget {
   const BiddingItems({
     super.key,
@@ -278,7 +277,8 @@ class BiddingItems extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
 
     return BlocBuilder<ProductCubit, ProductState>(
-      buildWhen: (previous, current) => previous.biddingProducts != current.biddingProducts,
+      buildWhen: (previous, current) =>
+          previous.biddingProducts != current.biddingProducts,
       builder: (context, state) {
         return state.status == ProductStatus.loading
             ? const ProductListShimmer()
@@ -302,8 +302,9 @@ class BiddingItems extends StatelessWidget {
                           itemBuilder: (context, index) => Padding(
                             padding: EdgeInsets.only(
                               left: index == 0 ? 10 : 0,
-                              right:
-                                  index == (state.biddingProducts.length - 1) ? 10 : 0,
+                              right: index == (state.biddingProducts.length - 1)
+                                  ? 10
+                                  : 0,
                             ),
                             child: ProductContainer(
                               key: UniqueKey(),
@@ -419,9 +420,9 @@ class WatchedItems extends StatelessWidget {
                             ),
                             child: LocalProductContainer(
                               productId: state.watchedProducts[index].id,
-                                image: state.watchedProducts[index].image[0],
-                                name: state.watchedProducts[index].name,
-                                price: state.watchedProducts[index].startingPrice,
+                              image: state.watchedProducts[index].image[0],
+                              name: state.watchedProducts[index].name,
+                              price: state.watchedProducts[index].startingPrice,
                             ),
                           ),
                           separatorBuilder: (context, index) =>
@@ -481,13 +482,17 @@ class EcovilleCategories extends StatelessWidget {
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
                                   childAspectRatio: 0.9),
                           itemBuilder: (context, index) {
                             return GestureDetector(
-                              onTap: ()=>context.push(Routes.searchResults,
-                          extra: {'controller': TextEditingController(text: "&&category=${state.categories[index].id}")}),
+                              onTap: () =>
+                                  context.push(Routes.searchResults, extra: {
+                                'controller': TextEditingController(
+                                    text:
+                                        "&&category=${state.categories[index].id}")
+                              }),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -496,13 +501,18 @@ class EcovilleCategories extends StatelessWidget {
                                     isCirlce: true,
                                     height: size.width * 0.23,
                                     width: size.width,
+                                    border: Border.all(
+                                        color: green,
+                                        width:
+                                            0.1 * SizeConfig.widthMultiplier),
                                   ),
                                   Gap(0.3 * SizeConfig.heightMultiplier),
                                   Text(
                                     state.categories[index].name,
                                     style: GoogleFonts.inter(
                                         color: black,
-                                        fontSize: 1.5 * SizeConfig.textMultiplier,
+                                        fontSize:
+                                            1.5 * SizeConfig.textMultiplier,
                                         fontWeight: FontWeight.w500),
                                   ),
                                 ],

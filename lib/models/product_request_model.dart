@@ -100,6 +100,6 @@ class ProductRequestModel {
         "address": address.toJson(),
         "allowBidding": allowBidding,
         "quantity": quantity,
-        "endBidding": endBidding.toIso8601String(),
+        "endBidding": endBiddingd,
       };
 }

@@ -75,6 +75,18 @@ class OrderCubit extends Cubit<OrderState> {
       emit(state.copyWith(status: OrderStatus.error, message: e.toString()));
     }
   }
+   void returnOrder({required OrderModel order}) async {
+    emit(state.copyWith(status: OrderStatus.loading));
+    try {
+      final response = await OrderRepository().returnOrder(order: order);
+      if (response) {
+        getUserOrders();
+        emit(state.copyWith(status: OrderStatus.updated));
+      }
+    } catch (e) {
+      emit(state.copyWith(status: OrderStatus.error, message: e.toString()));
+    }
+  }
 
   void createOrder({required OrderRequestModel order}) async {
     emit(state.copyWith(status: OrderStatus.loading));

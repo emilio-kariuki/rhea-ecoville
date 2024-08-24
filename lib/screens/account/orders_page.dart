@@ -1,3 +1,4 @@
+import 'package:ecoville/blocs/app/app_cubit.dart';
 import 'package:ecoville/blocs/app/orders_cubit.dart';
 import 'package:ecoville/blocs/app/rating_cubit.dart';
 import 'package:ecoville/models/order_model.dart';
@@ -14,123 +15,140 @@ class OrdersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => OrderCubit(),
-      child: Scaffold(
-          backgroundColor: white,
-          appBar: AppBar(
-            elevation: 0,
+      child: Builder(builder: (context) {
+        return Scaffold(
             backgroundColor: white,
-            surfaceTintColor: white,
-            automaticallyImplyLeading: false,
-            centerTitle: false,
-            leading: Padding(
-              padding: const EdgeInsets.all(13),
-              child: GestureDetector(
-                  onTap: () => context.pop(),
-                  child: SvgPicture.asset(
-                    AppImages.back,
-                    color: black,
-                    height: 2.5 * SizeConfig.heightMultiplier,
-                  )),
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: white,
+              surfaceTintColor: white,
+              automaticallyImplyLeading: false,
+              centerTitle: false,
+              leading: Padding(
+                padding: const EdgeInsets.all(13),
+                child: GestureDetector(
+                    onTap: () => context.pop(),
+                    child: SvgPicture.asset(
+                      AppImages.back,
+                      color: black,
+                      height: 2.5 * SizeConfig.heightMultiplier,
+                    )),
+              ),
+              title: Text(
+                "Orders",
+                style: GoogleFonts.inter(
+                    fontSize: 2.2 * SizeConfig.heightMultiplier,
+                    fontWeight: FontWeight.w600,
+                    color: black),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.all(13),
+                  child: GestureDetector(
+                      onTap: () => context.read<OrderCubit>().getUserOrders(),
+                      child: SvgPicture.asset(
+                        AppImages.refresh,
+                        color: black,
+                        height: 2.5 * SizeConfig.heightMultiplier,
+                      )),
+                ),
+              ],
             ),
-            title: Text(
-              "Orders",
-              style: GoogleFonts.inter(
-                  fontSize: 2.2 * SizeConfig.heightMultiplier,
-                  fontWeight: FontWeight.w600,
-                  color: black),
-            ),
-          ),
-          body: RefreshIndicator(
-            onRefresh: () async {
-              context.read<OrderCubit>().getUserOrders();
-              return Future.delayed(const Duration(seconds: 1));
-            },
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Builder(builder: (context) {
-                  return BlocConsumer<OrderCubit, OrderState>(
-                    buildWhen: (previous, current) =>
-                        previous.orders != current.orders,
-                    bloc: context.read<OrderCubit>()..getUserOrders(),
-                    listener: (context, state) {
-                      if (state.status == OrderStatus.error) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.message),
-                          ),
-                        );
-                      }
+            body: RefreshIndicator(
+              onRefresh: () async {
+                context.read<OrderCubit>().getUserOrders();
+                return Future.delayed(const Duration(seconds: 1));
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Builder(builder: (context) {
+                    return BlocConsumer<OrderCubit, OrderState>(
+                      buildWhen: (previous, current) =>
+                          previous.orders != current.orders,
+                      bloc: context.read<OrderCubit>()..getUserOrders(),
+                      listener: (context, state) {
+                        if (state.status == OrderStatus.error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.message),
+                            ),
+                          );
+                        }
 
-                      if (state.status == OrderStatus.updated) {
-                        context.read<OrderCubit>().getUserOrders();
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state.status == OrderStatus.loading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state.status == OrderStatus.loaded) {
-                        return state.orders.isEmpty
-                            ? SizedBox(
-                                height: 80 * SizeConfig.heightMultiplier,
-                                child: Center(
+                        if (state.status == OrderStatus.updated) {
+                          context.read<OrderCubit>().getUserOrders();
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state.status == OrderStatus.loading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state.status == OrderStatus.loaded) {
+                          return state.orders.isEmpty
+                              ? SizedBox(
+                                  height: 80 * SizeConfig.heightMultiplier,
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppImages.watch,
+                                          height:
+                                              20 * SizeConfig.heightMultiplier,
+                                        ),
+                                        Gap(1 * SizeConfig.heightMultiplier),
+                                        Text(
+                                          "Your Orders are empty",
+                                          style: GoogleFonts.inter(
+                                            fontSize:
+                                                2.2 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w600,
+                                            color: black,
+                                          ),
+                                        ),
+                                        Text(
+                                          "You have not placed any orders yet",
+                                          style: GoogleFonts.inter(
+                                            fontSize:
+                                                1.6 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w400,
+                                            color: darkGrey,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : RefreshIndicator(
+                                  onRefresh: () async {
+                                    context.read<OrderCubit>().getUserOrders();
+                                  },
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      SvgPicture.asset(
-                                        AppImages.watch,
-                                        height:
-                                            20 * SizeConfig.heightMultiplier,
-                                      ),
-                                      Gap(1 * SizeConfig.heightMultiplier),
-                                      Text(
-                                        "Your Orders are empty",
-                                        style: GoogleFonts.inter(
-                                          fontSize:
-                                              2.2 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          color: black,
+                                      for (var order in state.orders)
+                                        Column(
+                                          children: [
+                                            OrderTile(order: order),
+                                            Gap(1 *
+                                                SizeConfig.heightMultiplier),
+                                          ],
                                         ),
-                                      ),
-                                      Text(
-                                        "You have not placed any orders yet",
-                                        style: GoogleFonts.inter(
-                                          fontSize:
-                                              1.6 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w400,
-                                          color: darkGrey,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
                                     ],
                                   ),
-                                ),
-                              )
-                            : RefreshIndicator(
-                                onRefresh: () async {
-                                  context.read<OrderCubit>().getUserOrders();
-                                },
-                                child: Column(
-                                  children: [
-                                    for (var order in state.orders)
-                                      Column(
-                                        children: [
-                                          OrderTile(order: order),
-                                          Gap(1 * SizeConfig.heightMultiplier),
-                                        ],
-                                      ),
-                                  ],
-                                ),
-                              );
-                      } else {
-                        return const Center(child: Text("No orders found"));
-                      }
-                    },
-                  );
-                }),
+                                );
+                        } else {
+                          return const Center(child: Text("No orders found"));
+                        }
+                      },
+                    );
+                  }),
+                ),
               ),
-            ),
-          )),
+            ));
+      }),
     );
   }
 }
@@ -209,13 +227,15 @@ class OrderTile extends StatelessWidget {
                           ? Colors.pink.withOpacity(0.2)
                           : order.status == "delivered & paid"
                               ? Colors.green.withOpacity(0.2)
-                              : order.status == "cancelled"
-                                  ? Colors.red.withOpacity(0.2)
-                                  : order.status == "shipped"
-                                      ? Colors.blue.withOpacity(0.2)
-                                      : order.status == 'completed'
-                                          ? Colors.purple.withOpacity(0.2)
-                                          : Colors.black.withOpacity(0.2),
+                              : order.status == "delivered & notpaid"
+                                  ? Colors.green.withOpacity(0.5)
+                                  : order.status == "cancelled"
+                                      ? Colors.red.withOpacity(0.2)
+                                      : order.status == "shipped"
+                                          ? Colors.blue.withOpacity(0.2)
+                                          : order.status == 'completed'
+                                              ? Colors.purple.withOpacity(0.2)
+                                              : Colors.red.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Text(
@@ -229,13 +249,15 @@ class OrderTile extends StatelessWidget {
                             ? Colors.pink
                             : order.status == "delivered & paid"
                                 ? Colors.green
-                                : order.status == "cancelled"
-                                    ? Colors.red
-                                    : order.status == "shipped"
-                                        ? Colors.blue
-                                        : order.status == 'completed'
-                                            ? Colors.purple
-                                            : Colors.black,
+                                : order.status == "delivered & notpaid"
+                                    ? const Color.fromARGB(255, 30, 71, 31)
+                                    : order.status == "cancelled"
+                                        ? Colors.red
+                                        : order.status == "shipped"
+                                            ? Colors.blue
+                                            : order.status == 'completed'
+                                                ? Colors.purple
+                                                : Colors.red,
                   ),
                 ),
               ),
@@ -297,7 +319,7 @@ class OrderTile extends StatelessWidget {
                       color: black),
                 ),
                 Text(
-                  "Delivery Fee: Ksh ${150}",
+                  "Delivery Fee: Ksh ${129}",
                   style: GoogleFonts.inter(
                       fontSize: 1.4 * SizeConfig.textMultiplier,
                       fontWeight: FontWeight.w500,
@@ -435,6 +457,72 @@ class OrderTile extends StatelessWidget {
               ),
             ),
 
+          //return button
+          if (order.status == "returned")
+            Column(
+              children: [
+                BlocProvider(
+                  create: (context) => AppCubit(),
+                  child: Builder(builder: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: GestureDetector(
+                        onTap: () => context
+                            .read<AppCubit>()
+                            .launchPhone("+254796250443"),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.green.withOpacity(0.2),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Call for more details",
+                              style: GoogleFonts.inter(
+                                fontSize: 1.5 * SizeConfig.textMultiplier,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      context.read<OrderCubit>().confirmOrder(order: order);
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Colors.purple.withOpacity(0.2),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Cancel return request",
+                          style: GoogleFonts.inter(
+                            fontSize: 1.5 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.purple,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
           // confirm button
           if (order.status == "delivered & paid")
             Padding(
@@ -498,7 +586,7 @@ class OrderTile extends StatelessWidget {
                               context.read<OrderCubit>().payOrder(
                                   orderId: order.id,
                                   phone: _phoneController.text,
-                                  amount: order.totalPrice.toInt());
+                                  amount: order.totalPrice);
                             }
                           },
                           child: Container(
@@ -531,126 +619,173 @@ class OrderTile extends StatelessWidget {
             ),
 
           if (order.status == "completed")
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: GestureDetector(
-                onTap: () => showModalBottomSheet(
-                    clipBehavior: Clip.antiAlias,
-                    backgroundColor: white,
-                    isScrollControlled: true,
-                    barrierColor: Colors.black.withOpacity(0.6),
-                    elevation: 5,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(27.25),
-                            topRight: Radius.circular(27.25))),
-                    context: context,
-                    builder: (context) {
-                      final _reviewController = TextEditingController();
-                      final _ratingController = TextEditingController();
-                      return Container(
-                        padding: const EdgeInsets.all(15),
-                        child: IntrinsicHeight(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Product Review",
-                                style: GoogleFonts.inter(
-                                    fontSize: 2.2 * SizeConfig.heightMultiplier,
-                                    fontWeight: FontWeight.w600,
-                                    color: black),
-                              ),
-                              Gap(2 * SizeConfig.heightMultiplier),
-                              InputField(
-                                controller: _reviewController,
-                                maxLines: 5,
-                                minLines: 3,
-                                hintText: "Type your review here",
-                                validator: (p0) {
-                                  return null;
-                                },
-                              ),
-                              Gap(1 * SizeConfig.heightMultiplier),
-                              InputField(
-                                controller: _ratingController,
-                                textInputType: TextInputType.number,
-                                hintText: "Type your rating here",
-                                validator: (p0) {
-                                  return null;
-                                },
-                              ),
-                              Gap(2 * SizeConfig.heightMultiplier),
-                              BlocProvider(
-                                create: (context) => RatingCubit(),
-                                child: BlocConsumer<RatingCubit, RatingState>(
-                                  listener: (context, state) {
-                                    if (state.status == RatingStatus.success) {
-                                      context.pop();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(state.message),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  builder: (context, state) {
-                                    return CompleteButton(
-                                      function: () {
-                                        if (_reviewController.text.isNotEmpty) {
-                                          context.read<RatingCubit>().addRating(
-                                              productId: order.productId,
-                                              review: _reviewController.text,
-                                              rating: double.parse(
-                                                  _ratingController.text),
-                                              sellerId: order.product.userId);
-                                        }
+            Column(
+              children: [
+                if (!order.reviewed)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: GestureDetector(
+                      onTap: () => showModalBottomSheet(
+                          clipBehavior: Clip.antiAlias,
+                          backgroundColor: white,
+                          isScrollControlled: true,
+                          barrierColor: Colors.black.withOpacity(0.6),
+                          elevation: 5,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(27.25),
+                                  topRight: Radius.circular(27.25))),
+                          context: context,
+                          builder: (context) {
+                            final reviewController = TextEditingController();
+                            final ratingController = TextEditingController();
+                            return Container(
+                              padding: const EdgeInsets.all(15),
+                              child: IntrinsicHeight(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Product Review",
+                                      style: GoogleFonts.inter(
+                                          fontSize:
+                                              2.2 * SizeConfig.heightMultiplier,
+                                          fontWeight: FontWeight.w600,
+                                          color: black),
+                                    ),
+                                    Gap(2 * SizeConfig.heightMultiplier),
+                                    InputField(
+                                      controller: reviewController,
+                                      maxLines: 5,
+                                      minLines: 3,
+                                      hintText: "Type your review here",
+                                      validator: (p0) {
+                                        return null;
                                       },
-                                      isLoading:
-                                          state.status == RatingStatus.loading,
-                                      text: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 20),
-                                        child: Text(
-                                          "Add Rating",
-                                          style: GoogleFonts.inter(
-                                              fontSize: 1.8 *
-                                                  SizeConfig.heightMultiplier,
-                                              fontWeight: FontWeight.w600,
-                                              color: white),
-                                        ),
+                                    ),
+                                    Gap(1 * SizeConfig.heightMultiplier),
+                                    InputField(
+                                      controller: ratingController,
+                                      textInputType: TextInputType.number,
+                                      hintText: "Type your rating here",
+                                      validator: (p0) {
+                                        return null;
+                                      },
+                                    ),
+                                    Gap(2 * SizeConfig.heightMultiplier),
+                                    BlocProvider(
+                                      create: (context) => RatingCubit(),
+                                      child: BlocConsumer<RatingCubit,
+                                          RatingState>(
+                                        listener: (context, state) {
+                                          if (state.status ==
+                                              RatingStatus.success) {
+                                            context.pop();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(state.message),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        builder: (context, state) {
+                                          return CompleteButton(
+                                            function: () {
+                                              if (reviewController
+                                                  .text.isNotEmpty) {
+                                                context
+                                                    .read<RatingCubit>()
+                                                    .addRating(
+                                                        productId:
+                                                            order.productId,
+                                                        review: reviewController
+                                                            .text,
+                                                        rating: double.parse(
+                                                            ratingController
+                                                                .text),
+                                                        orderId: order.id,
+                                                        sellerId: order
+                                                            .product.userId);
+                                              }
+                                            },
+                                            isLoading: state.status ==
+                                                RatingStatus.loading,
+                                            text: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5,
+                                                      horizontal: 20),
+                                              child: Text(
+                                                "Add Rating",
+                                                style: GoogleFonts.inter(
+                                                    fontSize: 1.8 *
+                                                        SizeConfig
+                                                            .heightMultiplier,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: white),
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    );
-                                  },
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            );
+                          }),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Colors.purple.withOpacity(0.2),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Add Review",
+                            style: GoogleFonts.inter(
+                              fontSize: 1.5 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.purple,
+                            ),
                           ),
                         ),
-                      );
-                    }),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Colors.purple.withOpacity(0.2),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Add Review",
-                      style: GoogleFonts.inter(
-                        fontSize: 1.5 * SizeConfig.textMultiplier,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.purple,
                       ),
                     ),
                   ),
-                ),
-              ),
+                if (DateTime.now().difference(order.updatedAt).inDays < 2)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<OrderCubit>().returnOrder(order: order);
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Colors.green.withOpacity(0.2),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Return Item",
+                            style: GoogleFonts.inter(
+                              fontSize: 1.5 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           Gap(1 * SizeConfig.heightMultiplier),
           Text(

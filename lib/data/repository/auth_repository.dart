@@ -1,12 +1,12 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:ecoville/data/provider/notification_provider.dart';
 import 'package:ecoville/data/provider/user_provider.dart';
 import 'package:ecoville/data/repository/user_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class AuthTemplate {
   Future<bool> isSignedIn();
@@ -41,6 +41,13 @@ class AuthRepository extends AuthTemplate {
     if (user == null) {
       return false;
     }
+
+    FirebaseAnalytics.instance
+      ..setUserProperty(
+        name: 'email',
+        value: user.email!,
+      )
+      ..setUserId(id: user.id);
     await Posthog().identify(userId: user.id, userPropertiesSetOnce: {
       'email': user.email!,
       'avatar_url': user.userMetadata?['avatar_url'] ?? AppImages.defaultImage,
@@ -74,17 +81,21 @@ class AuthRepository extends AuthTemplate {
 
       await _userService.createUser(
         user: UserModel(
-          id: response.user!.id,
-          name: response.user!.userMetadata?['full_name'],
-          email: response.user!.email!,
-          image: response.user!.userMetadata?['avatar_url'],
-          token: token,
-          role: 'user'
-        ),
+            id: response.user!.id,
+            name: response.user!.userMetadata?['full_name'],
+            email: response.user!.email!,
+            image: response.user!.userMetadata?['avatar_url'],
+            token: token,
+            role: 'user'),
       );
-
+      analytics.logSignUp(signUpMethod: 'Google');
+      analytics.logLogin();
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception(e.toString());
     }
@@ -95,8 +106,13 @@ class AuthRepository extends AuthTemplate {
     try {
       await supabase.auth.signOut();
       await googleSignIn.signOut();
+      
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       return false;
     }
@@ -125,8 +141,13 @@ class AuthRepository extends AuthTemplate {
         image: AppImages.defaultImage,
         token: token,
       ));
+      analytics.logSignUp(signUpMethod: 'email');
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       return false;
     }
@@ -136,12 +157,19 @@ class AuthRepository extends AuthTemplate {
   Future<bool> resetPassword({required String email}) async {
     try {
       await supabase.auth.resetPasswordForEmail(email);
+
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       return false;
     }
   }
+
+  
 
   @override
   Future<bool> signInWithEmailPassword({
@@ -150,8 +178,13 @@ class AuthRepository extends AuthTemplate {
   }) async {
     try {
       await supabase.auth.signInWithPassword(password: password, email: email);
+      analytics.logSignUp(signUpMethod: 'email');
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       return false;
     }

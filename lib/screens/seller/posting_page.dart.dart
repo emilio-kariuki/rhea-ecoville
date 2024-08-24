@@ -214,8 +214,12 @@ class _PostingPageState extends State<PostingPage> {
                                                     ),
                                                     Positioned.fill(
                                                       child: GestureDetector(
-                                                        onTap: () => images
-                                                            .removeAt(index),
+                                                        onTap: () {
+                                                          
+                                                         setState(() {
+                                                           images.removeAt(index);
+                                                         });
+                                                        },
                                                         child: Container(
                                                           padding:
                                                               const EdgeInsets

@@ -10,6 +10,7 @@ class LocationCubit extends Cubit<LocationState> {
     emit(state.copyWith(status: LocationStatus.loading));
     try {
       final position = await _locationProvider.getCurrentLocation();
+      
       emit(state.copyWith(
         status: LocationStatus.success,
         position: position,

@@ -5,6 +5,7 @@ import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/main.dart';
 import 'package:ecoville/models/user_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class UserTemplate {
   Future<bool> createUser({required UserModel user});
@@ -41,7 +42,11 @@ class UserRepository extends UserTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       return false;
     }
@@ -64,7 +69,11 @@ class UserRepository extends UserTemplate {
       final user = UserModel.fromJson(response.data);
       logger.d("user role: ${user.toJson()}");
       return user;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error getting user');
     }
@@ -87,7 +96,11 @@ class UserRepository extends UserTemplate {
       }
       final updatedUser = UserModel.fromJson(response.data);
       return updatedUser;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error updating user');
     }
@@ -103,14 +116,27 @@ class UserRepository extends UserTemplate {
 
   @override
   Future<UserModel> getUserById({required String id}) async {
-    debugPrint('Getting user by id');
-    try {
-      final response = await supabase.from(TABLE_USERS).select().eq('id', id);
-      final user = UserModel.fromJson(response.first);
+   try {
+      final response = await Dio().get(
+          "$API_URL/user/get/$id",
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": id
+          }));
+         
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      final user = UserModel.fromJson(response.data);
+      logger.d("user role: ${user.toJson()}");
       return user;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
-      throw Exception('Error getting user by id');
+      throw Exception('Error getting user');
     }
   }
   

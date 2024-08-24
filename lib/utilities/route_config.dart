@@ -8,6 +8,7 @@ import 'package:ecoville/screens/home/map_page.dart';
 import 'package:ecoville/screens/messages/chat_page.dart';
 import 'package:ecoville/screens/messages/messages_page.dart';
 import 'package:ecoville/screens/search/search_result_page.dart';
+import 'package:ecoville/screens/seller/edit_product_page.dart';
 import 'package:ecoville/screens/seller/posting_page.dart.dart';
 import 'package:ecoville/screens/settings/add_address_page.dart';
 import 'package:ecoville/screens/settings/address_page.dart';
@@ -384,6 +385,19 @@ final GoRouter appRouter = GoRouter(
                     return null;
                   },
                   builder: (context, state) => PostingPage(),
+                ),
+                 GoRoute(
+                  path: 'edit/:id',
+                  redirect: (context, state) {
+                    final user = supabase.auth.currentUser;
+                    if (user == null) {
+                      return '/welcome';
+                    }
+                    return null;
+                  },
+                  builder: (context, state) =>EditProductPage(
+                    id: state.pathParameters['id']!,
+                  ),
                 )
               ]),
         ],

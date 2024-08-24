@@ -7,6 +7,7 @@ import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/search_model.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:flutter/services.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class AppTemplate {
   Future<File> pickImage({required ImageSource source});
@@ -44,7 +45,11 @@ class AppRepository extends AppTemplate {
         quality: 40,
       );
       return File(result!.path);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error compressing image');
     }
@@ -66,7 +71,11 @@ class AppRepository extends AppTemplate {
     try {
       final emailUrl = 'mailto:$email';
       await launchUrl(Uri.parse(emailUrl));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint('Error launching broswer $e');
     }
   }
@@ -81,7 +90,11 @@ class AppRepository extends AppTemplate {
           //     'google.navigation:q=Taronga+Zoo,+Sydney+Australia&avoid=tf'),
           package: 'com.google.android.apps.maps');
       intent.launch();
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint('Error launching broswer $e');
     }
   }
@@ -90,8 +103,12 @@ class AppRepository extends AppTemplate {
   Future<void> launchPhone({required String phone}) async {
     try {
       final phoneUrl = 'tel:$phone';
-      await launchUrl(Uri.parse(phoneUrl));
-    } catch (e) {
+       await launchUrl(Uri.parse(phoneUrl));
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint('Error launching broswer $e');
     }
   }
@@ -111,7 +128,11 @@ class AppRepository extends AppTemplate {
   Future<void> launchSms({required String phone, required String text}) async {
     try {
       await launchSms(phone: phone, text: text);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint('Error launching Sms $e');
     }
   }
@@ -125,7 +146,11 @@ class AppRepository extends AppTemplate {
         browserUrl,
         mode: LaunchMode.externalApplication,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint('Error launching broswer $e');
     }
   }
@@ -135,7 +160,11 @@ class AppRepository extends AppTemplate {
       {required String phone, required String text}) async {
     try {
       await launchWhatsApp(phone: phone, text: text);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint('Error launching whatsapp $e');
     }
   }
@@ -148,7 +177,11 @@ class AppRepository extends AppTemplate {
       );
       final file = await compressImage(image: File(pickedFile!.path));
       return file;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error picking image');
     }
@@ -173,7 +206,11 @@ class AppRepository extends AppTemplate {
       final url = supabase.storage.from('ecoville').getPublicUrl(imageKey);
       debugPrint("The image has been inserted");
       return url;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error uploading image');
     }
@@ -201,7 +238,11 @@ class AppRepository extends AppTemplate {
       final db = await _dbHelper.init();
       final searches = await db.query(LOCAL_TABLE_SEARCH);
       return searches.map((e) => SearchModel.fromJson(e)).toList();
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error getting search list');
     }
@@ -213,7 +254,11 @@ class AppRepository extends AppTemplate {
       final db = await _dbHelper.init();
       await db.delete(LOCAL_TABLE_SEARCH);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error getting search list');
     }
@@ -225,7 +270,11 @@ class AppRepository extends AppTemplate {
       final db = await _dbHelper.init();
       db.insert(LOCAL_TABLE_SEARCH, {'id': const Uuid().v4(), 'name': name});
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception('Error inserting search');
     }

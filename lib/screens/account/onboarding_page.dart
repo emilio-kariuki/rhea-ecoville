@@ -21,9 +21,9 @@ class OnboardingPage extends StatelessWidget {
       "image": AppImages.products,
     },
     {
-      "title": "Talk to the seller directly in chat",
+      "title": "Manage your orders",
       "description":
-          "Start a conversation with the seller and get more information about the product.",
+          "Manage your orders and get the product delivered to your doorstep.",
       "image": AppImages.messages_1,
     },
     {

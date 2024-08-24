@@ -46,7 +46,20 @@
             android:value="false" />
         <meta-data
             android:name="firebase_analytics_collection_enabled"
-            android:value="false" />
+            android:value="true" />
+        <meta-data
+            android:name="com.posthog.posthog.API_KEY" 
+            android:value="phc_lKAYTeRFNVGXfF8P4MDEZJhaFXY2uPa4KJGiOJGivdy" />
+        <meta-data 
+            android:name="com.posthog.posthog.POSTHOG_HOST" 
+            android:value="https://us.i.posthog.com" />
+        <meta-data 
+            android:name="com.posthog.posthog.TRACK_APPLICATION_LIFECYCLE_EVENTS" 
+            android:value="true" />
+        <meta-data 
+            android:name="com.posthog.posthog.DEBUG" 
+            android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -112,10 +125,6 @@
         <meta-data
             android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/provider_paths"/>
-        <meta-data android:name="com.posthog.posthog.API_KEY" android:value="phc_dzenEWvS3a24U3HQnwYkMyp8YjgCUEF3Q1030jPK3ln" />
-        <meta-data android:name="com.posthog.posthog.POSTHOG_HOST" android:value="https://us.i.posthog.com" />  <!-- usually 'https://us.i.posthog.com' or 'https://eu.i.posthog.com' -->
-        <meta-data android:name="com.posthog.posthog.TRACK_APPLICATION_LIFECYCLE_EVENTS" android:value="true" />
-        <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
         </provider>
     </application>
     

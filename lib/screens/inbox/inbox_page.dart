@@ -70,9 +70,9 @@ class _InboxPageState extends State<InboxPage> {
                 );
               },
             ),
-            IconContainer(
-                icon: AppImages.more,
-                function: () => context.push(Routes.cart)),
+            // IconContainer(
+            //     icon: AppImages.more,
+            //     function: () => context.push(Routes.cart)),
             Gap(1 * SizeConfig.widthMultiplier),
           ],
         ),

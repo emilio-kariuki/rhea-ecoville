@@ -41,15 +41,15 @@ class _SearchPageState extends State<SearchPage> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                      color: Colors.grey[600],
-                    )),
+                // GestureDetector(
+                //     onTap: () {
+                //       Navigator.pop(context);
+                //     },
+                //     child: Icon(
+                //       Icons.arrow_back,
+                //       size: 20,
+                //       color: Colors.grey[600],
+                //     )),
                 Gap(1 * SizeConfig.widthMultiplier),
                 Expanded(
                   child: TextFormField(

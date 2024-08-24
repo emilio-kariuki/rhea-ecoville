@@ -81,12 +81,7 @@ class _AdminPageState extends State<AdminPage> {
       if (response.statusCode != 200) {
         throw Exception('Failed to initiate payment');
       }
-      Future.delayed(const Duration(seconds: 5), () {
-        context.showSuccessToast(
-          title: "Success",
-          message: "Payment processed successfully",
-          context: context);
-      });
+      
     } catch (e) {
       print('Error initiating payment: $e');
     } finally {

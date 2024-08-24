@@ -11,6 +11,7 @@ class RatingCubit extends Cubit<RatingState> {
       {required String productId,
       required String review,
       required String sellerId,
+      required String orderId,
       required double rating}) async {
     try {
       emit(state.copyWith(status: RatingStatus.loading));
@@ -18,6 +19,7 @@ class RatingCubit extends Cubit<RatingState> {
           productId: productId,
           review: review,
           rating: rating,
+          orderId: orderId,
           sellerId: sellerId);
       emit(state.copyWith(
           message: "Rating added successfully", status: RatingStatus.success));

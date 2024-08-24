@@ -15,6 +15,7 @@ class LocalProductModel {
   final String id;
   final String name;
   final String image;
+  final String available;
   final String userId;
   final dynamic startingPrice;
 
@@ -22,6 +23,7 @@ class LocalProductModel {
     required this.id,
     required this.name,
     required this.image,
+    required this.available,
     required this.userId,
     required this.startingPrice,
   });
@@ -30,6 +32,7 @@ class LocalProductModel {
     String? id,
     String? name,
     String? image,
+    String? available,
     String? userId,
     dynamic startingPrice,
   }) =>
@@ -37,6 +40,7 @@ class LocalProductModel {
         id: id ?? this.id,
         name: name ?? this.name,
         image: image ?? this.image,
+        available: available ?? this.available,
         userId: userId ?? this.userId,
         startingPrice: startingPrice ?? this.startingPrice,
       );
@@ -45,6 +49,7 @@ class LocalProductModel {
         id: json["id"],
         name: json["name"],
         image: json['image'],
+        available: json["available"],
         userId: json["userId"],
         startingPrice: json["price"],
       );
@@ -53,6 +58,7 @@ class LocalProductModel {
         "id": id,
         "name": name,
         "image": image,
+        "available": available,
         "userId": userId,
         "price": startingPrice,
       };

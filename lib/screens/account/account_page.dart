@@ -110,7 +110,6 @@ class _AccountPageState extends State<AccountPage> {
                 color: black),
           ),
           actions: [
-            IconContainer(icon: AppImages.mail, function: () {}),
             Gap(1 * SizeConfig.widthMultiplier),
             IconContainer(
                 icon: AppImages.search,

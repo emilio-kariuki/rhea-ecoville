@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
 
     return BlocConsumer<NavigationCubit, NavigationState>(
       listener: (context, state) {
-        appRouter.push(routes[state.page]);
+        appRouter.go(routes[state.page]);
       },
       builder: (context, state) {
         return AnimatedBottomNavigationBar.builder(

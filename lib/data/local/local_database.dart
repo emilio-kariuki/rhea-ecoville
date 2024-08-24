@@ -35,21 +35,11 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute(
       '''
-          CREATE TABLE IF NOT EXISTS $savedTable (
-          "id" text PRIMARY KEY NOT NULL,
-          "image" text,
-          "name" text,
-          "price" double precision,
-          "userId" text NOT NULL
-        )
-          ''',
-    );
-    await db.execute(
-      '''
           CREATE TABLE IF NOT EXISTS $watchedTable (
           "id" text PRIMARY KEY NOT NULL,
           "image" text,
           "name" text,
+          "available" text,
           "price" double precision,
           "userId" text NOT NULL
         )
@@ -61,28 +51,20 @@ class DatabaseHelper {
           "id" text PRIMARY KEY NOT NULL,
           "image" text,
           "name" text,
+          "available" text,
           "price" double precision,
           "userId" text NOT NULL
         )
           ''',
     );
-    await db.execute(
-      '''
-          CREATE TABLE IF NOT EXISTS $favouriteTable (
-          "id" text PRIMARY KEY NOT NULL,
-          "image" text,
-          "name" text,
-          "price" double precision,
-          "userId" text NOT NULL
-        )
-          ''',
-    );
+
     await db.execute(
       '''
           CREATE TABLE IF NOT EXISTS $cartTable (
           "id" text PRIMARY KEY NOT NULL,
           "image" text,
           "name" text,
+          "available" text,
           "price" double precision,
           "userId" text NOT NULL
         )
@@ -99,32 +81,7 @@ class DatabaseHelper {
         )
           ''',
     );
-    await db.execute(
-      '''
-          CREATE TABLE IF NOT EXISTS $cartTable (
-          "id" text PRIMARY KEY NOT NULL,
-          "image" text,
-          "name" text,
-          "price" double precision,
-          "userId" text NOT NULL
-        )
-          ''',
-    );
-    await db.execute(
-      '''
-          CREATE TABLE IF NOT EXISTS $addressTable (
-          "id" text PRIMARY KEY NOT NULL,
-          "name" text,
-          "addressLine1" text,
-          "addressLine2" text,
-          "city" text,
-          "country" text,
-          "postalCode" text,
-          "phone" text,
-          "primary" text
-        )
-          ''',
-    );
+
     await db.execute(
       '''
           CREATE TABLE IF NOT EXISTS $categoryTable (

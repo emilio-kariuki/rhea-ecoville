@@ -1,9 +1,11 @@
 import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
+import 'package:ecoville/main.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class ProductContainer extends StatelessWidget {
   const ProductContainer({
@@ -49,8 +51,18 @@ class ProductContainer extends StatelessWidget {
                                 id: product.id,
                                 name: product.name,
                                 image: product.image[0],
+                                available: product.quantity.toString(),
                                 userId: product.userId!,
                                 startingPrice: product.price));
+                      analytics.logViewItem(currency: "KES", items: [
+                        AnalyticsEventItem(
+                            itemName: product.name,
+                            quantity: product.quantity,
+                            parameters: {
+                              "description": product.description,
+                              "seller": product.user!.name,
+                            })
+                      ]);
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,15 +85,15 @@ class ProductContainer extends StatelessWidget {
                         ),
                         Gap(0.8 * SizeConfig.heightMultiplier),
                         Text(
-                                  product.allowBidding!
-                                      ? "Kes ${product.biddingPrice}"
-                                      : "Kes ${product.price}",
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 2.2 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.2),
-                                ),
+                          product.allowBidding!
+                              ? "Ksh ${product.biddingPrice}"
+                              : "Ksh ${product.price}",
+                          style: GoogleFonts.inter(
+                              color: black,
+                              fontSize: 2.2 * SizeConfig.textMultiplier,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2),
+                        ),
                       ],
                     )),
               );
@@ -107,7 +119,7 @@ class ProductContainer extends StatelessWidget {
                         builder: (context, state) {
                           return GestureDetector(
                             onTap: () {
-                              var isLiked = product.isLiked!;
+                              var isLiked = product.isLiked;
                               state.products
                                   .firstWhere(
                                       (element) => element.id == product.id)
@@ -128,7 +140,7 @@ class ProductContainer extends StatelessWidget {
                                 widthFactor: 1,
                                 heightFactor: 1,
                                 child: SvgPicture.asset(
-                                  product.isLiked!
+                                  product.isLiked
                                       ? AppImages.favouriteSolid
                                       : AppImages.favourite,
                                   height: 2.7 * SizeConfig.heightMultiplier,

@@ -55,7 +55,7 @@ class ProductProvider extends ProductTemplate {
   }
 
   @override
-  Future<bool> updateProduct({required ProductModel product}) {
+  Future<bool> updateProduct({required Map<String,dynamic> product}) {
     return _productRepository.updateProduct(product: product);
   }
 

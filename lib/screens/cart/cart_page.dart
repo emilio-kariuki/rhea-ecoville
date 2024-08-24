@@ -4,7 +4,6 @@ import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/page_cubit.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/shared/complete_button.dart';
-import 'package:ecoville/shared/icon_container.dart';
 import 'package:ecoville/shared/network_image_container.dart';
 import 'package:ecoville/utilities/packages.dart';
 import 'package:ecoville/utilities/utilities.dart';
@@ -47,9 +46,9 @@ class CartPage extends StatelessWidget {
                 color: black),
           ),
           actions: [
-            IconContainer(
-                icon: AppImages.more,
-                function: () => context.pushNamed(Routes.cart)),
+            // IconContainer(
+            //     icon: AppImages.more,
+            //     function: () => context.pushNamed(Routes.cart)),
             Gap(1 * SizeConfig.widthMultiplier),
           ],
           bottom: PreferredSize(
@@ -186,10 +185,10 @@ class CartPage extends StatelessWidget {
                                                         ],
                                                       ),
                                                       const Spacer(),
-                                                      IconContainer(
-                                                        icon: AppImages.more,
-                                                        function: () {},
-                                                      ),
+                                                      // IconContainer(
+                                                      //   icon: AppImages.more,
+                                                      //   function: () {},
+                                                      // ),
                                                     ],
                                                   );
                                                 }
@@ -256,7 +255,7 @@ class CartPage extends StatelessWidget {
                                                   },
                                                   builder: (context, state) {
                                                     return Text(
-                                                      "Kes${(product.startingPrice).toStringAsFixed(2)}",
+                                                      "Ksh${(product.startingPrice).toStringAsFixed(2)}",
                                                       style: GoogleFonts.inter(
                                                           fontSize: 1.7 *
                                                               SizeConfig
@@ -310,6 +309,9 @@ class CartPage extends StatelessWidget {
                                                                             .name,
                                                                         image: product.image[
                                                                             0],
+                                                                        available: product
+                                                                            .available
+                                                                            .toString(),
                                                                         userId: product
                                                                             .userId,
                                                                         startingPrice:
@@ -451,7 +453,7 @@ class CartPage extends StatelessWidget {
                                               BlocBuilder<PageCubit, PageState>(
                                                 builder: (context, state) {
                                                   return Text(
-                                                    "\Kes ${totalAmount.toStringAsFixed(2)}",
+                                                    "\Ksh ${totalAmount.toStringAsFixed(2)}",
                                                     style: GoogleFonts.inter(
                                                         fontSize: 1.6 *
                                                             SizeConfig
@@ -497,7 +499,7 @@ class CartPage extends StatelessWidget {
                                               BlocBuilder<PageCubit, PageState>(
                                                 builder: (context, state) {
                                                   return Text(
-                                                    "\Kes ${totalAmount.toStringAsFixed(2)}",
+                                                    "Ksh ${totalAmount.toStringAsFixed(2)}",
                                                     style: GoogleFonts.inter(
                                                         fontSize: 1.6 *
                                                             SizeConfig
@@ -695,6 +697,9 @@ class LaterCartItems extends StatelessWidget {
                                                           name: product.name,
                                                           image:
                                                               product.image[0],
+                                                          available: product
+                                                              .available
+                                                              .toString(),
                                                           userId:
                                                               product.userId,
                                                           startingPrice: product

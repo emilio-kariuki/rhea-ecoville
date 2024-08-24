@@ -86,11 +86,11 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> updateProduct({required ProductModel product}) async {
+  Future<void> updateProduct({required Map<String,dynamic> product}) async {
     setLoading();
     try {
       await _productProvider.updateProduct(product: product);
-      emit(state.copyWith(status: ProductStatus.success));
+      emit(state.copyWith(status: ProductStatus.updated));
     } catch (e) {
       emit(state.copyWith(status: ProductStatus.error, message: e.toString()));
     }

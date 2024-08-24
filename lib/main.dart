@@ -14,10 +14,14 @@ import 'package:ecoville/data/repository/notification_repository.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/firebase_options.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 var logger = Logger();
+
+final analytics = FirebaseAnalytics.instance;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -54,7 +58,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  _socketService.connect();  
+  analytics.logAppOpen();x
+  _socketService.connect();
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await SystemChrome.setPreferredOrientations([
@@ -64,7 +69,15 @@ void main() async {
   await NotificationRepository().initializeNotifications();
   await NotificationRepository().getNotificationToken();
   await LocationRepository().requestPermission();
-  runApp(const MainApp());
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://999a1c41bde283cc73c316a7c9ab26ca@o4507333268275200.ingest.de.sentry.io/4507333270175824';
+      options.tracesSampleRate = 1.0;
+      options.profilesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(const MainApp()),
+  );
+  
   FlutterNativeSplash.remove();
 }
 
@@ -91,9 +104,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(
             lazy: false,
             create: (context) => NotificationCubit()..getAllNotifications()),
-        BlocProvider(
-            lazy: false,
-            create: (context) => MessageCubit()..getConversations()),
+        BlocProvider(lazy: false, create: (context) => MessageCubit()),
         BlocProvider(
           lazy: false,
           create: (context) => UserCubit()..getUser(),

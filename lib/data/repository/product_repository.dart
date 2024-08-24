@@ -12,6 +12,8 @@ import 'package:ecoville/models/product_model.dart';
 import 'package:ecoville/models/product_request_model.dart';
 import 'package:ecoville/models/recommendation_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class ProductTemplate {
   Future<List<ProductModel>> getProducts();
@@ -23,7 +25,7 @@ abstract class ProductTemplate {
   Future<List<ProductModel>> getUserProductsPosted();
   Future<bool> createProduct(
       {required ProductRequestModel product, required bool allowBidding});
-  Future<bool> updateProduct({required ProductModel product});
+  Future<bool> updateProduct({required Map<String, dynamic> product});
   Future<bool> deleteProduct({required String id});
 
   //* saved products
@@ -78,21 +80,42 @@ class ProductRepository extends ProductTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");
     }
   }
 
   @override
-  Future<bool> updateProduct({required ProductModel product}) async {
+  Future<bool> updateProduct({required Map<String, dynamic> product}) async {
     try {
-      await supabase
-          .from(TABLE_PRODUCT)
-          .update(product.toJson())
-          .eq('id', product.id!);
+      final id = product['id'];
+      product.remove('id');
+      // cast endBidding to string
+      if (product.containsKey('endBidding')) {
+        product['endBidding'] = product['endBidding'].toIso8601String();
+      }
+      final request = jsonEncode(product);
+      logger.d(product);
+      final response = await Dio().put("$API_URL/product/update/$id",
+          data: request,
+          options: Options(headers: {
+            "APIKEY": API_KEY,
+            "user": supabase.auth.currentUser!.id
+          }));
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error saving the product, $e");
     }
@@ -103,7 +126,11 @@ class ProductRepository extends ProductTemplate {
     try {
       await supabase.from(TABLE_PRODUCT).delete().eq('id', id);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error deleting the product, $e");
     }
@@ -123,7 +150,11 @@ class ProductRepository extends ProductTemplate {
       final product = ProductModel.fromJson(response.data);
       debugPrint(product.image.toString());
       return product;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error getting the product, $e");
     }
@@ -143,7 +174,11 @@ class ProductRepository extends ProductTemplate {
       final List<ProductModel> products =
           (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");
     }
@@ -159,7 +194,11 @@ class ProductRepository extends ProductTemplate {
           .eq('categoryId', categoryId);
       final products = response.map((e) => ProductModel.fromJson(e)).toList();
       return products;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");
     }
@@ -180,11 +219,16 @@ class ProductRepository extends ProductTemplate {
       final List<ProductModel> products =
           (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");
     }
   }
+
 
   @override
   Future<bool> saveProduct({required String productId}) async {
@@ -201,8 +245,14 @@ class ProductRepository extends ProductTemplate {
       if (response.statusCode != 200) {
         throw Exception("Error saving the products, ${response.data}");
       }
+      analytics
+          .logEvent(name: "Save Product", parameters: {"productId": productId});
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error saving the product, $e");
     }
@@ -224,7 +274,11 @@ class ProductRepository extends ProductTemplate {
         throw Exception("Error liking the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -247,7 +301,11 @@ class ProductRepository extends ProductTemplate {
           .map((e) => InteractionsModel.fromJson(e))
           .toList();
       return products;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -260,7 +318,11 @@ class ProductRepository extends ProductTemplate {
       final savedProducts = await _dbHelper.getUserLocalProducts(
           db: db, table: LOCAL_TABLE_WATCHED);
       return savedProducts;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the watched products, $error");
     }
@@ -274,7 +336,11 @@ class ProductRepository extends ProductTemplate {
       await _dbHelper.deleteLocalProduct(
           db: db, id: id, table: LOCAL_TABLE_WATCHED);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error saving the product, $e");
     }
@@ -288,7 +354,11 @@ class ProductRepository extends ProductTemplate {
       await _dbHelper.insertLocalProduct(
           db: db, product: product, table: LOCAL_TABLE_WATCHED);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error saving the product, $e");
     }
@@ -312,15 +382,22 @@ class ProductRepository extends ProductTemplate {
         final isWithinRange =
             await _locationProvider.isWithinRadiusFromCurrentLocation(
                 longitude:
-                    double.tryParse(product.address?.lon.toString() ?? "0.0") ?? 0.0,
-                latitude: double.tryParse(product.address?.lat.toString() ?? "0.0") ?? 0.0,
+                    double.tryParse(product.address?.lon.toString() ?? "0.0") ??
+                        0.0,
+                latitude:
+                    double.tryParse(product.address?.lat.toString() ?? "0.0") ??
+                        0.0,
                 radius: NEARBY_RADIUS);
         if (isWithinRange) {
           nearbyProducts.add(product);
         }
       }
       return nearbyProducts;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the nearby products, $error");
     }
@@ -343,7 +420,11 @@ class ProductRepository extends ProductTemplate {
           .limit(8);
 
       return similarResponse.map((e) => ProductModel.fromJson(e)).toList();
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the similar products, $error");
     }
@@ -364,8 +445,19 @@ class ProductRepository extends ProductTemplate {
       if (response.statusCode != 200) {
         throw Exception("Error liking the products, ${response.data}");
       }
+      analytics.logAddToWishlist(items: [
+        AnalyticsEventItem(
+          itemCategory: 'product',
+          itemId: id,
+          itemName: 'product',
+        )
+      ]);
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -387,7 +479,11 @@ class ProductRepository extends ProductTemplate {
           .map((e) => InteractionsModel.fromJson(e))
           .toList();
       return products;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -410,7 +506,11 @@ class ProductRepository extends ProductTemplate {
           .map((e) => InteractionsModel.fromJson(e))
           .toList();
       return products;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -432,7 +532,11 @@ class ProductRepository extends ProductTemplate {
         throw Exception("Error liking the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -454,7 +558,11 @@ class ProductRepository extends ProductTemplate {
         throw Exception("Error liking the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -476,7 +584,11 @@ class ProductRepository extends ProductTemplate {
         throw Exception("Error liking the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error liking the product, $e");
     }
@@ -507,7 +619,11 @@ class ProductRepository extends ProductTemplate {
         });
         return categories;
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the categories, $error");
     }
@@ -540,7 +656,11 @@ class ProductRepository extends ProductTemplate {
       final List<ProductModel> products =
           (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception(error);
     }
@@ -563,7 +683,11 @@ class ProductRepository extends ProductTemplate {
           .map((e) => RecommendationModel.fromJson(e))
           .toList();
       return products;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the recommendations, $error");
     }
@@ -584,14 +708,18 @@ class ProductRepository extends ProductTemplate {
       final sellerProducts =
           products.where((element) => element.userId == sellerId).toList();
       return sellerProducts;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");
     }
   }
-  
+
   @override
-  Future<List<ProductModel>> getBiddingProducts() async{
+  Future<List<ProductModel>> getBiddingProducts() async {
     try {
       final response = await Dio().get("$API_URL/product/get?allowBidding=true",
           options: Options(headers: {
@@ -604,7 +732,11 @@ class ProductRepository extends ProductTemplate {
       final List<ProductModel> products =
           (response.data as List).map((e) => ProductModel.fromJson(e)).toList();
       return products;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       debugPrint(error.toString());
       throw Exception("Error getting the products, $error");
     }

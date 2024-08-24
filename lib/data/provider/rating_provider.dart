@@ -7,8 +7,8 @@ class RatingProvider extends RatingTemplate {
       : _ratingRepository = ratingRepository;
 
   @override
-  Future<bool> addRating({required String productId, required String review, required String sellerId,required double rating}) {
-    return _ratingRepository.addRating(productId: productId, review: review, rating: rating, sellerId: sellerId);
+  Future<bool> addRating({required String productId, required String review, required String sellerId,required String orderId,required double rating}) {
+    return _ratingRepository.addRating(productId: productId, review: review, rating: rating, sellerId: sellerId, orderId: orderId,);
   }
 
   @override

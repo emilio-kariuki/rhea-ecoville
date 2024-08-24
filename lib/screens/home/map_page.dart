@@ -8,6 +8,8 @@ import 'package:ecoville/utilities/packages.dart';
 import 'package:flutter/gestures.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../main.dart';
+
 class MapPage extends StatelessWidget {
   MapPage({super.key});
 
@@ -53,28 +55,31 @@ class MapPage extends StatelessWidget {
                     previous.products != current.products,
                 bloc: context.read<ProductCubit>()
                   ..getProducts()
-                  ..getNearbyProducts()
-                  ..getSimilarProducts(productId: 'adfasdf-asdfasd-asdfasdf'),
+                  ..getNearbyProducts(),
+                  
                 listener: (context, state) {
                   if (state.status == ProductStatus.success) {
                     for (var element in state.products) {
                       addMarker(
                         LatLng(
-                          double.tryParse(element.address?.lat ?? "0.0") ?? 0.0,
-                          double.tryParse(element.address?.lon ?? "0.0") ?? 0.0,
+                          double.tryParse(element.address?.lat.toString() ?? "0.0") ?? 0.0,
+                          double.tryParse(element.address?.lon.toString() ?? "0.0") ?? 0.0,
                         ),
                         element.id,
                         element.name,
                         false,
                       );
                     }
+                    logger.d('Markers: $markers');
                   }
                 },
                 builder: (context, state) {
                   return BlocBuilder<LocationCubit, LocationState>(
-                    buildWhen: (previous, current) =>
-                        previous.position != current.position,
+                    // buildWhen: (previous, current) =>
+                    //     previous.position != current.position,
+                    bloc: context.read<LocationCubit>()..getCurrentLocation(),
                     builder: (context, state) {
+                      
                       return Stack(
                         children: [
                           SizedBox(
@@ -109,13 +114,14 @@ class MapPage extends StatelessWidget {
                                 ),
                               },
                               markers: Set<Marker>.of(markers.values),
-                              initialCameraPosition: CameraPosition(
-                                target: LatLng(state.position!.latitude,
-                                    state.position!.longitude),
+                              initialCameraPosition: const CameraPosition(
+                                target: LatLng(-0.3942691,
+                                    36.9630827),
                                 zoom: 15,
                               ),
                               onMapCreated:
                                   (GoogleMapController controller) async {
+                                    logger.d('Current location emilio: ${state.position!.latitude}, ${state.position!.longitude}');
                                 final GoogleMapController controller =
                                     await _controller.future;
                                 controller.animateCamera(

@@ -53,6 +53,8 @@ dependencies:
   dropdown_button2: ^2.3.9
   socket_io_client: ^2.0.3+1
   logger: ^2.4.0
+  firebase_analytics: ^10.10.7
+  sentry_flutter: ^8.6.0
   
 
 dev_dependencies:

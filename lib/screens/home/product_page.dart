@@ -1,5 +1,4 @@
 import 'package:ecoville/blocs/app/local_cubit.dart';
-import 'package:ecoville/blocs/app/message_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/rating_cubit.dart';
 import 'package:ecoville/blocs/minimal/navigation_cubit.dart';
@@ -51,169 +50,185 @@ class ProductDetailsPage extends StatelessWidget {
             backgroundColor: white,
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(8 * SizeConfig.heightMultiplier),
-              child: ProductAppBar(
-                id: id,
-              ),
+              child: (state.status == ProductStatus.success)
+                  ? ProductAppBar(
+                      id: id,
+                      userId: state.product!.userId!,
+                    )
+                  : AppBar(
+                      backgroundColor: white,
+                      elevation: 0,
+                      title: Text(
+                        title,
+                        style: GoogleFonts.inter(
+                            color: black,
+                            fontSize: 2.5 * SizeConfig.textMultiplier,
+                            fontWeight: FontWeight.bold,
+                            height: 1.2),
+                      ),
+                      leading: IconButton(
+                        icon: Icon(Icons.arrow_back, color: black),
+                        onPressed: () => context.pop(),
+                      ),
+                    ),
             ),
-            body: SingleChildScrollView(
-              child: BlocProvider(
-                create: (context) => PageCubit(),
-                child: state.status == ProductStatus.loading
-                    ? ProductPageShimmer(
-                        title: title,
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ProductImagesSection(
-                            id: id,
-                            pageController: _pageController,
-                          ),
-                          Gap(2 * SizeConfig.widthMultiplier),
-                          Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  state.product!.name,
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 2.5 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.2),
-                                ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: state.product!.sold!
-                                        ? Colors.red.withOpacity(0.2)
-                                        : Colors.blue.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Text(
-                                    state.product!.sold! ? "Sold Out" : "Available",
+            body: RefreshIndicator(
+              onRefresh: () {
+                context.read<ProductCubit>()
+                  ..getProduct(id: id)
+                  ..getProductRecommendations(query: title);
+                return Future.value();
+              },
+              child: SingleChildScrollView(
+                child: BlocProvider(
+                  create: (context) => PageCubit(),
+                  child: state.status == ProductStatus.loading
+                      ? ProductPageShimmer(
+                          title: title,
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ProductImagesSection(
+                              id: id,
+                              pageController: _pageController,
+                            ),
+                            Gap(2 * SizeConfig.widthMultiplier),
+                            Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    state.product!.name,
                                     style: GoogleFonts.inter(
+                                        color: black,
                                         fontSize:
-                                            1.5 * SizeConfig.textMultiplier,
-                                        fontWeight: FontWeight.w600,
-                                        color: state.product!.sold!
-                                            ? Colors.red
-                                            : Colors.blue),
+                                            2.5 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.2),
                                   ),
-                                ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                // Row(
-                                //   children: [
-                                //     NetworkImageContainer(
-                                //       imageUrl: AppImages.defaultImage,
-                                //       height: height * 0.05,
-                                //       width: height * 0.05,
-                                //       isCirlce: true,
-                                //     ),
-                                //     Gap(2 * SizeConfig.widthMultiplier),
-                                //     Column(
-                                //       crossAxisAlignment:
-                                //           CrossAxisAlignment.start,
-                                //       children: [
-                                //         BlocBuilder<ProductCubit, ProductState>(
-                                //           buildWhen: (previous, current) =>
-                                //               previous.product !=
-                                //               current.product,
-                                //           builder: (context, state) {
-                                //             return Text(
-                                //               state.product!.user!.name!,
-                                //               style: GoogleFonts.inter(
-                                //                   color: black,
-                                //                   fontSize: 2.2 *
-                                //                       SizeConfig.textMultiplier,
-                                //                   fontWeight: FontWeight.w600,
-                                //                   height: 1.2),
-                                //             );
-                                //           },
-                                //         ),
-                                //         Text(
-                                //           "90% Positive Rating",
-                                //           style: GoogleFonts.inter(
-                                //               color: black,
-                                //               fontSize: 1.6 *
-                                //                   SizeConfig.textMultiplier,
-                                //               fontWeight: FontWeight.w500,
-                                //               height: 1.2),
-                                //         ),
-                                //       ],
-                                //     ),
-                                //     const Spacer(),
-                                //     state.product!.userId !=
-                                //             supabase.auth.currentUser!.id
-                                //         ? BlocProvider(
-                                //             create: (context) => MessageCubit(),
-                                //             child: Builder(builder: (context) {
-                                //               return BlocListener<MessageCubit,
-                                //                   MessageState>(
-                                //                 listener: (context, state) {
-                                //                   debugPrint(
-                                //                       "Message State: ${state.status}");
-                                //                   if (state.status ==
-                                //                       MessageStatus.success) {
-                                //                     context
-                                //                         .push(Routes.messages);
-                                //                   }
-                                //                 },
-                                //                 child: IconContainer(
-                                //                   icon: AppImages.messages,
-                                //                   function: () => state.product!
-                                //                               .userId !=
-                                //                           supabase.auth
-                                //                               .currentUser!.id
-                                //                       ? context
-                                //                           .read<MessageCubit>()
-                                //                           .createConversation(
-                                //                               sellerId: state
-                                //                                   .product!
-                                //                                   .userId!)
-                                //                       : null,
-                                //                 ),
-                                //               );
-                                //             }),
-                                //           )
-                                //         : const SizedBox.shrink(),
-                                //   ],
-                                // ),
-                                // Gap(3 * SizeConfig.heightMultiplier),
-                                Text(
-                                  state.product!.allowBidding!
-                                      ? "Kes ${state.product!.biddingPrice}"
-                                      : "Kes ${state.product!.price}",
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 2.8 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.2),
-                                ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                if (state.product!.allowBidding!)
-                                  Row(
-                                    children: [
-                                      Text(
-                                        state.product!.bids!.isEmpty
-                                            ? "No Bids"
-                                            : "${state.product!.bids!.length} Bids",
-                                        style: GoogleFonts.inter(
-                                            color: black,
-                                            fontSize:
-                                                1.6 * SizeConfig.textMultiplier,
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.2),
-                                      ),
-                                      const Spacer(),
-                                      // time left endBidding - startBidding
-                                      if (state.product!.biddingStatus ==
-                                          "open")
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: state.product!.sold!
+                                          ? Colors.red.withOpacity(0.2)
+                                          : Colors.blue.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Text(
+                                      state.product!.sold!
+                                          ? "Sold Out"
+                                          : "Available",
+                                      style: GoogleFonts.inter(
+                                          fontSize:
+                                              1.5 * SizeConfig.textMultiplier,
+                                          fontWeight: FontWeight.w600,
+                                          color: state.product!.sold!
+                                              ? Colors.red
+                                              : Colors.blue),
+                                    ),
+                                  ),
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  // Row(
+                                  //   children: [
+                                  //     NetworkImageContainer(
+                                  //       imageUrl: AppImages.defaultImage,
+                                  //       height: height * 0.05,
+                                  //       width: height * 0.05,
+                                  //       isCirlce: true,
+                                  //     ),
+                                  //     Gap(2 * SizeConfig.widthMultiplier),
+                                  //     Column(
+                                  //       crossAxisAlignment:
+                                  //           CrossAxisAlignment.start,
+                                  //       children: [
+                                  //         BlocBuilder<ProductCubit, ProductState>(
+                                  //           buildWhen: (previous, current) =>
+                                  //               previous.product !=
+                                  //               current.product,
+                                  //           builder: (context, state) {
+                                  //             return Text(
+                                  //               state.product!.user!.name!,
+                                  //               style: GoogleFonts.inter(
+                                  //                   color: black,
+                                  //                   fontSize: 2.2 *
+                                  //                       SizeConfig.textMultiplier,
+                                  //                   fontWeight: FontWeight.w600,
+                                  //                   height: 1.2),
+                                  //             );
+                                  //           },
+                                  //         ),
+                                  //         Text(
+                                  //           "90% Positive Rating",
+                                  //           style: GoogleFonts.inter(
+                                  //               color: black,
+                                  //               fontSize: 1.6 *
+                                  //                   SizeConfig.textMultiplier,
+                                  //               fontWeight: FontWeight.w500,
+                                  //               height: 1.2),
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //     const Spacer(),
+                                  //     state.product!.userId !=
+                                  //             supabase.auth.currentUser!.id
+                                  //         ? BlocProvider(
+                                  //             create: (context) => MessageCubit(),
+                                  //             child: Builder(builder: (context) {
+                                  //               return BlocListener<MessageCubit,
+                                  //                   MessageState>(
+                                  //                 listener: (context, state) {
+                                  //                   debugPrint(
+                                  //                       "Message State: ${state.status}");
+                                  //                   if (state.status ==
+                                  //                       MessageStatus.success) {
+                                  //                     context
+                                  //                         .push(Routes.messages);
+                                  //                   }
+                                  //                 },
+                                  //                 child: IconContainer(
+                                  //                   icon: AppImages.messages,
+                                  //                   function: () => state.product!
+                                  //                               .userId !=
+                                  //                           supabase.auth
+                                  //                               .currentUser!.id
+                                  //                       ? context
+                                  //                           .read<MessageCubit>()
+                                  //                           .createConversation(
+                                  //                               sellerId: state
+                                  //                                   .product!
+                                  //                                   .userId!)
+                                  //                       : null,
+                                  //                 ),
+                                  //               );
+                                  //             }),
+                                  //           )
+                                  //         : const SizedBox.shrink(),
+                                  //   ],
+                                  // ),
+                                  // Gap(3 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    state.product!.allowBidding!
+                                        ? "Ksh ${state.product!.biddingPrice}"
+                                        : "Ksh ${state.product!.price}",
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize:
+                                            2.8 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.2),
+                                  ),
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  if (state.product!.allowBidding!)
+                                    Row(
+                                      children: [
                                         Text(
-                                          "Ends in ${formatMinutes(state.product!.endBidding!.difference(DateTime.timestamp()).inMinutes)}",
+                                          state.product!.bids!.isEmpty
+                                              ? "No Bids"
+                                              : "${state.product!.bids!.length} Bids",
                                           style: GoogleFonts.inter(
                                               color: black,
                                               fontSize: 1.6 *
@@ -221,269 +236,298 @@ class ProductDetailsPage extends StatelessWidget {
                                               fontWeight: FontWeight.w400,
                                               height: 1.2),
                                         ),
-                                    ],
-                                  ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                Text(
-                                  "${state.product!.address!.city!}, ${state.product!.address!.country!}",
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 2 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.2),
-                                ),
-                                Gap(1.5 * SizeConfig.heightMultiplier),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Condition ",
-                                      style: GoogleFonts.inter(
-                                          color: Colors.grey,
-                                          fontSize:
-                                              1.6 * SizeConfig.textMultiplier,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.2),
-                                    ),
-                                    Gap(10 * SizeConfig.widthMultiplier),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          state.product!.condition!,
-                                          style: GoogleFonts.inter(
-                                              color: black,
-                                              fontSize: 1.6 *
-                                                  SizeConfig.textMultiplier,
-                                              fontWeight: FontWeight.w700,
-                                              height: 1.2),
-                                        ),
-                                        Gap(0.5 * SizeConfig.widthMultiplier),
-                                        SvgPicture.asset(AppImages.info,
-                                            height: 2.5 *
-                                                SizeConfig.heightMultiplier,
-                                            width: 2.5 *
-                                                SizeConfig.heightMultiplier,
-                                            color: green),
+                                        const Spacer(),
+                                        // time left endBidding - startBidding
+                                        if (state.product!.allowBidding!)
+                                          Text(
+                                            "Ends in ${formatMinutes((state.product!.endBidding!.subtract(const Duration(hours: 3))).difference(DateTime.timestamp()).inMinutes)}",
+                                            style: GoogleFonts.inter(
+                                                color: black,
+                                                fontSize: 1.6 *
+                                                    SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.2),
+                                          ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                                Gap(3 * SizeConfig.heightMultiplier),
-                                if (state.product!.biddingStatus == "open")
-                                  BlocBuilder<ProductCubit, ProductState>(
-                                    builder: (context, state) {
-                                      if (state.product!.allowBidding!) {
-                                        return CompleteButton(
-                                          height:
-                                              6.5 * SizeConfig.heightMultiplier,
-                                          borderRadius: 30,
-                                          text: Text(
-                                            "Place Bid",
-                                            style: GoogleFonts.inter(
-                                                color: white,
-                                                fontSize: 1.8 *
-                                                    SizeConfig.textMultiplier,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 0.1),
-                                          ),
-                                          function: () => Navigator.of(context)
-                                              .push(MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      BiddingPage(
-                                                        productId:
-                                                            state.product!.id,
-                                                      ))),
-                                        );
-                                      }
-                                      return const SizedBox.shrink();
-                                    },
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    "${state.product!.address!.city!}, ${state.product!.address!.country!}",
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize: 2 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.2),
                                   ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                if ((state.product!.userId! !=
-                                        supabase.auth.currentUser!.id) &&
-                                    !state.product!.sold! &&
-                                    (state.product!.allowBidding == false ||
-                                        (state.product!.biddingStatus! ==
-                                                "closed" &&
-                                            state.product!.highestBidder ==
-                                                supabase.auth.currentUser!.id)))
-                                  BlocConsumer<LocalCubit, LocalState>(
-                                    listenWhen: (previous, current) =>
-                                        previous.status != current.status,
-                                    buildWhen: (previous, current) =>
-                                        previous.status != current.status,
-                                    listener: (context, state) {
-                                      if (state.status == LocalStatus.updated) {
-                                        context
-                                          ..read<ProductCubit>()
-                                              .getProduct(id: id)
-                                          ..read<LocalCubit>()
-                                              .getCartProducts();
-                                      }
-                                    },
-                                    builder: (context, localState) {
-                                      return BlocBuilder<ProductCubit,
-                                          ProductState>(
-                                        builder: (context, pstate) {
-                                          return BorderButton(
-                                              height: 6 *
+                                  Gap(1.5 * SizeConfig.heightMultiplier),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Condition ",
+                                        style: GoogleFonts.inter(
+                                            color: Colors.grey,
+                                            fontSize:
+                                                1.6 * SizeConfig.textMultiplier,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.2),
+                                      ),
+                                      Gap(10 * SizeConfig.widthMultiplier),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            state.product!.condition!,
+                                            style: GoogleFonts.inter(
+                                                color: black,
+                                                fontSize: 1.6 *
+                                                    SizeConfig.textMultiplier,
+                                                fontWeight: FontWeight.w700,
+                                                height: 1.2),
+                                          ),
+                                          Gap(0.5 * SizeConfig.widthMultiplier),
+                                          SvgPicture.asset(AppImages.info,
+                                              height: 2.5 *
                                                   SizeConfig.heightMultiplier,
-                                              borderRadius: 30,
-                                              text: BlocBuilder<LocalCubit,
-                                                  LocalState>(
-                                                builder: (context, state) {
-                                                  return Text(
-                                                    state.cartItems.any(
-                                                            (element) =>
-                                                                element.id ==
-                                                                pstate.product!
-                                                                    .id)
-                                                        ? "Added to Cart"
-                                                        : "Add to Cart",
-                                                    style: GoogleFonts.inter(
-                                                        color: green,
-                                                        fontSize: 1.8 *
-                                                            SizeConfig
-                                                                .textMultiplier,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        letterSpacing: 0.1),
-                                                  );
-                                                },
-                                              ),
-                                              function: () {
+                                              width: 2.5 *
+                                                  SizeConfig.heightMultiplier,
+                                              color: green),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Gap(3 * SizeConfig.heightMultiplier),
+                                  if (state.product!.biddingStatus == "open")
+                                    BlocBuilder<ProductCubit, ProductState>(
+                                      builder: (context, state) {
+                                        if (state.product!.allowBidding! &&
+                                            state.product!.user!.id !=
+                                                supabase.auth.currentUser!.id) {
+                                          return CompleteButton(
+                                            height: 6.5 *
+                                                SizeConfig.heightMultiplier,
+                                            borderRadius: 30,
+                                            text: Text(
+                                              "Place Bid",
+                                              style: GoogleFonts.inter(
+                                                  color: white,
+                                                  fontSize: 1.8 *
+                                                      SizeConfig.textMultiplier,
+                                                  fontWeight: FontWeight.w600,
+                                                  letterSpacing: 0.1),
+                                            ),
+                                            function: () =>
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            BiddingPage(
+                                                              productId: state
+                                                                  .product!.id,
+                                                            ))),
+                                          );
+                                        }
+                                        return const SizedBox.shrink();
+                                      },
+                                    ),
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  if ((state.product!.userId! !=
+                                              supabase.auth.currentUser!.id) &&
+                                          (!state.product!.sold!) ||
+                                      (state.product!.biddingStatus! ==
+                                              "closed" &&
+                                          state.product!.highestBidder ==
+                                              supabase.auth.currentUser!.id))
+                                    BlocConsumer<LocalCubit, LocalState>(
+                                      listenWhen: (previous, current) =>
+                                          previous.status != current.status,
+                                      buildWhen: (previous, current) =>
+                                          previous.status != current.status,
+                                      listener: (context, state) {
+                                        if (state.status ==
+                                            LocalStatus.updated) {
+                                          context
+                                            ..read<ProductCubit>()
+                                                .getProduct(id: id)
+                                            ..read<LocalCubit>()
+                                                .getCartProducts();
+                                        }
+                                      },
+                                      builder: (context, localState) {
+                                        return BlocBuilder<ProductCubit,
+                                            ProductState>(
+                                          builder: (context, pstate) {
+                                            return BorderButton(
+                                                height: 6 *
+                                                    SizeConfig.heightMultiplier,
+                                                borderRadius: 30,
+                                                text: BlocBuilder<LocalCubit,
+                                                    LocalState>(
+                                                  builder: (context, state) {
+                                                    return Text(
+                                                      state.cartItems.any(
+                                                              (element) =>
+                                                                  element.id ==
+                                                                  pstate
+                                                                      .product!
+                                                                      .id)
+                                                          ? "Added to Cart"
+                                                          : "Add to Cart",
+                                                      style: GoogleFonts.inter(
+                                                          color: green,
+                                                          fontSize: 1.8 *
+                                                              SizeConfig
+                                                                  .textMultiplier,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          letterSpacing: 0.1),
+                                                    );
+                                                  },
+                                                ),
+                                                function: () {
+                                                  context
+                                                      .read<LocalCubit>()
+                                                      .addProductToCart(
+                                                          product:
+                                                              LocalProductModel(
+                                                        id: state.product!.id,
+                                                        name:
+                                                            state.product!.name,
+                                                        image: state
+                                                            .product!.image[0],
+                                                        userId: state
+                                                            .product!.userId!,
+                                                        available: state
+                                                            .product!.quantity
+                                                            .toString(),
+                                                        startingPrice: state
+                                                            .product!.price,
+                                                      ));
+                                                });
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  BlocBuilder<ProductCubit, ProductState>(
+                                    buildWhen: (previous, current) =>
+                                        previous.product != current.product,
+                                    builder: (context, state) {
+                                      return BlocProvider(
+                                        create: (context) => LocalCubit(),
+                                        child: Builder(builder: (context) {
+                                          return BlocListener<LocalCubit,
+                                              LocalState>(
+                                            listenWhen: (previous, current) =>
+                                                previous.status !=
+                                                current.status,
+                                            listener: (context, state) {
+                                              if (state.status ==
+                                                  LocalStatus.updated) {
                                                 context
-                                                    .read<LocalCubit>()
-                                                    .addProductToCart(
-                                                        product:
-                                                            LocalProductModel(
-                                                      id: state.product!.id,
-                                                      name: state.product!.name,
-                                                      image: state
-                                                          .product!.image[0],
-                                                      userId: state
-                                                          .product!.userId!,
-                                                      startingPrice:
-                                                          state.product!.price,
-                                                    ));
-                                              });
-                                        },
+                                                    .read<ProductCubit>()
+                                                    .getProduct(id: id);
+                                              }
+                                            },
+                                            child: BorderButton(
+                                                height: 6 *
+                                                    SizeConfig.heightMultiplier,
+                                                borderRadius: 30,
+                                                text: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      state.product!
+                                                              .isWishlisted
+                                                          ? AppImages
+                                                              .favouriteSolid
+                                                          : AppImages.favourite,
+                                                      height: 3 *
+                                                          SizeConfig
+                                                              .heightMultiplier,
+                                                      width: 3 *
+                                                          SizeConfig
+                                                              .heightMultiplier,
+                                                      color: green,
+                                                    ),
+                                                    Gap(1 *
+                                                        SizeConfig
+                                                            .widthMultiplier),
+                                                    Text(
+                                                      state.product!
+                                                              .isWishlisted
+                                                          ? "Added to Wishlist"
+                                                          : "Add to Wishlist",
+                                                      style: GoogleFonts.inter(
+                                                          color: green,
+                                                          fontSize: 1.8 *
+                                                              SizeConfig
+                                                                  .textMultiplier,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          letterSpacing: 0.1),
+                                                    ),
+                                                  ],
+                                                ),
+                                                function: () => state
+                                                        .product!.isWishlisted
+                                                    ? context
+                                                        .read<LocalCubit>()
+                                                        .removeProductFromWishlist(
+                                                            id: state
+                                                                .product!.id)
+                                                    : context
+                                                        .read<LocalCubit>()
+                                                        .addProductToWishlist(
+                                                            id: state
+                                                                .product!.id)),
+                                          );
+                                        }),
                                       );
                                     },
                                   ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                BlocBuilder<ProductCubit, ProductState>(
-                                  buildWhen: (previous, current) =>
-                                      previous.product != current.product,
-                                  builder: (context, state) {
-                                    return BlocProvider(
-                                      create: (context) => LocalCubit(),
-                                      child: Builder(builder: (context) {
-                                        return BlocListener<LocalCubit,
-                                            LocalState>(
-                                          listenWhen: (previous, current) =>
-                                              previous.status != current.status,
-                                          listener: (context, state) {
-                                            if (state.status ==
-                                                LocalStatus.updated) {
-                                              context
-                                                  .read<ProductCubit>()
-                                                  .getProduct(id: id);
-                                            }
-                                          },
-                                          child: BorderButton(
-                                              height: 6 *
-                                                  SizeConfig.heightMultiplier,
-                                              borderRadius: 30,
-                                              text: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    state.product!.isWishlisted
-                                                        ? AppImages
-                                                            .favouriteSolid
-                                                        : AppImages.favourite,
-                                                    height: 3 *
-                                                        SizeConfig
-                                                            .heightMultiplier,
-                                                    width: 3 *
-                                                        SizeConfig
-                                                            .heightMultiplier,
-                                                    color: green,
-                                                  ),
-                                                  Gap(1 *
-                                                      SizeConfig
-                                                          .widthMultiplier),
-                                                  Text(
-                                                    state.product!.isWishlisted
-                                                        ? "Added to Wishlist"
-                                                        : "Add to Wishlist",
-                                                    style: GoogleFonts.inter(
-                                                        color: green,
-                                                        fontSize: 1.8 *
-                                                            SizeConfig
-                                                                .textMultiplier,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        letterSpacing: 0.1),
-                                                  ),
-                                                ],
-                                              ),
-                                              function: () => state
-                                                      .product!.isWishlisted
-                                                  ? context
-                                                      .read<LocalCubit>()
-                                                      .removeProductFromWishlist(
-                                                          id: state.product!.id)
-                                                  : context
-                                                      .read<LocalCubit>()
-                                                      .addProductToWishlist(
-                                                          id: state
-                                                              .product!.id)),
-                                        );
-                                      }),
-                                    );
-                                  },
-                                ),
-                                Gap(3 * SizeConfig.heightMultiplier),
-                                Text(
-                                  "Item Description from the seller ",
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 2.5 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.2),
-                                ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                Text(
-                                  "Available items: ${state.product!.quantity}",
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 1.6 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.2),
-                                ),
-                                Gap(1 * SizeConfig.heightMultiplier),
-                                Text(
-                                  state.product!.description!,
-                                  style: GoogleFonts.inter(
-                                      color: black,
-                                      fontSize: 1.6 * SizeConfig.textMultiplier,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.2),
-                                ),
-                                Gap(3 * SizeConfig.heightMultiplier),
-                                SellerSection(),
-                                Gap(4 * SizeConfig.heightMultiplier),
-                                RecommendedItems()
-                              ],
+                                  Gap(3 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    "Item Description from the seller ",
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize:
+                                            2.5 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.2),
+                                  ),
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    "Available items: ${state.product!.quantity}",
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize:
+                                            1.6 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.2),
+                                  ),
+                                  Gap(1 * SizeConfig.heightMultiplier),
+                                  Text(
+                                    state.product!.description!,
+                                    style: GoogleFonts.inter(
+                                        color: black,
+                                        fontSize:
+                                            1.6 * SizeConfig.textMultiplier,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.2),
+                                  ),
+                                  Gap(3 * SizeConfig.heightMultiplier),
+                                  SellerSection(),
+                                  Gap(4 * SizeConfig.heightMultiplier),
+                                  RecommendedItems()
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                ),
               ),
             ));
       },
@@ -550,10 +594,10 @@ class SellerSection extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            IconContainer(
-              icon: AppImages.favourite,
-              function: () {},
-            ),
+            // IconContainer(
+            //   icon: AppImages.favourite,
+            //   function: () {},
+            // ),
           ],
         ),
         Gap(4 * SizeConfig.heightMultiplier),
@@ -572,7 +616,7 @@ class SellerSection extends StatelessWidget {
               builder: (context, state) {
                 return Text(
                   // "Member since ${state.product!.user.createdAt!.year}",
-                  "Joined ${state.product!.createdAt.toString().timeAgo()}",
+                  "Joined ${state.product!.user!.createdAt.toString().timeAgo()}",
                   style: GoogleFonts.inter(
                       color: black,
                       fontSize: 1.8 * SizeConfig.textMultiplier,
@@ -826,6 +870,21 @@ class RatingContainer extends StatelessWidget {
             height: 1.2),
       ),
       Gap(1 * SizeConfig.heightMultiplier),
+      // generate 5 stars
+      Row(
+        children: List.generate(5, (index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Icon(
+              index < rating.rating
+                  ? Icons.star
+                  : Icons.star_border_purple500_outlined,
+              color: green,
+              size: 16,
+            ),
+          );
+        }),
+      ),
     ]);
   }
 }
@@ -1014,8 +1073,10 @@ class ProductAppBar extends StatelessWidget {
   const ProductAppBar({
     super.key,
     required this.id,
+    required this.userId,
   });
   final String id;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -1108,10 +1169,11 @@ class ProductAppBar extends StatelessWidget {
           }),
         ),
         Gap(1 * SizeConfig.widthMultiplier),
-        // IconContainer(
-        //     icon: AppImages.more,
-        //     function: () => context.pushNamed(Routes.cart)),
-        // Gap(1 * SizeConfig.widthMultiplier),
+        if (userId == supabase.auth.currentUser!.id)
+          IconContainer(
+              icon: AppImages.edit,
+              function: () => context.push('/selling/edit/$id')),
+        Gap(1 * SizeConfig.widthMultiplier),
       ],
     );
   }
@@ -1365,6 +1427,7 @@ class RecommendedItems extends StatelessWidget {
                                                     image: state
                                                         .recommendations[index]
                                                         .image[0],
+                                                    available: "1",
                                                     userId: supabase
                                                         .auth.currentUser!.id,
                                                     startingPrice: state

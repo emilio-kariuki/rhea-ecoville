@@ -2,6 +2,7 @@ import 'package:ecoville/data/local/local_database.dart';
 import 'package:ecoville/data/service/service_locator.dart';
 import 'package:ecoville/models/local_product_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class CartTemplate {
   Future<bool> addToCart({required LocalProductModel product});
@@ -22,19 +23,30 @@ class CartRepository extends CartTemplate {
       final result = await _dbHelper.insertLocalProduct(
           db: db, product: product, table: LOCAL_TABLE_CART);
       return result > 0;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
+
       debugPrint(error.toString());
       return false;
     }
   }
 
+  
   @override
   Future<bool> clearCart() async {
     try {
       final db = await _dbHelper.init();
       await db.delete(LOCAL_TABLE_CART);
       return true;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
+
       debugPrint(error.toString());
       return false;
     }
@@ -47,7 +59,12 @@ class CartRepository extends CartTemplate {
       final result =
           await _dbHelper.getLocalProducts(db: db, table: LOCAL_TABLE_CART);
       return result;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
+
       debugPrint(error.toString());
       return [];
     }
@@ -60,7 +77,12 @@ class CartRepository extends CartTemplate {
       await _dbHelper.deleteLocalProduct(
           db: db, id: id, table: LOCAL_TABLE_CART);
       return true;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
+
       debugPrint(error.toString());
       return false;
     }

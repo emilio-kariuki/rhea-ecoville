@@ -162,6 +162,7 @@ class SearchResultPage extends StatelessWidget {
                                 id: state.searchResults[index].id,
                                 name: state.searchResults[index].name,
                                 image: state.searchResults[index].image[0],
+                                available: state.searchResults[index].quantity.toString(),
                                 userId: state.searchResults[index].userId!,
                                 startingPrice:
                                     state.searchResults[index].price!)),

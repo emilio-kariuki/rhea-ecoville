@@ -1,5 +1,8 @@
+import 'package:ecoville/blocs/app/address_cubit.dart';
 import 'package:ecoville/blocs/app/auth_cubit.dart';
+import 'package:ecoville/blocs/app/local_cubit.dart';
 import 'package:ecoville/blocs/app/message_cubit.dart';
+import 'package:ecoville/blocs/app/notification_cubit.dart';
 import 'package:ecoville/blocs/app/product_cubit.dart';
 import 'package:ecoville/blocs/app/user_cubit.dart';
 import 'package:ecoville/blocs/minimal/bool_cubit.dart';
@@ -153,9 +156,15 @@ class WelcomePage extends StatelessWidget {
                             if (state.status == AuthStatus.success) {
                               context
                                 ..read<ProductCubit>().getProducts()
+                                ..read<ProductCubit>().getBiddingProducts()
                                 ..read<MessageCubit>().getConversations()
                                 ..read<UserCubit>().getUser()
                                 ..read<ProductCubit>().getNearbyProducts()
+                                ..read<AddressCubit>().getAddresses()
+                                ..read<LocalCubit>().getCartProducts()
+                                ..read<LocalCubit>().getWatchedProduct()
+                                ..read<LocalCubit>().getLaterCartProducts()
+                                ..read<NotificationCubit>().getAllNotifications()
                                 ..read<ProductCubit>().getSimilarProducts(
                                     productId: "adfasdf-asdfasd-asdfasdf")
                                 ..pushNamed(Routes.home);

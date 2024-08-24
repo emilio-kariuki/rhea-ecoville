@@ -5,11 +5,13 @@ import 'package:ecoville/main.dart';
 import 'package:ecoville/models/order_model.dart';
 import 'package:ecoville/models/order_request_model.dart';
 import 'package:ecoville/utilities/packages.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract class OrderTemplate {
   Future<List<OrderModel>> getUserOrders();
   Future<bool> cancelOrder({required OrderModel order});
   Future<bool> confirmOrder({required OrderModel order});
+  Future<bool> returnOrder({required OrderModel order});
   Future<bool> createOrder({required OrderRequestModel order});
   Future<List<OrderModel>> getAllOrders();
   Future<bool> payOrder({required String orderId, required String phone, required int amount});
@@ -31,12 +33,19 @@ class OrderRepository implements OrderTemplate {
       }
       final List<OrderModel> products =
           (response.data as List).map((e) => OrderModel.fromJson(e)).toList();
+      // sort the orders by date
+      products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       debugPrint(products.toString());
       return products;
-    } catch (e) {
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       throw Exception(e);
     }
   }
+
 
   @override
   Future<bool> cancelOrder({required OrderModel order}) async {
@@ -54,7 +63,11 @@ class OrderRepository implements OrderTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       throw Exception(e);
     }
   }
@@ -75,7 +88,37 @@ class OrderRepository implements OrderTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
+      throw Exception(e);
+    }
+  }
+
+
+  @override
+  Future<bool> returnOrder({required OrderModel order}) async {
+    try {
+      final response = await Dio()
+          .put("$API_URL/admin/updateOrderStatus/${order.id}",
+              options: Options(headers: {
+                "APIKEY": API_KEY,
+                "user": supabase.auth.currentUser!.id,
+                "token": order.user.token,
+                "email": order.user.email
+              }),
+              data: {"status": "returned"});
+      if (response.statusCode != 200) {
+        throw Exception("Error getting the products, ${response.data}");
+      }
+      return true;
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       throw Exception(e);
     }
   }
@@ -99,8 +142,13 @@ class OrderRepository implements OrderTemplate {
       if (response.statusCode != 200) {
         throw Exception("Error getting the products, ${response.data}");
       }
+    
       return true;
-    } catch (e) {
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       logger.e(e);
       throw Exception(e);
     }
@@ -123,7 +171,11 @@ class OrderRepository implements OrderTemplate {
           (response.data as List).map((e) => OrderModel.fromJson(e)).toList();
       debugPrint(products.toString());
       return products;
-    } catch (e) {
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       throw Exception(e);
     }
   }
@@ -148,7 +200,11 @@ class OrderRepository implements OrderTemplate {
         throw Exception("Error getting the products, ${response.data}");
       }
       return true;
-    } catch (e) {
+    }   catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       return false;
     }
   }

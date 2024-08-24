@@ -1,6 +1,8 @@
 import 'package:ecoville/utilities/packages.dart';
 import 'dart:math';
 
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 abstract class LocationTemplate {
   Future<void> requestPermission();
   Future<Position> getCurrentLocation();
@@ -24,7 +26,11 @@ class LocationRepository extends LocationTemplate {
       await requestPermission();
       final location = await Geolocator.getCurrentPosition();
       return location;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
       return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         forceAndroidLocationManager: true,
@@ -38,7 +44,11 @@ class LocationRepository extends LocationTemplate {
     try {
       return Geolocator.distanceBetween(
           start.latitude, start.longitude, end.latitude, end.longitude);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error calculating distance: $e");
     }
@@ -53,7 +63,11 @@ class LocationRepository extends LocationTemplate {
       return Geolocator.distanceBetween(
               start.latitude, start.longitude, end.latitude, end.longitude) <=
           radius;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error calculating distance: $e");
     }
@@ -69,7 +83,11 @@ class LocationRepository extends LocationTemplate {
       final distance = calculateDistanceBetween(currentLocation.latitude,
           currentLocation.longitude, latitude, longitude);
       return distance <= radius;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error calculating distance: $e");
     }
@@ -101,7 +119,11 @@ class LocationRepository extends LocationTemplate {
             'Location permissions are permanently denied, we cannot request permissions.');
       }
       return;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       // throw Exception("Error requesting permission: $e");
       return;
@@ -118,7 +140,11 @@ class LocationRepository extends LocationTemplate {
           longitude: position.longitude,
           googleMapApiKey: GOOGLE_MAPS_API_KEY);
       return addresses;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+      );
       debugPrint(e.toString());
       throw Exception("Error getting address from coordinates: $e");
     }

@@ -17,6 +17,7 @@ class OrderModel {
     final String status;
     final DateTime createdAt;
     final DateTime updatedAt;
+    final bool reviewed;
     final User user;
     final Product product;
 
@@ -29,6 +30,7 @@ class OrderModel {
         required this.status,
         required this.createdAt,
         required this.updatedAt,
+        required this.reviewed,
         required this.user,
         required this.product,
     });
@@ -42,6 +44,7 @@ class OrderModel {
         String? status,
         DateTime? createdAt,
         DateTime? updatedAt,
+        bool? reviewed,
         User? user,
         Product? product,
     }) => 
@@ -54,6 +57,7 @@ class OrderModel {
             status: status ?? this.status,
             createdAt: createdAt ?? this.createdAt,
             updatedAt: updatedAt ?? this.updatedAt,
+            reviewed: reviewed ?? this.reviewed,
             user: user ?? this.user,
             product: product ?? this.product,
         );
@@ -67,6 +71,7 @@ class OrderModel {
         status: json["status"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
+        reviewed: json["reviewed"],
         user: User.fromJson(json["user"]),
         product: Product.fromJson(json["product"]),
     );
@@ -80,6 +85,7 @@ class OrderModel {
         "status": status,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
+        "reviewed": reviewed,
         "user": user.toJson(),
         "product": product.toJson(),
     };

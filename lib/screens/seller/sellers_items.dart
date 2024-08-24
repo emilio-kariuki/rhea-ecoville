@@ -134,6 +134,7 @@ class SellerContainer extends StatelessWidget {
                   id: product.id,
                   name: product.name,
                   image: product.image[0],
+                  available: product.quantity.toString(),
                   userId: product.userId!,
                   startingPrice: product.price!));
       },
